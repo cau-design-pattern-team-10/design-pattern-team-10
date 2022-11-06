@@ -11,8 +11,8 @@
   - 게임은 그리드 1개로만 구성된다.
   - 규칙은 Conway's Game of Life 의 규칙을 말하며, 해당 [문서](http://www.radicaleye.com/lifepage/)를 따른다.
   - 틱(Tick) 은 게임의 최소 시간단위를 의미한다.
-  - TODO: Tick 이 실제로 어떻게 흐르는지 확인해야함
-  - 스텝(Step)은 Game of Life 의 규칙을 1회 적용한 것을 의미한다.
+    - 게임 진행 상태에 따라, 현실 시간의 일정시간을 1틱으로 동작한다.
+  - 1틱이 증가할때 그리드에 규칙을 적용하며, 이를 1틱 진행한다라고 말할 수 있다.
   - 게임 진행 상태(또는 진행 상태, State) 는 게임의 진행 상태를 의미하며, Halt, Agonizing, Slow, Medium, Fast 가 존재한다.
   - 게임은 반드시 게임 진행 상태를 가진다.
   - 최초 시작시 게임은 아래와 같은 상태를 가진다.:
@@ -46,27 +46,28 @@
     - 켜져있던 칸을 꺼서, 영역내의 모든 칸이 꺼져있더라도 테두리가 표시된다.
 
 - Run single step:
-  - Grid 내의 모든 Cell 이 규칙에 맞추어 1 step 진행한다.
+  - Grid 내의 모든 Cell 이 규칙에 맞추어 1 tick 진행한다.
   - 게임 진행 상태는 유지한다.
 
 - Run Agonizing
   - 게임 진행 상태를 Agonizing 으로 변경한다.
-  - 500 tick마다 1 step 진행한다.
+  - 500 ms 를 1 tick 으로 설정한다.
 
 - Run Slow
   - 게임 진행 상태를 Slow 으로 변경한다.
-  - 150 tick마다 1 step 진행한다.
+  - 150 ms 를 1 tick 으로 설정한다.
 
 - Run Medium
   - 게임 진행 상태를 Medium 으로 변경한다.
-  - 70 tick마다 1 step 진행한다.
+  - 70 ms 를 1 tick 으로 설정한다.
 
 - Run Fast
   - 게임 진행 상태를 Fast 으로 변경한다.
-  - 30 tick마다 1 step 진행한다.
+  - 30 ms 를 1 tick 으로 설정한다.
 
 - Halt
   - 게임 진행 상태를 Halt 로 변경한다.
+  - 현실 시간에 따른 tick 진행을 정지한다.
 
 #### 확장기능
 
