@@ -30,16 +30,16 @@ public class Files
 	 *  </PRE>
 	 */
 
-	public static File userSelected( final String startHere, 
+	public static File userSelected( final String startHere,
 						final String extension,
 						final String description,
 						final String selectButtonText )
 									throws FileNotFoundException
-	{	FileFilter filter = 
+	{	FileFilter filter =
 			new FileFilter()
 			{	public boolean accept(File f)
 				{	return f.isDirectory()
-							|| (extension != null 
+							|| (extension != null
 									&& f.getName().endsWith(extension) );
 				}
 				public String getDescription()
@@ -55,22 +55,5 @@ public class Files
 			return chooser.getSelectedFile();
 
 		throw new FileNotFoundException("No file selected by user");
-	}
-
-	/** A unit test class for the methods in this class. Run with
-	 *  java com.holub.io.Files\$Test
-	 */
-	static class Test
-	{	
-		public static void main(String[] args)
-		{	try
-			{	File f=Files.userSelected(".",".test","Test File","Select!");
-				System.out.println( "Selected " + f.getName() );
-			}
-			catch( FileNotFoundException e)
-			{	System.out.println( "No file selected" );
-			}
-			System.exit(0); // Required to stop AWT thread & shut down.
-		}
 	}
 }

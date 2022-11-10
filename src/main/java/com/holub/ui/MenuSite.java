@@ -227,7 +227,7 @@ public final class MenuSite
 	 *  <p>
 	 *  @param requester The object that requested that this menu
 	 *  	be added. All menus (and line items) added by a specific
-	 *  	requster are removed by a single 
+	 *  	requster are removed by a single
 	 *  	{@link #removeMyMenus removeMyMenus(...)}	call.
 	 *		The requester need not be the actual object that adds
 	 *		the menu---there may not be a single one. It is simply
@@ -686,7 +686,7 @@ public final class MenuSite
 			return;
 
 		String label;
-		if( nameMap != null 
+		if( nameMap != null
 				&& (label= (String)(nameMap.get(name))) != null )
 		{
 			Matcher m = shortcutExtractor.matcher(label);
@@ -766,7 +766,7 @@ public final class MenuSite
 		// private JMenuItem  item;
 		private Component  item;
 
-		private String		parentSpecification; // of JMenu or of 
+		private String		parentSpecification; // of JMenu or of
 												 // JMenuItem's parent
 		private MenuElement parent;		   		 // JMenu or JMenuBar
 		private boolean		isHelpMenu;
@@ -983,235 +983,6 @@ public final class MenuSite
 		}
 	}
 
-	/*** *************************************************************
-	 * This inner class tests the MenuSite. Do not
-	 * Ship MenuSite$Test.class with your applications. Test the
-	 * code by invoking "java com.holub.tools.MenuSite\$Test".
-	 * The test code creates three menus:
-	 * <ul>
-	 * <li> A Help menu that contains three line items, each added in
-	 * 		a different way. Nothing happens when these are selected.
-	 * <li>	A "Removal" menu that disappears when selected.
-	 * <li> A "Main" menu that initially contains a single line item
-	 *		called "Add an Item." Selecting this item adds a "Remove
-	 *		Menus" Item to the "Main" menu. Selecting that removes
-	 *		both the Main and Help (but not the "Removal") menus.
-	 * </ul>
-	 * I don't like the fact that this test is interactive, since
-	 * interactive testing can't be automated.
-	 */
-	public static class Test extends JFrame
-	{
-		static Test	instance; // = new Test();
-		static boolean isDisabled1 = false;
-		static boolean isDisabled2 = false;
-
-		Test()
-		{
-			setSize( 400, 200 );
-			addWindowListener
-			(	new WindowAdapter()
-				{	public void windowClosing( WindowEvent e )
-					{	System.exit(1);
-					}
-				}
-			);
-			MenuSite.establish( this );
-			show();
-		}
-
-		//------------------------------------------------------------
-		static class RemoveListener implements ActionListener
-		{	public void actionPerformed( ActionEvent e )
-			{	MenuSite.removeMyMenus( instance );
-			}
-		}
-		//------------------------------------------------------------
-
-		static public void main( String[] args ) throws Exception
-		{
-			com.holub.tools.Log.toScreen("com.holub.ui");
-			UIManager.setLookAndFeel(
-				UIManager.getSystemLookAndFeelClassName() );
-
-			instance = new Test();
-
-			// Create a generic reporter.
-
-			ActionListener reportIt =
-					new ActionListener()
-					{	public void actionPerformed(ActionEvent e)
-						{	JMenuItem item = (JMenuItem)(e.getSource());
-							System.out.println( item.getText() );
-						}
-					};
-
-
-			// Create the File menu first.
-
-			ActionListener terminator =
-				new ActionListener()
-				{	public void actionPerformed( ActionEvent e )
-					{	System.exit(0);
-					}
-				};
-
-			// Make the file menu with it's own ID so that the removal
-			// test in the main menu doesn't remove it.
-
-			Object fileId = new Object();
-			MenuSite.addMenu(fileId, "File" );
-			MenuSite.addLine(fileId, "File", "Quit", terminator);
-			MenuSite.addLine(fileId, "File", "Bye",  terminator);
-
-			// Now, make a few more menus.
-
-			MenuSite.addMenu(instance, "Main" );
-			MenuSite.addLine
-			(	instance, "Main", "Add Line Item to Menu",
-				new ActionListener()
-				{	public void actionPerformed( ActionEvent e )
-					{	MenuSite.addLine(instance, "Main",
-							"Remove Main and Help menus",
-							new ActionListener()
-							{ public void actionPerformed(ActionEvent e)
-							  {  MenuSite.removeMyMenus(instance);
-							  }
-							}
-						);
-					}
-				}
-			);
-
-			//---------------------------------------------------------
-			MenuSite.addLine( instance, "Main", "-", null );
-			//---------------------------------------------------------
-			final Object disable1 = new Object();
-
-			MenuSite.addLine(	instance, "Main", "Toggle1",
-				new ActionListener()
-				{	public void actionPerformed( ActionEvent e )
-					{	isDisabled1 = !isDisabled1;
-						MenuSite.setEnable( disable1, !isDisabled1 );
-						MenuSite.getMyMenuItem(instance,
-											  "Main", "Toggle1").
-							setText
-							(	isDisabled1 ? "Enable following Item"
-											: "Disable following Item"
-							);
-
-					}
-				}
-			);
-			MenuSite.getMyMenuItem(instance, "Main", "Toggle1").
-									setText("Disable following Item");
-
-			MenuSite.addLine(disable1, "Main", "Disableable", reportIt);
-
-			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			final Object disable2 = new Object();
-
-			MenuSite.addLine(	instance, "Main", "Toggle2",
-				new ActionListener()
-				{	public void actionPerformed( ActionEvent e )
-					{	isDisabled2 = !isDisabled2;
-						MenuSite.setEnable( disable2, !isDisabled2 );
-						MenuSite.getMyMenuItem(instance,
-												"Main", "Toggle2").
-							setText
-							(	isDisabled2 ? "Enable following Item"
-											: "Disable following Item"
-							);
-					}
-				}
-			);
-			MenuSite.getMyMenuItem(instance, "Main", "Toggle2").
-									setText("Disable following Item");
-			MenuSite.addLine(disable2, "Main", "Disableable", reportIt);
-
-			//--------------------------------------------------------
-
-			// Check that a single line item can be removed
-
-			final Object id = new Object();
-
-			MenuSite.addLine( id, "Main", "-", null );
-			MenuSite.addLine
-			(	id, "Main", "Remove this item & separator line",
-				new ActionListener()
-				{	public void actionPerformed( ActionEvent e )
-					{	MenuSite.removeMyMenus( id );
-					}
-				}
-			);
-
-			// Check out submenus. Create two of them, one in two
-			// steps and the other in a single step. Then add items
-			// that remove the submenus to make sure that removal works
-			// correctly.
-
-			MenuSite.addLine(instance,"Main", "-", null );
-			MenuSite.addLine(instance,
-					"Main:Submenu1", "Submenu One Item", reportIt );
-			MenuSite.addLine(instance,
-					"Main:Submenu2", "Submenu Two Item", reportIt );
-			MenuSite.addLine(instance,
-					"Main:Submenu3", "Submenu Three Item", reportIt );
-			MenuSite.addLine(instance,
-					"Main:Submenu2:SubSubmenu2",
-					"Sub-Submenu Two Item", reportIt );
-
-			MenuSite.addLine(instance,
-					"Main:Submenu3:SubSubmenu3",
-					"Sub-Submenu Three Item", reportIt );
-
-			MenuSite.addLine(instance,
-					"Main:Submenu3:SubSubmenu3:SubSubSubmenu3",
-					"Sub-Sub-Submenu Three Item", reportIt );
-
-			MenuSite.addLine(instance, "Main", "-", null );
-
-			// Check that the map file works correctly.
-			// Items 5 and 6 are deliberately malformed in the map
-			// file and will cause an error to be logged.
-			// item.7 doesn't exist in the file.
-
-			MenuSite.mapNames(
-			   new URL("file://c:/src/com/holub/ui/test/menu.map.txt"));
-
-			MenuSite.addLine( instance, "Main", "item.1", reportIt );
-			MenuSite.addLine( instance, "Main", "item.2", reportIt );
-			MenuSite.addLine( instance, "Main", "item.3", reportIt );
-			MenuSite.addLine( instance, "Main", "item.4", reportIt );
-			MenuSite.addLine( instance, "Main", "item.5", reportIt );
-			MenuSite.addLine( instance, "Main", "item.6", reportIt );
-			MenuSite.addLine( instance, "Main", "item.7", reportIt );
-
-			// Create a help menu. Do it in the middle of things
-			// to make sure that it ends up on the far right.
-			// Use all three mechanisms for adding menu items directly
-			// using the menu's "name," and using the menu's "text").
-
-			MenuSite.addLine( instance, "Help", "Get Help", reportIt );
-
-			// Create a second "requester" and have it add a Removal
-			// menu with the name RemovalMenu. Picking that menu
-			// will remove only the menu for the current requester.
-			// Do this after doing the help menu to make sure that
-			// it's inserted in the right place.
-
-			final Object x = new Object();
-			MenuSite.addLine
-			(	x,
-				"Removal", "Select to Remove Removal menu",
-				new ActionListener()
-				{	public void actionPerformed(ActionEvent e)
-					{	MenuSite.removeMyMenus(x);
-					}
-				}
-			);
-		}
-	}
 }
 
 /// TODO: 
