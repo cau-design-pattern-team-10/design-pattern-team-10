@@ -10,27 +10,27 @@ import com.holub.ui.MenuSite;
  * @include /etc/license.txt
  */
 
-public final class Life extends JFrame
-{	
-	private static JComponent universe;
+public final class Life extends JFrame {
 
-	public static void main( String[] arguments )
-	{	new Life();
-	}
+  private static JComponent universe;
 
-	private Life()
-	{	super( "The Game of Life. "
-					+"(c)2003 Allen I. Holub <http://www.holub.com>");
+  public static void main(String[] arguments) {
+    new Life();
+  }
 
-		// Must establish the MenuSite very early in case
-		// a subcomponent puts menus on it.
-		MenuSite.establish( this );		//{=life.java.establish}
+  private Life() {
+    super("The Game of Life. "
+        + "(c)2003 Allen I. Holub <http://www.holub.com>");
 
-		setDefaultCloseOperation	( EXIT_ON_CLOSE 		);
-		getContentPane().setLayout	( new BorderLayout()	);
-		getContentPane().add( Universe.instance(), BorderLayout.CENTER); //{=life.java.install}
+    // Must establish the MenuSite very early in case
+    // a subcomponent puts menus on it.
+    MenuSite.establish(this);    //{=life.java.establish}
 
-		pack();
-		setVisible( true );
-	}
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    getContentPane().setLayout(new BorderLayout());
+    getContentPane().add(Universe.instance(), BorderLayout.CENTER); //{=life.java.install}
+
+    pack();
+    setVisible(true);
+  }
 }

@@ -21,22 +21,22 @@ package com.holub.tools;
  * Here's an example of how you might use a <code>Publisher</code>:
  * <PRE>
  *	class EventGenerator
- *	{	interface Listener
- *		{	notify( String why );
- *		}
+ *  {	interface Listener
+ *    {	notify( String why );
+ *    }
  *
  *		private Publisher publisher = new Publisher();
  *
  *		public void addEventListener( Listener l )
- *		{	publisher.subscribe(l);
- *		}
+ *    {	publisher.subscribe(l);
+ *    }
  *
  *		public void removeEventListener ( Listener l )
- *		{	publisher.cancelSubscription(l);
- *		}
+ *    {	publisher.cancelSubscription(l);
+ *    }
  *
  *		public void someEventHasHappend(final String reason)
- *		{	publisher.publish
+ *    {	publisher.publish
  *			(	
  *				// Pass the publisher a Distributor that knows
  *				// how to notify EventGenerator listeners. The
@@ -45,13 +45,13 @@ package com.holub.tools;
  *				// in turn.
  *
  *				new Publisher.Distributor()
- *				{	public void deliverTo( Object subscriber )
- *					{	((Listener)subscriber).notify(reason);
- *					}
- *				}
+ *        {	public void deliverTo( Object subscriber )
+ *          {	((Listener)subscriber).notify(reason);
+ *          }
+ *        }
  *			);
- *		}
- *	}
+ *    }
+ *  }
  * </PRE>
  * Since you're specifying what a notification looks like
  * by defining a Listener interface, and then also defining
@@ -61,69 +61,75 @@ package com.holub.tools;
  * @include /etc/license.txt
  */
 
-public class Publisher
-{
-	public interface Distributor
-	{	void deliverTo( Object subscriber );	// the Visitor pattern's
-	}											// "visit" method.
+public class Publisher {
 
-	// The Node class is immutable. Once it's created, it can't
-	// be modified. Immutable classes have the property that, in
-	// a multithreaded system, access to the does not have to be
-	// synchronized, because they're read only.
-	//
-	// This particular class is really a struct so I'm allowing direct
-	// access to the fields. Since it's private, I can play
-	// fast and loose with the encapsulation without significantly
-	// impacting the maintainability of the code.
+  public interface Distributor {
 
-	private class Node
-	{	public final Object subscriber;
-		public final Node	next;
+    void deliverTo(Object subscriber);  // the Visitor pattern's
+  }                      // "visit" method.
 
-		private Node( Object subscriber, Node next )
-		{	this.subscriber	= subscriber;
-			this.next		= next;
-		}
+  // The Node class is immutable. Once it's created, it can't
+  // be modified. Immutable classes have the property that, in
+  // a multithreaded system, access to the does not have to be
+  // synchronized, because they're read only.
+  //
+  // This particular class is really a struct so I'm allowing direct
+  // access to the fields. Since it's private, I can play
+  // fast and loose with the encapsulation without significantly
+  // impacting the maintainability of the code.
 
-		public Node remove( Object target )
-		{	if( target == subscriber )
+  private class Node {
+
+    public final Object subscriber;
+    public final Node next;
+
+    private Node(Object subscriber, Node next) {
+      this.subscriber = subscriber;
+      this.next = next;
+    }
+
+    public Node remove(Object target) {
+			if (target == subscriber) {
 				return next;
+			}
 
-			if( next == null ) 						// target is not in list
+			if (next == null)            // target is not in list
+			{
 				throw new java.util.NoSuchElementException
-												(target.toString());
+						(target.toString());
+			}
 
-			return new Node(subscriber, next.remove(target));
+      return new Node(subscriber, next.remove(target));
+    }
+
+    public void accept(Distributor deliveryAgent) // deliveryAgent is
+    {
+      deliveryAgent.deliverTo(subscriber);     // a "visitor"
+    }
+  }
+
+  private volatile Node subscribers = null;
+
+  /**
+   * Publish an event using the deliveryAgent. Note that this method isn't synchronized (and doesn't
+   * have to be). Those subscribers that are on the list at the time the publish operation is
+   * initiated will be notified. (So, in theory, it's possible for an object that cancels its
+   * subsciption to nonetheless be notified.) There's no universally "good" solution to this
+   * problem.
+   */
+
+  public void publish(Distributor deliveryAgent) {
+		for (Node cursor = subscribers; cursor != null; cursor = cursor.next) {
+			cursor.accept(deliveryAgent);
 		}
+  }
 
-		public  void accept( Distributor deliveryAgent ) // deliveryAgent is
-		{	deliveryAgent.deliverTo( subscriber );		 // a "visitor"
-		}
-	}
+  synchronized public void subscribe(Object subscriber) {
+    subscribers = new Node(subscriber, subscribers);
+  }
 
-	private volatile Node subscribers = null;
-
-	/** Publish an event using the deliveryAgent. Note that this
-	 *  method isn't synchronized (and doesn't have to be). Those
-	 *  subscribers that are on the list at the time the publish
-	 *  operation is initiated will be notified. (So, in theory,
-	 *  it's possible for an object that cancels its subsciption
-	 *  to nonetheless be notified.) There's no universally "good"
-	 *  solution to this problem.
-	 */
-
-	public void publish( Distributor deliveryAgent )
-	{	for(Node cursor = subscribers; cursor != null; cursor = cursor.next)
-			cursor.accept( deliveryAgent );
-	}
-
-	synchronized public void subscribe( Object subscriber )
-	{	subscribers = new Node( subscriber, subscribers );
-	}
-
-	synchronized public void cancelSubscription( Object subscriber )
-	{	subscribers = subscribers.remove( subscriber );
-	}
+  synchronized public void cancelSubscription(Object subscriber) {
+    subscribers = subscribers.remove(subscriber);
+  }
 
 }
