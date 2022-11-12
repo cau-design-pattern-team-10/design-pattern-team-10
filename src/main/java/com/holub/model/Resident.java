@@ -1,11 +1,10 @@
-package com.holub.life;
+package com.holub.model;
 
-import com.holub.model.Cell;
-import com.holub.model.DummyCell;
+import com.holub.life.Direction;
+import com.holub.life.Storable;
 import com.holub.ui.CellUI;
 import com.holub.ui.ResidentUI;
 import java.awt.*;
-import com.holub.ui.Colors;  // Contains constants specifying various
 // colors not defined in java.awt.Color.
 
 

@@ -1,12 +1,13 @@
-package com.holub.life;
+package com.holub.model;
 
-import com.holub.model.Cell;
+import com.holub.life.Direction;
+import com.holub.life.Storable;
 import com.holub.ui.CellUI;
+import com.holub.ui.NeighborhoodUI;
 import java.awt.*;
 import java.util.*;
 import java.io.*;
 
-import com.holub.ui.Colors;
 import com.holub.asynch.ConditionVariable;
 
 /***
@@ -25,10 +26,11 @@ import com.holub.asynch.ConditionVariable;
  * @include /etc/license.txt
  */
 
-public final class Neighborhood implements Cell, CellUI {
+public final class Neighborhood implements Cell {
+  NeighborhoodUI neighborhoodUI;
   @Override
   public CellUI getCellUI() {
-    return this;
+    return neighborhoodUI;
   }
 
   /**
@@ -38,6 +40,9 @@ public final class Neighborhood implements Cell, CellUI {
    */
   private static final ConditionVariable readingPermitted =
       new ConditionVariable(true);
+  public ConditionVariable getReadingPermitted() {
+    return readingPermitted;
+  }
 
   /**
    * Returns true only if none of the cells in the Neighborhood changed state during the last
@@ -46,15 +51,22 @@ public final class Neighborhood implements Cell, CellUI {
 
   private boolean amActive = false;
 
+  public boolean isAmActive() {
+    return amActive;
+  }
+
   /**
    * The actual grid of Cells contained within this neighborhood.
    */
-  private final Cell[][] grid;
+  public final Cell[][] grid;
 
   /**
    * The neighborhood is square, so gridSize is both the horizontal and vertical size.
    */
   private final int gridSize;
+  public int getGridSize() {
+    return gridSize;
+  }
 
   /**
    * Create a new Neigborhood containing gridSize-by-gridSize clones of the prototype. The Protype
@@ -64,6 +76,7 @@ public final class Neighborhood implements Cell, CellUI {
   public Neighborhood(int gridSize, Cell prototype) {
     this.gridSize = gridSize;
     this.grid = new Cell[gridSize][gridSize];
+    this.neighborhoodUI = new NeighborhoodUI(this);
 
 		for (int row = 0; row < gridSize; ++row) {
 			for (int column = 0; column < gridSize; ++column) {
@@ -87,6 +100,14 @@ public final class Neighborhood implements Cell, CellUI {
    */
 
   private boolean oneLastRefreshRequired = false;
+
+  public boolean isOneLastRefreshRequired() {
+    return oneLastRefreshRequired;
+  }
+
+  public void setOneLastRefreshRequired(boolean oneLastRefreshRequired) {
+    this.oneLastRefreshRequired = oneLastRefreshRequired;
+  }
 
   /**
    * Shows the direction of the cells along the edge of the block that will change  state in the
@@ -297,7 +318,7 @@ public final class Neighborhood implements Cell, CellUI {
    * Modifies activeEdges to indicate whether the addition of the cell at (row,column) makes an edge
    * active.
    */
-  private void rememberThatCellAtEdgeChangedState(int row, int column) {
+  public void rememberThatCellAtEdgeChangedState(int row, int column) {
     if (row == 0) {
       activeEdges.add(Direction.NORTH);
 
@@ -325,69 +346,6 @@ public final class Neighborhood implements Cell, CellUI {
   }
 
   /**
-   * Redraw the current neighborhood only if necessary (something changed in the last transition).
-   *
-   * @param g       Draw onto this graphics.
-   * @param here    Bounding rectangle for current Neighborhood.
-   * @param drawAll force a redraw, even if nothing has changed.
-   * @see #transition
-   */
-
-  public void redraw(Graphics g, Rectangle here, boolean drawAll) {
-    // If the current neighborhood is stable (nothing changed
-    // in the last transition stage), then there's nothing
-    // to do. Just return. Otherwise, update the current block
-    // and all sub-blocks. Since this algorithm is applied
-    // recursively to sublocks, only those blocks that actually
-    // need to update will actually do so.
-
-		if (!amActive && !oneLastRefreshRequired && !drawAll) {
-			return;
-		}
-    try {
-      oneLastRefreshRequired = false;
-      int compoundWidth = here.width;
-      Rectangle subcell = new Rectangle(here.x, here.y,
-          here.width / gridSize,
-          here.height / gridSize);
-
-      // Check to see if we can paint. If not, just return. If
-      // so, actually wait for permission (in case there's
-      // a race condition, then paint.
-
-			if (!readingPermitted.isTrue())  //{=Neighborhood.reading.not.permitted}
-			{
-				return;
-			}
-
-      readingPermitted.waitForTrue();
-
-      for (int row = 0; row < gridSize; ++row) {
-        for (int column = 0; column < gridSize; ++column) {
-          grid[row][column].getCellUI().redraw(g, subcell, drawAll);  // {=Neighborhood.redraw3}
-          subcell.translate(subcell.width, 0);
-        }
-        subcell.translate(-compoundWidth, subcell.height);
-      }
-
-      g = g.create();
-      g.setColor(Colors.LIGHT_ORANGE);
-      g.drawRect(here.x, here.y, here.width, here.height);
-
-      if (amActive) {
-        g.setColor(Color.BLUE);
-        g.drawRect(here.x + 1, here.y + 1,
-            here.width - 2, here.height - 2);
-      }
-
-      g.dispose();
-    } catch (InterruptedException e) {  // thrown from waitForTrue. Just
-      // ignore it, since not printing is a
-      // reasonable reaction to an interrupt.
-    }
-  }
-
-  /**
    * Return the edge cell in the indicated row and column.
    */
   public Cell edge(int row, int column) {
@@ -398,24 +356,6 @@ public final class Neighborhood implements Cell, CellUI {
     return grid[row][column];
   }
 
-  /**
-   * Notification of a mouse click. The point is relative to the upper-left corner of the surface.
-   */
-  public void userClicked(Point here, Rectangle surface) {
-    int pixelsPerCell = surface.width / gridSize;
-    int row = here.y / pixelsPerCell;
-    int column = here.x / pixelsPerCell;
-    int rowOffset = here.y % pixelsPerCell;
-    int columnOffset = here.x % pixelsPerCell;
-
-    Point position = new Point(columnOffset, rowOffset);
-    Rectangle subcell = new Rectangle(0, 0, pixelsPerCell,
-        pixelsPerCell);
-
-    grid[row][column].getCellUI().userClicked(position, subcell); //{=Neighborhood.userClicked.call}
-    amActive = true;
-    rememberThatCellAtEdgeChangedState(row, column);
-  }
 
   public boolean isAlive() {
     return true;
@@ -471,6 +411,10 @@ public final class Neighborhood implements Cell, CellUI {
     Memento m = new NeighborhoodState();
     transfer(m, new Point(0, 0), Cell.STORE);
     return m;
+  }
+
+  public void setAmActive(boolean amActive) {
+    this.amActive = amActive;
   }
 
   /**

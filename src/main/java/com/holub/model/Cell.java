@@ -1,8 +1,6 @@
 package com.holub.model;
 
 import com.holub.life.Direction;
-import com.holub.life.Neighborhood;
-import com.holub.life.Resident;
 import com.holub.life.Storable;
 import com.holub.ui.CellUI;
 import java.awt.*;

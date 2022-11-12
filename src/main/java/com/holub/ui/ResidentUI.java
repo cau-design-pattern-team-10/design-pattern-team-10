@@ -1,9 +1,6 @@
 package com.holub.ui;
 
-import com.holub.life.Neighborhood;
-import com.holub.life.Resident;
-import com.holub.model.Cell;
-import com.holub.tools.Observable;
+import com.holub.model.Resident;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
