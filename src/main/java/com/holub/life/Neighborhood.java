@@ -1,5 +1,6 @@
 package com.holub.life;
 
+import com.holub.model.Cell;
 import java.awt.*;
 import java.util.*;
 import java.io.*;

@@ -1,5 +1,7 @@
 package com.holub.life;
 
+import com.holub.model.Cell;
+import com.holub.model.CellImpl;
 import java.awt.*;
 import com.holub.ui.Colors;  // Contains constants specifying various
 // colors not defined in java.awt.Color.
@@ -76,7 +78,9 @@ public final class Resident implements Cell {
   }
 
   private void verify(Cell c, String direction) {
-    assert (c instanceof Resident) || (c == Cell.DUMMY)
+    // TODO: change dummy to final static
+    Cell DUMMY = new CellImpl();
+    assert (c instanceof Resident) || (c == DUMMY)
         : "incorrect type for " + direction + ": " +
         c.getClass().getName();
   }

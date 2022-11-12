@@ -1,5 +1,9 @@
-package com.holub.life;
+package com.holub.model;
 
+import com.holub.life.Direction;
+import com.holub.life.Neighborhood;
+import com.holub.life.Resident;
+import com.holub.life.Storable;
 import java.awt.*;
 
 /***
@@ -134,60 +138,4 @@ public interface Cell {
    */
   Storable createMemento();
 
-  /**
-   * The DUMMY Singleton represents a permanently dead (thus stable) cell. It's used for the edges
-   * of the grid. It's a singleton. The Dummy class is private, but it is accessed through the
-   * public DUMMY field, declared below. I'd like this class to be private, but the JLS doesn't
-   * allow private members in an interface.
-   */
-
-  public static final Cell DUMMY = new Cell() {
-    public boolean figureNextState(Cell n, Cell s, Cell e, Cell w,
-        Cell ne, Cell nw, Cell se, Cell sw) {
-      return true;
-    }
-
-    public Cell edge(int r, int c) {
-      return this;
-    }
-
-    public boolean isAlive() {
-      return false;
-    }
-
-    public Cell create() {
-      return this;
-    }
-
-    public Direction isDisruptiveTo() {
-      return Direction.NONE;
-    }
-
-    public void clear() {
-    }
-
-    public int widthInCells() {
-      return 0;
-    }
-
-    public boolean transition() {
-      return false;
-    }
-
-    public void userClicked(Point h, Rectangle s) {
-    }
-
-    public void redraw(Graphics g, Rectangle here,
-        boolean drawAll) {
-    }
-
-    public boolean transfer(Storable m, Point ul, boolean load) {
-      return false;
-    }
-
-    public Storable createMemento() {
-      throw new UnsupportedOperationException(
-          "Cannot create memento of dummy block");
-    }
-  };
 }

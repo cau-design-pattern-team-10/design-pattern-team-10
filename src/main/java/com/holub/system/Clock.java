@@ -1,4 +1,4 @@
-package com.holub.life;
+package com.holub.system;
 
 import java.awt.event.*;
 import javax.swing.*;

@@ -1,5 +1,8 @@
 package com.holub.life;
 
+import com.holub.model.Cell;
+import com.holub.model.CellImpl;
+import com.holub.system.Clock;
 import java.io.*;
 
 import java.awt.*;
@@ -131,9 +134,11 @@ public class Universe extends JPanel {
     Clock.instance().addClockListener //{=Universe.clock.subscribe}
         (new Clock.Listener() {
            public void tick() {
+             // TODO: DUMMY to static final
+             Cell DUMMY = new CellImpl();
              if (outermostCell.figureNextState
-                 (Cell.DUMMY, Cell.DUMMY, Cell.DUMMY, Cell.DUMMY,
-                     Cell.DUMMY, Cell.DUMMY, Cell.DUMMY, Cell.DUMMY
+                 (DUMMY, DUMMY, DUMMY, DUMMY,
+                     DUMMY, DUMMY, DUMMY, DUMMY
                  )
              ) {
 							 if (outermostCell.transition()) {
