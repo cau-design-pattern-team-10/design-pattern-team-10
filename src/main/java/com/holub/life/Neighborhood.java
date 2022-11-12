@@ -412,7 +412,7 @@ public final class Neighborhood implements Cell, CellUI {
     Rectangle subcell = new Rectangle(0, 0, pixelsPerCell,
         pixelsPerCell);
 
-    grid[row][column].userClicked(position, subcell); //{=Neighborhood.userClicked.call}
+    grid[row][column].getCellUI().userClicked(position, subcell); //{=Neighborhood.userClicked.call}
     amActive = true;
     rememberThatCellAtEdgeChangedState(row, column);
   }

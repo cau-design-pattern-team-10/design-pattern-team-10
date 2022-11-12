@@ -1,6 +1,7 @@
 package com.holub.ui;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Rectangle;
 
 public interface CellUI {
@@ -16,4 +17,6 @@ public interface CellUI {
    */
 
   void redraw(Graphics g, Rectangle here, boolean drawAll);
+
+  void userClicked(Point here, Rectangle surface);
 }

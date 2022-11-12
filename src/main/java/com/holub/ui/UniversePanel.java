@@ -98,7 +98,7 @@ public class UniversePanel extends JPanel {
              Rectangle bounds = getBounds();
              bounds.x = 0;
              bounds.y = 0;
-             outermostCell.userClicked(e.getPoint(), bounds);
+             outermostCell.getCellUI().userClicked(e.getPoint(), bounds);
              repaint();
            }
          }

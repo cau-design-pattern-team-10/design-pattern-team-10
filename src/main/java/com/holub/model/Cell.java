@@ -47,14 +47,6 @@ public interface Cell {
 
 
   /**
-   * A user has clicked somewhere within you.
-   *
-   * @param here The position of the click relative to the bounding rectangle of the current Cell.
-   */
-
-  void userClicked(Point here, Rectangle surface);
-
-  /**
    * Return true if this cell or any subcells are alive.
    */
   boolean isAlive();
