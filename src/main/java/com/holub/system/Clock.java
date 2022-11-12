@@ -34,22 +34,8 @@ public class Clock {
   // it creates a menu, and it can't do that until the menus
   // are established.
   //
-  private Clock() {
-    createMenus();
-  }
-
-  private static Clock instance;
-
-  /**
-   * The clock is a singleton. Get a reference to it by calling
-   * <code>Clock.getInstance()</code>. It's illegal to call
-   * <code>new Clock()</code>.
-   */
-  public synchronized static Clock getInstance() {
-		if (instance == null) {
-			instance = new Clock();
-		}
-    return instance;
+  public Clock(MenuSite menuSite) {
+    createMenus(menuSite);
   }
 
   /**
@@ -86,7 +72,7 @@ public class Clock {
   /**
    * Create the menu that controls the clock speed and put it onto the menu site.
    */
-  private void createMenus() {
+  private void createMenus(MenuSite menuSite) {
     // First set up a single listener that will handle all the
     // menu-selection events except "Exit"
 
@@ -107,7 +93,6 @@ public class Clock {
           }
         };
     // {=midSetup}
-    MenuSite menuSite = MenuSite.getInstance();
     menuSite.addLine(this, "Go", "Halt", modifier);
     menuSite.addLine(this, "Go", "Tick (Single Step)", modifier);
     menuSite.addLine(this, "Go", "Agonizing", modifier);

@@ -22,6 +22,8 @@ public class Item {
   private String parentSpecification; // of JMenu or of
   // JMenuItem's parent
   private MenuElement parent;           // JMenu or JMenuBar
+
+  MenuSite menuSite = null;
   private boolean isHelpMenu;
 
   public String toString() {
@@ -90,10 +92,10 @@ public class Item {
    * the penultimate position.
    */
 
-  public final void attachYourselfToYourParent() {
+  public final void attachYourselfToYourParent(MenuSite menuSite) {
     assert valid();
 
-    MenuSite menuSite = MenuSite.getInstance();
+    this.menuSite = menuSite;
     if (parent instanceof JMenu) {
       ((JMenu) parent).add(item);
     } else if (menuSite.menuBarContents.size() <= 0) {
@@ -127,7 +129,6 @@ public class Item {
   public void detachYourselfFromYourParent() {
     assert valid();
 
-    MenuSite menuSite = MenuSite.getInstance();
     if (parent instanceof JMenu) {
       ((JMenu) parent).remove(item);
     } else // the parent's the menu bar.
@@ -138,6 +139,7 @@ public class Item {
       regenerateMenuBar(); // without me on it
 
       parent = null;
+      menuSite = null;
     }
   }
 
@@ -163,7 +165,6 @@ public class Item {
     // Create the new menu bar and populate it from
     // the current-contents list.
 
-    MenuSite menuSite = MenuSite.getInstance();
     JMenuBar menuBar = new JMenuBar();
     menuSite.SetMenuBar(menuBar);
     ListIterator i = menuSite.menuBarContents.listIterator(0);

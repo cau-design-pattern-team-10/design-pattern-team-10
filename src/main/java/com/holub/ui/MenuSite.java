@@ -111,15 +111,6 @@ public final class MenuSite {
   public JMenuBar getMenuBar() {
     return menuBar;
   }
-  private static MenuSite instance;
-
-  public synchronized static MenuSite getInstance() {
-    if (instance == null) {
-      instance = new MenuSite();
-    }
-    return instance;
-  }
-
   /*** The "requesters" table keeps track of who requested which
    * menu items. It is indexed by requester and contains a
    * Set of MenuSite.Item objects that identify all
@@ -182,7 +173,7 @@ public final class MenuSite {
    * MenuSite is a singleton. A private constructor prevents
    * you from manufacturing one using <code>new</code>.
    */
-  private MenuSite() {
+  public MenuSite() {
   }
 
   /*** Check the current object for validity. If you use this
@@ -358,7 +349,7 @@ public final class MenuSite {
 
     Item item = new Item(element, found, toThisMenu);
     menusAddedBy(requester).add(item);
-    item.attachYourselfToYourParent();
+    item.attachYourselfToYourParent(this);
   }
 
   /*** **************************************************************
@@ -543,7 +534,7 @@ public final class MenuSite {
 
         Item item = new Item(child, parent, menuSpecifier);
         menusAddedBy(requester).add(item);
-        item.attachYourselfToYourParent();
+        item.attachYourselfToYourParent(this);
       }
     }
 

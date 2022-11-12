@@ -25,6 +25,10 @@ import com.holub.io.Files;
 public class UniversePanel extends JPanel {
   private final Cell outermostCell;
   private final Clock clock;
+  private final MenuSite menuSite;
+  public MenuSite getMenuSite() {
+    return menuSite;
+  }
   /**
    * The default height and width of a Neighborhood in cells. If it's too big, you'll run too slowly
    * because you have to update the entire block as a unit, so there's more to do. If it's too
@@ -41,11 +45,12 @@ public class UniversePanel extends JPanel {
   // The constructor is private so that the universe can be created
   // only by an outer-class method [Neighborhood.createUniverse()].
 
-  public UniversePanel(Clock clock) {  // Create the nested Cells that comprise the "universe." A bug
+  public UniversePanel(Clock clock, MenuSite menuSite) {  // Create the nested Cells that comprise the "universe." A bug
     // in the current implementation causes the program to fail
     // miserably if the overall size of the grid is too big to fit
     // on the screen.
     this.clock = clock;
+    this.menuSite = menuSite;
 
     outermostCell = new Neighborhood
         (DEFAULT_GRID_SIZE,
@@ -95,8 +100,6 @@ public class UniversePanel extends JPanel {
            }
          }
         );
-
-    MenuSite menuSite = MenuSite.getInstance();
 
     menuSite.addLine(this, "Grid", "Clear",
         new ActionListener() {
