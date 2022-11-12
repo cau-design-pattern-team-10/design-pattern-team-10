@@ -1,5 +1,6 @@
 package com.holub.life;
 
+import com.holub.ui.UniversePanel;
 import java.awt.*;
 import javax.swing.*;
 import com.holub.ui.MenuSite;
@@ -28,7 +29,7 @@ public final class Life extends JFrame {
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     getContentPane().setLayout(new BorderLayout());
-    getContentPane().add(Universe.instance(), BorderLayout.CENTER); //{=life.java.install}
+    getContentPane().add(UniversePanel.getInstance(), BorderLayout.CENTER); //{=life.java.install}
 
     pack();
     setVisible(true);

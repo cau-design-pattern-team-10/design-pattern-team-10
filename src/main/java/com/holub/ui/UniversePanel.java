@@ -1,5 +1,8 @@
-package com.holub.life;
+package com.holub.ui;
 
+import com.holub.life.Neighborhood;
+import com.holub.life.Resident;
+import com.holub.life.Storable;
 import com.holub.model.Cell;
 import com.holub.model.CellImpl;
 import com.holub.system.Clock;
@@ -10,7 +13,6 @@ import javax.swing.*;
 import java.awt.event.*;
 
 import com.holub.io.Files;
-import com.holub.ui.MenuSite;
 
 /**
  * The Universe is a mediator that sits between the Swing event model and the Life classes. It is
@@ -20,10 +22,10 @@ import com.holub.ui.MenuSite;
  * @include /etc/license.txt
  */
 
-public class Universe extends JPanel {
-
+public class UniversePanel extends JPanel {
   private final Cell outermostCell;
-  private static final Universe theInstance = new Universe();
+  private final Clock clock;
+  private static final UniversePanel theInstance = new UniversePanel(Clock.getInstance());
 
   /**
    * The default height and width of a Neighborhood in cells. If it's too big, you'll run too slowly
@@ -41,10 +43,11 @@ public class Universe extends JPanel {
   // The constructor is private so that the universe can be created
   // only by an outer-class method [Neighborhood.createUniverse()].
 
-  private Universe() {  // Create the nested Cells that comprise the "universe." A bug
+  private UniversePanel(Clock clock) {  // Create the nested Cells that comprise the "universe." A bug
     // in the current implementation causes the program to fail
     // miserably if the overall size of the grid is too big to fit
     // on the screen.
+    this.clock = clock;
 
     outermostCell = new Neighborhood
         (DEFAULT_GRID_SIZE,
@@ -131,7 +134,7 @@ public class Universe extends JPanel {
             }
         );
 
-    Clock.instance().addClockListener //{=Universe.clock.subscribe}
+    clock.addClockListener //{=Universe.clock.subscribe}
         (new Clock.Listener() {
            public void tick() {
              // TODO: DUMMY to static final
@@ -155,7 +158,7 @@ public class Universe extends JPanel {
    * Neighborhood.createUniverse()
    */
 
-  public static Universe instance() {
+  public static UniversePanel getInstance() {
     return theInstance;
   }
 
@@ -164,7 +167,7 @@ public class Universe extends JPanel {
       FileInputStream in = new FileInputStream(
           Files.userSelected(".", ".life", "Life File", "Load"));
 
-      Clock.instance().stop();    // stop the game and
+      clock.stop();    // stop the game and
       outermostCell.clear();      // clear the board.
 
       Storable memento = outermostCell.createMemento();
@@ -184,7 +187,7 @@ public class Universe extends JPanel {
       FileOutputStream out = new FileOutputStream(
           Files.userSelected(".", ".life", "Life File", "Write"));
 
-      Clock.instance().stop();    // stop the game
+      clock.stop();    // stop the game
 
       Storable memento = outermostCell.createMemento();
       outermostCell.transfer(memento, new Point(0, 0), Cell.STORE);

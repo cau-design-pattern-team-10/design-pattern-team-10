@@ -42,10 +42,10 @@ public class Clock {
 
   /**
    * The clock is a singleton. Get a reference to it by calling
-   * <code>Clock.instance()</code>. It's illegal to call
+   * <code>Clock.getInstance()</code>. It's illegal to call
    * <code>new Clock()</code>.
    */
-  public synchronized static Clock instance() {
+  public synchronized static Clock getInstance() {
 		if (instance == null) {
 			instance = new Clock();
 		}
