@@ -6,7 +6,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-public class CellImpl implements Cell {
+public class DummyCell implements Cell {
     public boolean figureNextState(Cell n, Cell s, Cell e, Cell w,
         Cell ne, Cell nw, Cell se, Cell sw) {
       return true;

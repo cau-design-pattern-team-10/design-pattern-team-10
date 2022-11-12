@@ -4,7 +4,7 @@ import com.holub.life.Neighborhood;
 import com.holub.life.Resident;
 import com.holub.life.Storable;
 import com.holub.model.Cell;
-import com.holub.model.CellImpl;
+import com.holub.model.DummyCell;
 import com.holub.system.Clock;
 import java.io.*;
 
@@ -141,7 +141,7 @@ public class UniversePanel extends JPanel {
         (new Clock.Listener() {
            public void tick() {
              // TODO: DUMMY to static final
-             Cell DUMMY = new CellImpl();
+             Cell DUMMY = new DummyCell();
              if (outermostCell.figureNextState
                  (DUMMY, DUMMY, DUMMY, DUMMY,
                      DUMMY, DUMMY, DUMMY, DUMMY
