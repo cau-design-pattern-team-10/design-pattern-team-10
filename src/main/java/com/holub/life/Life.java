@@ -1,5 +1,6 @@
 package com.holub.life;
 
+import com.holub.system.Clock;
 import com.holub.ui.UniversePanel;
 import java.awt.*;
 import javax.swing.*;
@@ -25,11 +26,12 @@ public final class Life extends JFrame {
 
     // Must establish the MenuSite very early in case
     // a subcomponent puts menus on it.
-    MenuSite.establish(this);    //{=life.java.establish}
+    MenuSite menuSite = MenuSite.getInstance();
+    menuSite.establish(this);    //{=life.java.establish}
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     getContentPane().setLayout(new BorderLayout());
-    getContentPane().add(UniversePanel.getInstance(), BorderLayout.CENTER); //{=life.java.install}
+    getContentPane().add(new UniversePanel(Clock.getInstance()), BorderLayout.CENTER); //{=life.java.install}
 
     pack();
     setVisible(true);

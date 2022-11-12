@@ -25,8 +25,6 @@ import com.holub.io.Files;
 public class UniversePanel extends JPanel {
   private final Cell outermostCell;
   private final Clock clock;
-  private static final UniversePanel theInstance = new UniversePanel(Clock.getInstance());
-
   /**
    * The default height and width of a Neighborhood in cells. If it's too big, you'll run too slowly
    * because you have to update the entire block as a unit, so there's more to do. If it's too
@@ -43,7 +41,7 @@ public class UniversePanel extends JPanel {
   // The constructor is private so that the universe can be created
   // only by an outer-class method [Neighborhood.createUniverse()].
 
-  private UniversePanel(Clock clock) {  // Create the nested Cells that comprise the "universe." A bug
+  public UniversePanel(Clock clock) {  // Create the nested Cells that comprise the "universe." A bug
     // in the current implementation causes the program to fail
     // miserably if the overall size of the grid is too big to fit
     // on the screen.
@@ -98,7 +96,9 @@ public class UniversePanel extends JPanel {
          }
         );
 
-    MenuSite.addLine(this, "Grid", "Clear",
+    MenuSite menuSite = MenuSite.getInstance();
+
+    menuSite.addLine(this, "Grid", "Clear",
         new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             outermostCell.clear();
@@ -107,7 +107,7 @@ public class UniversePanel extends JPanel {
         }
     );
 
-    MenuSite.addLine      // {=Universe.load.setup}
+    menuSite.addLine      // {=Universe.load.setup}
         (this, "Grid", "Load",
             new ActionListener() {
               public void actionPerformed(ActionEvent e) {
@@ -116,7 +116,7 @@ public class UniversePanel extends JPanel {
             }
         );
 
-    MenuSite.addLine
+    menuSite.addLine
         (this, "Grid", "Store",
             new ActionListener() {
               public void actionPerformed(ActionEvent e) {
@@ -125,7 +125,7 @@ public class UniversePanel extends JPanel {
             }
         );
 
-    MenuSite.addLine
+    menuSite.addLine
         (this, "Grid", "Exit",
             new ActionListener() {
               public void actionPerformed(ActionEvent e) {
@@ -151,15 +151,6 @@ public class UniversePanel extends JPanel {
            }
          }
         );
-  }
-
-  /**
-   * Singleton Accessor. The Universe object itself is manufactured in
-   * Neighborhood.createUniverse()
-   */
-
-  public static UniversePanel getInstance() {
-    return theInstance;
   }
 
   private void doLoad() {

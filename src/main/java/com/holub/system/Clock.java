@@ -107,12 +107,13 @@ public class Clock {
           }
         };
     // {=midSetup}
-    MenuSite.addLine(this, "Go", "Halt", modifier);
-    MenuSite.addLine(this, "Go", "Tick (Single Step)", modifier);
-    MenuSite.addLine(this, "Go", "Agonizing", modifier);
-    MenuSite.addLine(this, "Go", "Slow", modifier);
-    MenuSite.addLine(this, "Go", "Medium", modifier);
-    MenuSite.addLine(this, "Go", "Fast", modifier); // {=endSetup}
+    MenuSite menuSite = MenuSite.getInstance();
+    menuSite.addLine(this, "Go", "Halt", modifier);
+    menuSite.addLine(this, "Go", "Tick (Single Step)", modifier);
+    menuSite.addLine(this, "Go", "Agonizing", modifier);
+    menuSite.addLine(this, "Go", "Slow", modifier);
+    menuSite.addLine(this, "Go", "Medium", modifier);
+    menuSite.addLine(this, "Go", "Fast", modifier); // {=endSetup}
   }  //{=endCreateMenus}
 
   private Publisher publisher = new Publisher();
