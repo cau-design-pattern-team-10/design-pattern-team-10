@@ -4,6 +4,7 @@ import com.holub.life.Direction;
 import com.holub.life.Neighborhood;
 import com.holub.life.Resident;
 import com.holub.life.Storable;
+import com.holub.ui.CellUI;
 import java.awt.*;
 
 /***
@@ -17,6 +18,7 @@ import java.awt.*;
 
 public interface Cell {
 
+  CellUI getCellUI();
   /**
    * Figure out the next state of the cell, given the specified neighbors.
    *
@@ -43,18 +45,6 @@ public interface Cell {
    */
   boolean transition();
 
-  /**
-   * Redraw yourself in the indicated rectangle on the indicated Graphics object if ncessary. This
-   * method is meant for a conditional redraw, where some of the cells might not be refreshed (if
-   * they haven't changed state, for example).
-   *
-   * @param g       redraw using this graphics,
-   * @param here    a rectangle that describes the bounds of the current cell.
-   * @param drawAll if true, draw an entire compound cell; otherwise, draw only the subcells that
-   *                need to be redrawn.
-   */
-
-  void redraw(Graphics g, Rectangle here, boolean drawAll);
 
   /**
    * A user has clicked somewhere within you.

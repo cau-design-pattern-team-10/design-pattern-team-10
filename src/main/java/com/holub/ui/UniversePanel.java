@@ -24,6 +24,7 @@ import com.holub.io.Files;
 
 public class UniversePanel extends JPanel {
   private final Cell outermostCell;
+  private final CellUI outermostCellUI;
   private final Clock clock;
   private final MenuSite menuSite;
   public MenuSite getMenuSite() {
@@ -52,13 +53,15 @@ public class UniversePanel extends JPanel {
     this.clock = clock;
     this.menuSite = menuSite;
 
-    outermostCell = new Neighborhood
+    Neighborhood neighborhood = new Neighborhood
         (DEFAULT_GRID_SIZE,
             new Neighborhood
                 (DEFAULT_GRID_SIZE,
                     new Resident()
                 )
         );
+    outermostCell = neighborhood;
+    outermostCellUI = neighborhood;
 
     final Dimension PREFERRED_SIZE =
         new Dimension
@@ -208,7 +211,7 @@ public class UniversePanel extends JPanel {
     // corner of the screen. Pretend that it's at (0,0)
     panelBounds.x = 0;
     panelBounds.y = 0;
-    outermostCell.redraw(g, panelBounds, true);    //{=Universe.redraw1}
+    outermostCellUI.redraw(g, panelBounds, true);    //{=Universe.redraw1}
   }
 
   /**
@@ -231,7 +234,7 @@ public class UniversePanel extends JPanel {
                Rectangle panelBounds = getBounds();
                panelBounds.x = 0;
                panelBounds.y = 0;
-               outermostCell.redraw(g, panelBounds, false); //{=Universe.redraw2}
+               outermostCellUI.redraw(g, panelBounds, false); //{=Universe.redraw2}
              } finally {
                g.dispose();
              }

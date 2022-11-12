@@ -1,6 +1,7 @@
 package com.holub.life;
 
 import com.holub.model.Cell;
+import com.holub.ui.CellUI;
 import java.awt.*;
 import java.util.*;
 import java.io.*;
@@ -24,7 +25,11 @@ import com.holub.asynch.ConditionVariable;
  * @include /etc/license.txt
  */
 
-public final class Neighborhood implements Cell {
+public final class Neighborhood implements Cell, CellUI {
+  @Override
+  public CellUI getCellUI() {
+    return this;
+  }
 
   /**
    * Block if reading is not permitted because the grid is transitioning to the next state. Only one
@@ -359,7 +364,7 @@ public final class Neighborhood implements Cell {
 
       for (int row = 0; row < gridSize; ++row) {
         for (int column = 0; column < gridSize; ++column) {
-          grid[row][column].redraw(g, subcell, drawAll);  // {=Neighborhood.redraw3}
+          grid[row][column].getCellUI().redraw(g, subcell, drawAll);  // {=Neighborhood.redraw3}
           subcell.translate(subcell.width, 0);
         }
         subcell.translate(-compoundWidth, subcell.height);

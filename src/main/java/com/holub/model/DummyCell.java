@@ -2,11 +2,17 @@ package com.holub.model;
 
 import com.holub.life.Direction;
 import com.holub.life.Storable;
+import com.holub.ui.CellUI;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 
 public class DummyCell implements Cell {
+    @Override
+    public CellUI getCellUI() {
+      throw new IllegalCallerException("not implemented");
+    }
+
     public boolean figureNextState(Cell n, Cell s, Cell e, Cell w,
         Cell ne, Cell nw, Cell se, Cell sw) {
       return true;

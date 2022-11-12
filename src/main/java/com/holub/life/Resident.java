@@ -2,6 +2,7 @@ package com.holub.life;
 
 import com.holub.model.Cell;
 import com.holub.model.DummyCell;
+import com.holub.ui.CellUI;
 import java.awt.*;
 import com.holub.ui.Colors;  // Contains constants specifying various
 // colors not defined in java.awt.Color.
@@ -14,7 +15,11 @@ import com.holub.ui.Colors;  // Contains constants specifying various
  * @include /etc/license.txt
  */
 
-public final class Resident implements Cell {
+public final class Resident implements Cell, CellUI {
+  @Override
+  public CellUI getCellUI() {
+    return this;
+  }
 
   private static final Color BORDER_COLOR = Colors.DARK_YELLOW;
   private static final Color LIVE_COLOR = Color.RED;
