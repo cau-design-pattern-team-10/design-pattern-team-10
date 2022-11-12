@@ -1,5 +1,6 @@
 package com.holub.life;
 
+import com.holub.model.Universe;
 import com.holub.system.Clock;
 import com.holub.ui.UniversePanel;
 import java.awt.*;
@@ -32,7 +33,8 @@ public final class Life extends JFrame {
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     getContentPane().setLayout(new BorderLayout());
-    getContentPane().add(new UniversePanel(clock, menuSite), BorderLayout.CENTER); //{=life.java.install}
+    Universe universe = new Universe(clock);
+    getContentPane().add(new UniversePanel(universe, menuSite), BorderLayout.CENTER); //{=life.java.install}
 
     pack();
     setVisible(true);
