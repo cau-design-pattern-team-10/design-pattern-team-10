@@ -2,8 +2,10 @@ package com.holub.model;
 
 import com.holub.life.Direction;
 import com.holub.life.Storable;
+import com.holub.tools.Observer;
 import com.holub.ui.CellUI;
 import com.holub.ui.ResidentUI;
+import java.util.List;
 import java.awt.*;
 // colors not defined in java.awt.Color.
 
@@ -17,9 +19,11 @@ import java.awt.*;
 
 public final class Resident implements Cell {
   ResidentUI residentUI;
+  List<Observer> observers;
   public Resident() {
     super();
     residentUI = new ResidentUI(this);
+
   }
   @Override
   public CellUI getCellUI() {
@@ -150,5 +154,22 @@ public final class Resident implements Cell {
   public Storable createMemento() {
     throw new UnsupportedOperationException(
         "May not create memento of a unitary cell");
+  }
+
+  @Override
+  public void update() {
+    for (Observer o : observers) {
+      o.detectUpdate(this);
+    }
+  }
+
+  @Override
+  public void attach(Observer observer) {
+    observers.add(observer);
+  }
+
+  @Override
+  public void detach(Observer observer) {
+    observers.remove(observer);
   }
 }

@@ -2,6 +2,7 @@ package com.holub.model;
 
 import com.holub.life.Direction;
 import com.holub.life.Storable;
+import com.holub.tools.Observable;
 import com.holub.ui.CellUI;
 import java.awt.*;
 
@@ -14,7 +15,7 @@ import java.awt.*;
  * @include /etc/license.txt
  */
 
-public interface Cell {
+public interface Cell extends Observable {
 
   CellUI getCellUI();
   /**

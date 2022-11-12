@@ -2,6 +2,8 @@ package com.holub.model;
 
 import com.holub.life.Direction;
 import com.holub.life.Storable;
+import com.holub.tools.Observable;
+import com.holub.tools.Observer;
 import com.holub.ui.CellUI;
 import com.holub.ui.NeighborhoodUI;
 import java.awt.*;
@@ -9,6 +11,7 @@ import java.util.*;
 import java.io.*;
 
 import com.holub.asynch.ConditionVariable;
+import java.util.List;
 
 /***
  * A group of {@link Cell} objects. Cells are grouped into neighborhoods
@@ -28,6 +31,7 @@ import com.holub.asynch.ConditionVariable;
 
 public final class Neighborhood implements Cell {
   NeighborhoodUI neighborhoodUI;
+  List<Observer> observers;
   @Override
   public CellUI getCellUI() {
     return neighborhoodUI;
@@ -77,6 +81,7 @@ public final class Neighborhood implements Cell {
     this.gridSize = gridSize;
     this.grid = new Cell[gridSize][gridSize];
     this.neighborhoodUI = new NeighborhoodUI(this);
+    this.observers = new LinkedList<Observer>();
 
 		for (int row = 0; row < gridSize; ++row) {
 			for (int column = 0; column < gridSize; ++column) {
@@ -415,6 +420,23 @@ public final class Neighborhood implements Cell {
 
   public void setAmActive(boolean amActive) {
     this.amActive = amActive;
+  }
+
+  @Override
+  public void update() {
+    for (Observer observer : observers) {
+      observer.detectUpdate(this);
+    }
+  }
+
+  @Override
+  public void attach(Observer observer) {
+    observers.add(observer);
+  }
+
+  @Override
+  public void detach(Observer observer) {
+    observers.remove(observer);
   }
 
   /**

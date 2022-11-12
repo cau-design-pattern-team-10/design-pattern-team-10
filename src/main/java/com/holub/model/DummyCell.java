@@ -2,6 +2,7 @@ package com.holub.model;
 
 import com.holub.life.Direction;
 import com.holub.life.Storable;
+import com.holub.tools.Observer;
 import com.holub.ui.CellUI;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -60,4 +61,19 @@ public class DummyCell implements Cell {
       throw new UnsupportedOperationException(
           "Cannot create memento of dummy block");
     }
+
+  @Override
+  public void update() {
+    throw new UnsupportedOperationException("not implemented");
+  }
+
+  @Override
+  public void attach(Observer observer) {
+    throw new UnsupportedOperationException("not implemented");
+  }
+
+  @Override
+  public void detach(Observer observer) {
+      throw new UnsupportedOperationException("not implemented");
+  }
 }
