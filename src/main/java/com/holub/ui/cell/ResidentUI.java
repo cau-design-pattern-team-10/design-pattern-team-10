@@ -1,6 +1,7 @@
-package com.holub.ui;
+package com.holub.ui.cell;
 
-import com.holub.model.Resident;
+import com.holub.model.cell.Resident;
+import com.holub.ui.Colors;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;

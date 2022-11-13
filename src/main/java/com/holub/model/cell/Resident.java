@@ -1,10 +1,9 @@
-package com.holub.model;
+package com.holub.model.cell;
 
 import com.holub.life.Direction;
 import com.holub.life.Storable;
+import com.holub.model.Point;
 import com.holub.tools.Observer;
-import com.holub.ui.CellUI;
-import com.holub.ui.ResidentUI;
 import java.util.List;
 
 /*** ****************************************************************
@@ -15,19 +14,11 @@ import java.util.List;
  */
 
 public final class Resident implements Cell {
-  ResidentUI residentUI;
   List<Observer> observers;
   boolean updated;
   public Resident() {
     super();
-    residentUI = new ResidentUI(this);
-
   }
-  @Override
-  public CellUI getCellUI() {
-    return residentUI;
-  }
-
   @Override
   public boolean isUpdated() {
     return updated;

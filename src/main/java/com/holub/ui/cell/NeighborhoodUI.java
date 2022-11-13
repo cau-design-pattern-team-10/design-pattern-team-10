@@ -1,7 +1,8 @@
-package com.holub.ui;
+package com.holub.ui.cell;
 
 import com.holub.asynch.ConditionVariable;
-import com.holub.model.Neighborhood;
+import com.holub.model.cell.Neighborhood;
+import com.holub.ui.Colors;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -16,7 +17,7 @@ public class NeighborhoodUI implements CellUI {
     this.grid = new CellUI[gridSize][gridSize];
     for (int row = 0; row < gridSize; ++row) {
       for (int column = 0; column < gridSize; ++column) {
-        grid[row][column] = cell.grid[row][column].getCellUI();
+        grid[row][column] = CellUIFactory.getInstance().createCellUI(cell.grid[row][column]);
       }
     }
   }

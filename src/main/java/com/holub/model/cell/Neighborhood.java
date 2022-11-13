@@ -1,10 +1,9 @@
-package com.holub.model;
+package com.holub.model.cell;
 
 import com.holub.life.Direction;
 import com.holub.life.Storable;
+import com.holub.model.Point;
 import com.holub.tools.Observer;
-import com.holub.ui.CellUI;
-import com.holub.ui.NeighborhoodUI;
 
 import com.holub.asynch.ConditionVariable;
 import java.io.IOException;
@@ -34,7 +33,6 @@ import java.util.List;
  */
 
 public final class Neighborhood implements Cell {
-  NeighborhoodUI neighborhoodUI;
   List<Observer> observers;
   boolean updated;
 
@@ -43,10 +41,6 @@ public final class Neighborhood implements Cell {
     return updated;
   }
 
-  @Override
-  public CellUI getCellUI() {
-    return neighborhoodUI;
-  }
 
   /**
    * Block if reading is not permitted because the grid is transitioning to the next state. Only one
@@ -98,7 +92,6 @@ public final class Neighborhood implements Cell {
 				grid[row][column] = prototype.create();
 			}
 		}
-    this.neighborhoodUI = new NeighborhoodUI(this);
   }
 
   /**

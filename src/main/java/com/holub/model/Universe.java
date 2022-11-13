@@ -2,6 +2,10 @@ package com.holub.model;
 
 import com.holub.io.Files;
 import com.holub.life.Storable;
+import com.holub.model.cell.Cell;
+import com.holub.model.cell.DummyCell;
+import com.holub.model.cell.Neighborhood;
+import com.holub.model.cell.Resident;
 import com.holub.system.Clock;
 import com.holub.tools.Observable;
 import com.holub.tools.Observer;
@@ -14,7 +18,7 @@ import java.util.List;
 public class Universe implements Observable {
   private List<Observer> observers;
   private final Clock clock;
-  public final Cell outermostCell;
+  public final Neighborhood outermostCell;
   /**
    * The default height and width of a Neighborhood in cells. If it's too big, you'll run too slowly
    * because you have to update the entire block as a unit, so there's more to do. If it's too

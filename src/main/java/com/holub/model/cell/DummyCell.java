@@ -1,19 +1,13 @@
-package com.holub.model;
+package com.holub.model.cell;
 
 import com.holub.life.Direction;
 import com.holub.life.Storable;
 import com.holub.tools.Observer;
-import com.holub.ui.CellUI;
 public class DummyCell implements Cell {
 
   @Override
   public boolean isUpdated() {
     return false;
-  }
-
-  @Override
-  public CellUI getCellUI() {
-    throw new IllegalCallerException("not implemented");
   }
 
   public boolean figureNextState(Cell n, Cell s, Cell e, Cell w,

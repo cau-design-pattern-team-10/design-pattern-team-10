@@ -4,6 +4,9 @@ import com.holub.model.Universe;
 import com.holub.tools.Observable;
 import com.holub.tools.Observer;
 
+import com.holub.ui.cell.CellUI;
+import com.holub.ui.cell.CellUIFactory;
+import com.holub.ui.cell.NeighborhoodUI;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -40,7 +43,7 @@ public class UniversePanel extends JPanel implements Observer {
     this.universe = universe;
     this.universe.attach(this);
     this.menuSite = menuSite;
-    this.outermostCellUI = universe.outermostCell.getCellUI();
+    this.outermostCellUI = CellUIFactory.getInstance().createCellUI(universe.outermostCell);
 
     addComponentListener
         (new ComponentAdapter() {

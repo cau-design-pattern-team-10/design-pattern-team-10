@@ -1,4 +1,4 @@
-package com.holub.ui;
+package com.holub.ui.cell;
 
 import java.awt.Graphics;
 import java.awt.Point;
