@@ -5,10 +5,16 @@ import com.holub.life.Storable;
 import com.holub.tools.Observer;
 import com.holub.ui.CellUI;
 import com.holub.ui.NeighborhoodUI;
-import java.util.*;
-import java.io.*;
 
 import com.holub.asynch.ConditionVariable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /***
@@ -30,6 +36,13 @@ import java.util.List;
 public final class Neighborhood implements Cell {
   NeighborhoodUI neighborhoodUI;
   List<Observer> observers;
+  boolean updated;
+
+  @Override
+  public boolean isUpdated() {
+    return updated;
+  }
+
   @Override
   public CellUI getCellUI() {
     return neighborhoodUI;
@@ -425,6 +438,7 @@ public final class Neighborhood implements Cell {
     for (Observer observer : observers) {
       observer.detectUpdate(this);
     }
+    updated = false;
   }
 
   @Override

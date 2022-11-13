@@ -17,6 +17,7 @@ import java.util.List;
 public final class Resident implements Cell {
   ResidentUI residentUI;
   List<Observer> observers;
+  boolean updated;
   public Resident() {
     super();
     residentUI = new ResidentUI(this);
@@ -27,8 +28,14 @@ public final class Resident implements Cell {
     return residentUI;
   }
 
+  @Override
+  public boolean isUpdated() {
+    return updated;
+  }
+
   public void toggle() {
     amAlive = !amAlive;
+    updated = true;
   }
 
   private boolean amAlive = false;
@@ -158,6 +165,7 @@ public final class Resident implements Cell {
     for (Observer o : observers) {
       o.detectUpdate(this);
     }
+    updated = false;
   }
 
   @Override

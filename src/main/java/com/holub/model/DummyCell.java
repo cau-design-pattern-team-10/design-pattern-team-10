@@ -5,34 +5,40 @@ import com.holub.life.Storable;
 import com.holub.tools.Observer;
 import com.holub.ui.CellUI;
 public class DummyCell implements Cell {
-    @Override
-    public CellUI getCellUI() {
-      throw new IllegalCallerException("not implemented");
-    }
 
-    public boolean figureNextState(Cell n, Cell s, Cell e, Cell w,
-        Cell ne, Cell nw, Cell se, Cell sw) {
-      return true;
-    }
+  @Override
+  public boolean isUpdated() {
+    return false;
+  }
 
-    public Cell edge(int r, int c) {
-      return this;
-    }
+  @Override
+  public CellUI getCellUI() {
+    throw new IllegalCallerException("not implemented");
+  }
 
-    public boolean isAlive() {
-      return false;
-    }
+  public boolean figureNextState(Cell n, Cell s, Cell e, Cell w,
+      Cell ne, Cell nw, Cell se, Cell sw) {
+    return true;
+  }
 
-    public Cell create() {
-      return this;
-    }
+  public Cell edge(int r, int c) {
+    return this;
+  }
 
-    public Direction isDisruptiveTo() {
-      return Direction.NONE;
-    }
+  public boolean isAlive() {
+    return false;
+  }
 
-    public void clear() {
-    }
+  public Cell create() {
+    return this;
+  }
+
+  public Direction isDisruptiveTo() {
+    return Direction.NONE;
+  }
+
+  public void clear() {
+  }
 
   @Override
   public boolean transfer(Storable memento, com.holub.model.Point upperLeftCorner, boolean doLoad) {
@@ -40,17 +46,17 @@ public class DummyCell implements Cell {
   }
 
   public int widthInCells() {
-      return 0;
-    }
+    return 0;
+  }
 
-    public boolean transition() {
-      return false;
-    }
+  public boolean transition() {
+    return false;
+  }
 
-    public Storable createMemento() {
-      throw new UnsupportedOperationException(
-          "Cannot create memento of dummy block");
-    }
+  public Storable createMemento() {
+    throw new UnsupportedOperationException(
+        "Cannot create memento of dummy block");
+  }
 
   @Override
   public void update() {
@@ -64,6 +70,6 @@ public class DummyCell implements Cell {
 
   @Override
   public void detach(Observer observer) {
-      throw new UnsupportedOperationException("not implemented");
+    throw new UnsupportedOperationException("not implemented");
   }
 }

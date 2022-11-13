@@ -3,9 +3,10 @@ package com.holub.life;
 import com.holub.model.Universe;
 import com.holub.system.Clock;
 import com.holub.ui.UniversePanel;
-import java.awt.*;
-import javax.swing.*;
 import com.holub.ui.MenuSite;
+import java.awt.BorderLayout;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 
 /*******************************************************************
  * An implemenation of Conway's Game of Life.

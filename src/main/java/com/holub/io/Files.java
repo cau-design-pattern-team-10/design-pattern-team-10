@@ -1,7 +1,8 @@
 package com.holub.io;
 
-import java.io.*;
-import javax.swing.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter; // disambiguate from java.io version
 
 /*** A utility that handles various File-related operations.

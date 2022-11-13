@@ -1,16 +1,22 @@
 package com.holub.ui;
 
-import com.holub.model.Cell;
-import com.holub.model.DummyCell;
 import com.holub.model.Universe;
-import com.holub.system.Clock;
 import com.holub.tools.Observable;
 import com.holub.tools.Observer;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
-import javax.swing.*;
-import java.awt.event.*;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  * The Universe is a mediator that sits between the Swing event model and the Life classes. It is
@@ -136,35 +142,6 @@ public class UniversePanel extends JPanel implements Observer {
     panelBounds.x = 0;
     panelBounds.y = 0;
     universe.outermostCell.getCellUI().redraw(g, panelBounds, true);    //{=Universe.redraw1}
-  }
-
-  /**
-   * Force a screen refresh by queing a request on the Swing event queue. This is an example of the
-   * Active Object pattern (not covered by the Gang of Four). This method is called on every clock
-   * tick. Note that the redraw() method on a given <code>Cell</code> does nothing if the
-   * <code>Cell</code> doesn't have to be refreshed.
-   */
-
-  private void refreshNow() {
-    SwingUtilities.invokeLater
-        (new Runnable() {
-           public void run() {
-             Graphics g = getGraphics();
-						 if (g == null)    // Universe not displayable
-						 {
-							 return;
-						 }
-             try {
-               Rectangle panelBounds = getBounds();
-               panelBounds.x = 0;
-               panelBounds.y = 0;
-               universe.outermostCell.getCellUI().redraw(g, panelBounds, false); //{=Universe.redraw2}
-             } finally {
-               g.dispose();
-             }
-           }
-         }
-        );
   }
 
   @Override
