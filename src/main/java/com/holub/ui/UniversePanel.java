@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 
 public class UniversePanel extends JPanel implements Observer {
   Universe universe;
+  CellUI outermostCellUI;
   private final MenuSite menuSite;
   // The constructor is private so that the universe can be created
   // only by an outer-class method [Neighborhood.createUniverse()].
@@ -39,6 +40,7 @@ public class UniversePanel extends JPanel implements Observer {
     this.universe = universe;
     this.universe.attach(this);
     this.menuSite = menuSite;
+    this.outermostCellUI = universe.outermostCell.getCellUI();
 
     addComponentListener
         (new ComponentAdapter() {
@@ -74,7 +76,7 @@ public class UniversePanel extends JPanel implements Observer {
              Rectangle bounds = getBounds();
              bounds.x = 0;
              bounds.y = 0;
-             universe.outermostCell.getCellUI().userClicked(e.getPoint(), bounds);
+             outermostCellUI.userClicked(e.getPoint(), bounds);
              repaint();
            }
          }
@@ -141,7 +143,7 @@ public class UniversePanel extends JPanel implements Observer {
     // corner of the screen. Pretend that it's at (0,0)
     panelBounds.x = 0;
     panelBounds.y = 0;
-    universe.outermostCell.getCellUI().redraw(g, panelBounds, true);    //{=Universe.redraw1}
+    outermostCellUI.redraw(g, panelBounds, true);    //{=Universe.redraw1}
   }
 
   @Override
