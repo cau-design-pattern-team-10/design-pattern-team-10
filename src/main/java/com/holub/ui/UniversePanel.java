@@ -8,6 +8,7 @@ import com.holub.tools.Observable;
 import com.holub.tools.Observer;
 
 import java.awt.*;
+import java.io.IOException;
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -86,7 +87,12 @@ public class UniversePanel extends JPanel implements Observer {
         (this, "Grid", "Load",
             new ActionListener() {
               public void actionPerformed(ActionEvent e) {
-                universe.doLoad();
+                try {
+                  universe.doLoad();
+                } catch (IOException theException) {
+                  JOptionPane.showMessageDialog(null, "Read Failed!",
+                      "The Game of Life", JOptionPane.ERROR_MESSAGE);
+                }
               }
             }
         );
@@ -95,7 +101,12 @@ public class UniversePanel extends JPanel implements Observer {
         (this, "Grid", "Store",
             new ActionListener() {
               public void actionPerformed(ActionEvent e) {
-                universe.doStore();
+                try {
+                  universe.doStore();
+                } catch (IOException theException) {
+                  JOptionPane.showMessageDialog(null, "Write Failed!",
+                      "The Game of Life", JOptionPane.ERROR_MESSAGE);
+                }
               }
             }
         );

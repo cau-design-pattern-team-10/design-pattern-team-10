@@ -38,7 +38,12 @@ public class DummyCell implements Cell {
     public void clear() {
     }
 
-    public int widthInCells() {
+  @Override
+  public boolean transfer(Storable memento, com.holub.model.Point upperLeftCorner, boolean doLoad) {
+    return false;
+  }
+
+  public int widthInCells() {
       return 0;
     }
 

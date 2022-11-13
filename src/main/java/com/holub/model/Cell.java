@@ -4,7 +4,6 @@ import com.holub.life.Direction;
 import com.holub.life.Storable;
 import com.holub.tools.Observable;
 import com.holub.ui.CellUI;
-import java.awt.*;
 
 /***
  * This interface is the basic unit that comprises a life board.

@@ -5,13 +5,11 @@ import com.holub.life.Storable;
 import com.holub.system.Clock;
 import com.holub.tools.Observable;
 import com.holub.tools.Observer;
-import java.awt.Point;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.JOptionPane;
 
 public class Universe implements Observable {
   private List<Observer> observers;
@@ -66,8 +64,7 @@ public class Universe implements Observable {
     outermostCell.clear();
   }
 
-  public void doLoad() {
-    try {
+  public void doLoad() throws IOException {
       FileInputStream in = new FileInputStream(
           Files.userSelected(".", ".life", "Life File", "Load"));
 
@@ -79,15 +76,10 @@ public class Universe implements Observable {
       outermostCell.transfer(memento, new Point(0, 0), Cell.LOAD);
 
       in.close();
-    } catch (IOException theException) {
-      JOptionPane.showMessageDialog(null, "Read Failed!",
-          "The Game of Life", JOptionPane.ERROR_MESSAGE);
-    }
     update();
   }
 
-  public void doStore() {
-    try {
+  public void doStore() throws IOException {
       FileOutputStream out = new FileOutputStream(
           Files.userSelected(".", ".life", "Life File", "Write"));
 
@@ -98,10 +90,6 @@ public class Universe implements Observable {
       memento.flush(out);
 
       out.close();
-    } catch (IOException theException) {
-      JOptionPane.showMessageDialog(null, "Write Failed!",
-          "The Game of Life", JOptionPane.ERROR_MESSAGE);
-    }
   }
 
   public int widthInCells() {

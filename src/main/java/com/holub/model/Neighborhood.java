@@ -2,11 +2,9 @@ package com.holub.model;
 
 import com.holub.life.Direction;
 import com.holub.life.Storable;
-import com.holub.tools.Observable;
 import com.holub.tools.Observer;
 import com.holub.ui.CellUI;
 import com.holub.ui.NeighborhoodUI;
-import java.awt.*;
 import java.util.*;
 import java.io.*;
 
