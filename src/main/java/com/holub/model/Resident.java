@@ -6,9 +6,6 @@ import com.holub.tools.Observer;
 import com.holub.ui.CellUI;
 import com.holub.ui.ResidentUI;
 import java.util.List;
-import java.awt.*;
-// colors not defined in java.awt.Color.
-
 
 /*** ****************************************************************
  * The Resident class implements a single cell---a "resident" of a

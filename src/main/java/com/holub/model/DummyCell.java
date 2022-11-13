@@ -4,10 +4,6 @@ import com.holub.life.Direction;
 import com.holub.life.Storable;
 import com.holub.tools.Observer;
 import com.holub.ui.CellUI;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Rectangle;
-
 public class DummyCell implements Cell {
     @Override
     public CellUI getCellUI() {
@@ -48,17 +44,6 @@ public class DummyCell implements Cell {
     }
 
     public boolean transition() {
-      return false;
-    }
-
-    public void userClicked(Point h, Rectangle s) {
-    }
-
-    public void redraw(Graphics g, Rectangle here,
-        boolean drawAll) {
-    }
-
-    public boolean transfer(Storable m, Point ul, boolean load) {
       return false;
     }
 
