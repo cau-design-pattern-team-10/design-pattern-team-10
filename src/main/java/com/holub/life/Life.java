@@ -1,12 +1,11 @@
 package com.holub.life;
 
-import com.holub.model.Universe;
+import com.holub.system.Universe;
 import com.holub.system.Clock;
 import com.holub.ui.UniversePanel;
 import com.holub.ui.menu.ClockMenu;
 import com.holub.ui.menu.MenuSite;
 import java.awt.BorderLayout;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 /*******************************************************************
@@ -16,9 +15,6 @@ import javax.swing.JFrame;
  */
 
 public final class Life extends JFrame {
-
-  private static JComponent universe;
-
   public static void main(String[] arguments) {
     new Life();
   }

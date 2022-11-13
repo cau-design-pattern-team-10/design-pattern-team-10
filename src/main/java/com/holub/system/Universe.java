@@ -1,12 +1,12 @@
-package com.holub.model;
+package com.holub.system;
 
 import com.holub.io.Files;
-import com.holub.life.Storable;
+import com.holub.tools.Storable;
+import com.holub.model.Point;
 import com.holub.model.cell.Cell;
 import com.holub.model.cell.DummyCell;
 import com.holub.model.cell.Neighborhood;
 import com.holub.model.cell.Resident;
-import com.holub.system.Clock;
 import com.holub.tools.Observable;
 import com.holub.tools.Observer;
 import java.io.FileInputStream;

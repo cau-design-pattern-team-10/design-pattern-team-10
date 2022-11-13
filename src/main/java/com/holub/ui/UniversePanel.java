@@ -1,6 +1,6 @@
 package com.holub.ui;
 
-import com.holub.model.Universe;
+import com.holub.system.Universe;
 import com.holub.tools.Observable;
 import com.holub.tools.Observer;
 
