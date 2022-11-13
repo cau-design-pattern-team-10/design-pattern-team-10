@@ -9,8 +9,16 @@ import java.awt.Rectangle;
 
 public class NeighborhoodUI implements CellUI {
   Neighborhood cell;
+  private final CellUI[][] grid;
   public NeighborhoodUI(Neighborhood cell) {
     this.cell = cell;
+    final int gridSize = cell.getGridSize();
+    this.grid = new CellUI[gridSize][gridSize];
+    for (int row = 0; row < gridSize; ++row) {
+      for (int column = 0; column < gridSize; ++column) {
+        grid[row][column] = cell.grid[row][column].getCellUI();
+      }
+    }
   }
 
   /**
@@ -55,7 +63,7 @@ public class NeighborhoodUI implements CellUI {
 
       for (int row = 0; row < gridSize; ++row) {
         for (int column = 0; column < gridSize; ++column) {
-          cell.grid[row][column].getCellUI().redraw(g, subcell, drawAll);  // {=Neighborhood.redraw3}
+          grid[row][column].redraw(g, subcell, drawAll);  // {=Neighborhood.redraw3}
           subcell.translate(subcell.width, 0);
         }
         subcell.translate(-compoundWidth, subcell.height);
@@ -95,7 +103,7 @@ public class NeighborhoodUI implements CellUI {
     Rectangle subcell = new Rectangle(0, 0, pixelsPerCell,
         pixelsPerCell);
 
-    cell.grid[row][column].getCellUI().userClicked(position, subcell); //{=Neighborhood.userClicked.call}
+    grid[row][column].userClicked(position, subcell); //{=Neighborhood.userClicked.call}
     cell.setAmActive(true);
     cell.rememberThatCellAtEdgeChangedState(row, column);
   }
