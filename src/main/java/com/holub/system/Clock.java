@@ -4,7 +4,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import java.util.Timer;    // overrides java.awt.timer
-import com.holub.ui.MenuSite;
+import com.holub.ui.menu.MenuSite;
 import com.holub.tools.Publisher;
 
 /***
@@ -34,8 +34,7 @@ public class Clock {
   // it creates a menu, and it can't do that until the menus
   // are established.
   //
-  public Clock(MenuSite menuSite) {
-    createMenus(menuSite);
+  public Clock() {
   }
 
   /**
@@ -68,38 +67,6 @@ public class Clock {
   public void stop() {
     startTicking(0);
   }
-
-  /**
-   * Create the menu that controls the clock speed and put it onto the menu site.
-   */
-  private void createMenus(MenuSite menuSite) {
-    // First set up a single listener that will handle all the
-    // menu-selection events except "Exit"
-
-    ActionListener modifier =                  //{=startSetup}
-        new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            String name = ((JMenuItem) e.getSource()).getName();
-            char toDo = name.charAt(0);
-
-						if (toDo == 'T') {
-							tick();              // single tick
-						} else {
-							startTicking(toDo == 'A' ? 500 :    // agonizing
-									toDo == 'S' ? 150 :    // slow
-											toDo == 'M' ? 70 :    // medium
-													toDo == 'F' ? 30 : 0); // fast
-						}
-          }
-        };
-    // {=midSetup}
-    menuSite.addLine(this, "Go", "Halt", modifier);
-    menuSite.addLine(this, "Go", "Tick (Single Step)", modifier);
-    menuSite.addLine(this, "Go", "Agonizing", modifier);
-    menuSite.addLine(this, "Go", "Slow", modifier);
-    menuSite.addLine(this, "Go", "Medium", modifier);
-    menuSite.addLine(this, "Go", "Fast", modifier); // {=endSetup}
-  }  //{=endCreateMenus}
 
   private Publisher publisher = new Publisher();
 

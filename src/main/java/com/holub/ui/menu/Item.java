@@ -1,4 +1,4 @@
-package com.holub.ui;
+package com.holub.ui.menu;
 
 import java.awt.Component;
 import java.util.ListIterator;
