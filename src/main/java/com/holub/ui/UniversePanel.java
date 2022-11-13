@@ -6,7 +6,6 @@ import com.holub.tools.Observer;
 
 import com.holub.ui.cell.CellUI;
 import com.holub.ui.cell.CellUIFactory;
-import com.holub.ui.cell.NeighborhoodUI;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -32,7 +31,6 @@ import javax.swing.JPanel;
 public class UniversePanel extends JPanel implements Observer {
   Universe universe;
   CellUI outermostCellUI;
-  private final MenuSite menuSite;
   // The constructor is private so that the universe can be created
   // only by an outer-class method [Neighborhood.createUniverse()].
 
@@ -42,7 +40,6 @@ public class UniversePanel extends JPanel implements Observer {
     // on the screen.
     this.universe = universe;
     this.universe.attach(this);
-    this.menuSite = menuSite;
     this.outermostCellUI = CellUIFactory.getInstance().createCellUI(universe.outermostCell);
 
     addComponentListener
