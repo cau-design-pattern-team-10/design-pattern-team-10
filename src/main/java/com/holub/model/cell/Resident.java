@@ -4,6 +4,7 @@ import com.holub.life.Direction;
 import com.holub.tools.Storable;
 import com.holub.model.Point;
 import com.holub.tools.Observer;
+import java.util.LinkedList;
 import java.util.List;
 
 /*** ****************************************************************
@@ -18,6 +19,7 @@ public final class Resident implements Cell {
   boolean updated;
   public Resident() {
     super();
+    this.observers = new LinkedList<>();
   }
   @Override
   public boolean isUpdated() {

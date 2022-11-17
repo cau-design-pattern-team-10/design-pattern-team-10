@@ -5,6 +5,7 @@ import com.holub.model.cell.Resident;
 import com.holub.tools.Observable;
 import com.holub.ui.Colors;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
@@ -13,9 +14,12 @@ public class ResidentUI implements CellUI {
   private static final Color BORDER_COLOR = Colors.DARK_YELLOW;
   private static final Color LIVE_COLOR = Color.RED;
   private static final Color DEAD_COLOR = Colors.LIGHT_YELLOW;
+  private final Component parent;
 
-  public ResidentUI(Resident cell) {
+  public ResidentUI(Resident cell, Component parent) {
     this.cell = cell;
+    this.parent = parent;
+    cell.attach(this);
   }
   public void redraw(Graphics g, Rectangle here, boolean drawAll) {
     g = g.create();
@@ -35,9 +39,11 @@ public class ResidentUI implements CellUI {
   @Override
   public void click(Point p) {
     cell.toggle();
+    cell.update();
   }
 
   @Override
   public void detectUpdate(Observable o) {
+    parent.repaint();
   }
 }

@@ -6,19 +6,23 @@ import com.holub.model.cell.Neighborhood;
 import com.holub.tools.Observable;
 import com.holub.ui.Colors;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
 public class NeighborhoodUI implements CellUI {
   Neighborhood cell;
   private final CellUI[][] grid;
-  public NeighborhoodUI(Neighborhood cell) {
+  private final Component parent;
+  public NeighborhoodUI(Neighborhood cell, Component parent) {
     this.cell = cell;
+    this.parent = parent;
+    this.cell.attach(this);
     final int gridSize = cell.getGridSize();
     this.grid = new CellUI[gridSize][gridSize];
     for (int row = 0; row < gridSize; ++row) {
       for (int column = 0; column < gridSize; ++column) {
-        grid[row][column] = CellUIFactory.getInstance().createCellUI(cell.grid[row][column]);
+        grid[row][column] = CellUIFactory.getInstance().createCellUI(cell.grid[row][column], parent);
       }
     }
   }
@@ -108,5 +112,6 @@ public class NeighborhoodUI implements CellUI {
 
   @Override
   public void detectUpdate(Observable o) {
+    parent.repaint();
   }
 }

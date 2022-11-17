@@ -42,7 +42,7 @@ public class UniversePanel extends JPanel implements Observer {
     // on the screen.
     this.universe = universe;
     this.universe.attach(this);
-    this.outermostCellUI = CellUIFactory.getInstance().createCellUI(universe.outermostCell);
+    this.outermostCellUI = CellUIFactory.getInstance().createCellUI(universe.outermostCell, this);
 
     addComponentListener
         (new ComponentAdapter() {
@@ -81,7 +81,6 @@ public class UniversePanel extends JPanel implements Observer {
              p.y = mouseRealPoint.y / universe.DEFAULT_CELL_SIZE;
              System.out.printf("%d, %d\n", p.x, p.y);
              outermostCellUI.click(p);
-             repaint();
            }
          }
         );
@@ -131,8 +130,6 @@ public class UniversePanel extends JPanel implements Observer {
 
   public void paint(Graphics g) {
     Rectangle panelBounds = getBounds();
-    Rectangle clipBounds = g.getClipBounds();
-
     // The panel bounds is relative to the upper-left
     // corner of the screen. Pretend that it's at (0,0)
     panelBounds.x = 0;
