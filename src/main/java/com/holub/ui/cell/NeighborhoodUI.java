@@ -1,11 +1,12 @@
 package com.holub.ui.cell;
 
 import com.holub.asynch.ConditionVariable;
+import com.holub.model.Point;
 import com.holub.model.cell.Neighborhood;
+import com.holub.tools.Observable;
 import com.holub.ui.Colors;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Rectangle;
 
 public class NeighborhoodUI implements CellUI {
@@ -92,20 +93,20 @@ public class NeighborhoodUI implements CellUI {
    * Notification of a mouse click. The point is relative to the upper-left corner of the surface.
    */
   @Override
-  public void userClicked(Point here, Rectangle surface) {
-    final int gridSize = cell.getGridSize();
-    int pixelsPerCell = surface.width / gridSize;
-    int row = here.y / pixelsPerCell;
-    int column = here.x / pixelsPerCell;
-    int rowOffset = here.y % pixelsPerCell;
-    int columnOffset = here.x % pixelsPerCell;
-
-    Point position = new Point(columnOffset, rowOffset);
-    Rectangle subcell = new Rectangle(0, 0, pixelsPerCell,
-        pixelsPerCell);
-
-    grid[row][column].userClicked(position, subcell); //{=Neighborhood.userClicked.call}
+  public void click(Point here) {
+    Point p = new Point();
+    int unitSize = this.cell.widthInCells() / this.cell.getGridSize();
+    p.x = here.x % unitSize;
+    p.y = here.y % unitSize;
+    int row = here.y / unitSize;
+    int column = here.x / unitSize;
+    grid[row][column].click(p);
     cell.setAmActive(true);
     cell.rememberThatCellAtEdgeChangedState(row, column);
+    cell.update();
+  }
+
+  @Override
+  public void detectUpdate(Observable o) {
   }
 }

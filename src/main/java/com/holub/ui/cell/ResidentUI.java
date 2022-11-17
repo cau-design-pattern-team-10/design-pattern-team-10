@@ -1,10 +1,11 @@
 package com.holub.ui.cell;
 
+import com.holub.model.Point;
 import com.holub.model.cell.Resident;
+import com.holub.tools.Observable;
 import com.holub.ui.Colors;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Rectangle;
 
 public class ResidentUI implements CellUI {
@@ -31,7 +32,12 @@ public class ResidentUI implements CellUI {
     g.dispose();
   }
 
-  public void userClicked(Point here, Rectangle surface) {
+  @Override
+  public void click(Point p) {
     cell.toggle();
+  }
+
+  @Override
+  public void detectUpdate(Observable o) {
   }
 }

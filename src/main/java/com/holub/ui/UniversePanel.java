@@ -1,5 +1,6 @@
 package com.holub.ui;
 
+import com.holub.model.Point;
 import com.holub.system.Universe;
 import com.holub.tools.Observable;
 import com.holub.tools.Observer;
@@ -74,59 +75,51 @@ public class UniversePanel extends JPanel implements Observer {
     addMouseListener          //{=Universe.mouse}
         (new MouseAdapter() {
            public void mousePressed(MouseEvent e) {
-             Rectangle bounds = getBounds();
-             bounds.x = 0;
-             bounds.y = 0;
-             outermostCellUI.userClicked(e.getPoint(), bounds);
+             java.awt.Point mouseRealPoint = e.getPoint();
+             Point p = new Point();
+             p.x = mouseRealPoint.x / universe.DEFAULT_CELL_SIZE;
+             p.y = mouseRealPoint.y / universe.DEFAULT_CELL_SIZE;
+             System.out.printf("%d, %d\n", p.x, p.y);
+             outermostCellUI.click(p);
              repaint();
            }
          }
         );
 
     menuSite.addLine(this, "Grid", "Clear",
-        new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            universe.clear();
-            repaint();
-          }
+        e -> {
+          universe.clear();
+          repaint();
         }
     );
 
     menuSite.addLine      // {=Universe.load.setup}
         (this, "Grid", "Load",
-            new ActionListener() {
-              public void actionPerformed(ActionEvent e) {
-                try {
-                  universe.doLoad();
-                } catch (IOException theException) {
-                  JOptionPane.showMessageDialog(null, "Read Failed!",
-                      "The Game of Life", JOptionPane.ERROR_MESSAGE);
-                }
+            e -> {
+              try {
+                universe.doLoad();
+              } catch (IOException theException) {
+                JOptionPane.showMessageDialog(null, "Read Failed!",
+                    "The Game of Life", JOptionPane.ERROR_MESSAGE);
               }
             }
         );
 
     menuSite.addLine
         (this, "Grid", "Store",
-            new ActionListener() {
-              public void actionPerformed(ActionEvent e) {
-                try {
-                  universe.doStore();
-                } catch (IOException theException) {
-                  JOptionPane.showMessageDialog(null, "Write Failed!",
-                      "The Game of Life", JOptionPane.ERROR_MESSAGE);
-                }
+            e -> {
+              try {
+                universe.doStore();
+              } catch (IOException theException) {
+                JOptionPane.showMessageDialog(null, "Write Failed!",
+                    "The Game of Life", JOptionPane.ERROR_MESSAGE);
               }
             }
         );
 
     menuSite.addLine
         (this, "Grid", "Exit",
-            new ActionListener() {
-              public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-              }
-            }
+            e -> System.exit(0)
         );
 
   }

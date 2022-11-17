@@ -1,10 +1,11 @@
 package com.holub.ui.cell;
 
+import com.holub.model.Point;
+import com.holub.tools.Observer;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Rectangle;
 
-public interface CellUI {
+public interface CellUI extends Observer {
   /**
    * Redraw yourself in the indicated rectangle on the indicated Graphics object if ncessary. This
    * method is meant for a conditional redraw, where some of the cells might not be refreshed (if
@@ -18,5 +19,5 @@ public interface CellUI {
 
   void redraw(Graphics g, Rectangle here, boolean drawAll);
 
-  void userClicked(Point here, Rectangle surface);
+  void click(Point p);
 }
