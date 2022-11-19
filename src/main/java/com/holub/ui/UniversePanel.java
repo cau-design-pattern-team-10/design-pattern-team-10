@@ -12,8 +12,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -33,6 +31,13 @@ import javax.swing.JPanel;
 public class UniversePanel extends JPanel implements Observer {
   Universe universe;
   CellUI outermostCellUI;
+
+  /**
+   * The size of the smallest "atomic" cell---a Resident object. This size is extrinsic to a
+   * Resident (It's passed into the Resident's "draw yourself" method.
+   */
+  public static final int DEFAULT_CELL_SIZE = 8;
+  private int cellSize = DEFAULT_CELL_SIZE;
   // The constructor is private so that the universe can be created
   // only by an outer-class method [Neighborhood.createUniverse()].
 
@@ -53,8 +58,8 @@ public class UniversePanel extends JPanel implements Observer {
              // total size must be an even multiple of 63.
 
              Rectangle bounds = getBounds();
-             bounds.height /= universe.widthInCells();
-             bounds.height *= universe.widthInCells();
+             cellSize = bounds.height / universe.widthInCells();
+             bounds.height = cellSize * universe.widthInCells();
              bounds.width = bounds.height;
              setBounds(bounds);
            }
@@ -63,8 +68,8 @@ public class UniversePanel extends JPanel implements Observer {
 
     setBackground(Color.white);
     final Dimension PREFERRED_SIZE = new Dimension (
-        universe.widthInCells() * universe.DEFAULT_CELL_SIZE,
-        universe.widthInCells() * universe.DEFAULT_CELL_SIZE
+        universe.widthInCells() * cellSize,
+        universe.widthInCells() * cellSize
     );
 
     setPreferredSize(PREFERRED_SIZE);
@@ -77,8 +82,8 @@ public class UniversePanel extends JPanel implements Observer {
            public void mousePressed(MouseEvent e) {
              java.awt.Point mouseRealPoint = e.getPoint();
              Point p = new Point();
-             p.x = mouseRealPoint.x / universe.DEFAULT_CELL_SIZE;
-             p.y = mouseRealPoint.y / universe.DEFAULT_CELL_SIZE;
+             p.x = mouseRealPoint.x / cellSize;
+             p.y = mouseRealPoint.y / cellSize;
              System.out.printf("%d, %d\n", p.x, p.y);
              outermostCellUI.click(p);
            }

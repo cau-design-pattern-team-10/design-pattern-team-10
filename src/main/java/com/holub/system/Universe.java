@@ -26,12 +26,6 @@ public class Universe implements Observable {
    */
   private static final int DEFAULT_GRID_SIZE = 8;
 
-  /**
-   * The size of the smallest "atomic" cell---a Resident object. This size is extrinsic to a
-   * Resident (It's passed into the Resident's "draw yourself" method.
-   */
-  public static final int DEFAULT_CELL_SIZE = 8;
-
   public Universe(Clock clock) {
     this.observers = new LinkedList<>();
     this.clock = clock;

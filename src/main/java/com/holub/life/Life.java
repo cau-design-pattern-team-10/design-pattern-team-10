@@ -22,18 +22,19 @@ public final class Life extends JFrame {
   private Life() {
     super("The Game of Life. "
         + "(c)2003 Allen I. Holub <http://www.holub.com>");
+    // Define data plane
+    Clock clock = new Clock();
+    Universe universe = new Universe(clock);
 
-    // Must establish the MenuSite very early in case
-    // a subcomponent puts menus on it.
+    // Define ui plane
     MenuSite menuSite = new MenuSite();
     menuSite.establish(this);    //{=life.java.establish}
-    Clock clock = new Clock();
+    UniversePanel universePanel = new UniversePanel(universe, menuSite);
     ClockMenu clockMenu = new ClockMenu(clock, menuSite);
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     getContentPane().setLayout(new BorderLayout());
-    Universe universe = new Universe(clock);
-    getContentPane().add(new UniversePanel(universe, menuSite), BorderLayout.CENTER); //{=life.java.install}
+    getContentPane().add(universePanel, BorderLayout.CENTER); //{=life.java.install}
 
     pack();
     setVisible(true);
