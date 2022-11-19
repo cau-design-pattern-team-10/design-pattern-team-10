@@ -1,10 +1,11 @@
 package com.holub.ui;
 
-import java.awt.*;
 
 /*	The Colors interface contains nothing but symbolic constants for various
  *	color values. The names are self explanatory.
  */
+
+import java.awt.Color;
 
 /*** Provides symbolic definitions for various colors not defined in the
  * {@link java.awt.Color} class.

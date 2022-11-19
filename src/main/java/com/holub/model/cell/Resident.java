@@ -1,9 +1,11 @@
-package com.holub.life;
+package com.holub.model.cell;
 
-import java.awt.*;
-import com.holub.ui.Colors;  // Contains constants specifying various
-// colors not defined in java.awt.Color.
-
+import com.holub.life.Direction;
+import com.holub.tools.Storable;
+import com.holub.model.Point;
+import com.holub.tools.Observer;
+import java.util.LinkedList;
+import java.util.List;
 
 /*** ****************************************************************
  * The Resident class implements a single cell---a "resident" of a
@@ -13,10 +15,21 @@ import com.holub.ui.Colors;  // Contains constants specifying various
  */
 
 public final class Resident implements Cell {
+  List<Observer> observers;
+  boolean updated;
+  public Resident() {
+    super();
+    this.observers = new LinkedList<>();
+  }
+  @Override
+  public boolean isUpdated() {
+    return updated;
+  }
 
-  private static final Color BORDER_COLOR = Colors.DARK_YELLOW;
-  private static final Color LIVE_COLOR = Color.RED;
-  private static final Color DEAD_COLOR = Colors.LIGHT_YELLOW;
+  public void toggle() {
+    amAlive = !amAlive;
+    updated = true;
+  }
 
   private boolean amAlive = false;
   private boolean willBeAlive = false;
@@ -76,7 +89,9 @@ public final class Resident implements Cell {
   }
 
   private void verify(Cell c, String direction) {
-    assert (c instanceof Resident) || (c == Cell.DUMMY)
+    // TODO: change dummy to final static
+    Cell DUMMY = new DummyCell();
+    assert (c instanceof Resident) || (c == DUMMY)
         : "incorrect type for " + direction + ": " +
         c.getClass().getName();
   }
@@ -95,26 +110,6 @@ public final class Resident implements Cell {
     amAlive = willBeAlive;
     return changed;
   }
-
-  public void redraw(Graphics g, Rectangle here, boolean drawAll) {
-    g = g.create();
-    g.setColor(amAlive ? LIVE_COLOR : DEAD_COLOR);
-    g.fillRect(here.x + 1, here.y + 1, here.width - 1, here.height - 1);
-
-    // Doesn't draw a line on the far right and bottom of the
-    // grid, but that's life, so to speak. It's not worth the
-    // code for the special case.
-
-    g.setColor(BORDER_COLOR);
-    g.drawLine(here.x, here.y, here.x, here.y + here.height);
-    g.drawLine(here.x, here.y, here.x + here.width, here.y);
-    g.dispose();
-  }
-
-  public void userClicked(Point here, Rectangle surface) {
-    amAlive = !amAlive;
-  }
-
   public void clear() {
     amAlive = willBeAlive = false;
   }
@@ -141,10 +136,10 @@ public final class Resident implements Cell {
       if (amAlive = willBeAlive = memento.isAlive(upperLeft)) {
         return true;
       }
-    } else if (amAlive)            // store only live cells
-    {
+    } else if (amAlive) {
       memento.markAsAlive(upperLeft);
     }
+    update();
 
     return false;
   }
@@ -156,5 +151,23 @@ public final class Resident implements Cell {
   public Storable createMemento() {
     throw new UnsupportedOperationException(
         "May not create memento of a unitary cell");
+  }
+
+  @Override
+  public void update() {
+    for (Observer o : observers) {
+      o.detectUpdate(this);
+    }
+    updated = false;
+  }
+
+  @Override
+  public void attach(Observer observer) {
+    observers.add(observer);
+  }
+
+  @Override
+  public void detach(Observer observer) {
+    observers.remove(observer);
   }
 }

@@ -2,8 +2,15 @@
 
 package com.holub.tools;
 
-import java.util.logging.*;
-import java.io.*;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * This class provides a single method that sets up logging for a particular package to go to the

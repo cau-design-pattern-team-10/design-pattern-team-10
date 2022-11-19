@@ -1,6 +1,9 @@
-package com.holub.life;
+package com.holub.model.cell;
 
-import java.awt.*;
+import com.holub.life.Direction;
+import com.holub.tools.Storable;
+import com.holub.model.Point;
+import com.holub.tools.Observable;
 
 /***
  * This interface is the basic unit that comprises a life board.
@@ -11,8 +14,9 @@ import java.awt.*;
  * @include /etc/license.txt
  */
 
-public interface Cell {
+public interface Cell extends Observable {
 
+  boolean isUpdated();
   /**
    * Figure out the next state of the cell, given the specified neighbors.
    *
@@ -39,26 +43,6 @@ public interface Cell {
    */
   boolean transition();
 
-  /**
-   * Redraw yourself in the indicated rectangle on the indicated Graphics object if ncessary. This
-   * method is meant for a conditional redraw, where some of the cells might not be refreshed (if
-   * they haven't changed state, for example).
-   *
-   * @param g       redraw using this graphics,
-   * @param here    a rectangle that describes the bounds of the current cell.
-   * @param drawAll if true, draw an entire compound cell; otherwise, draw only the subcells that
-   *                need to be redrawn.
-   */
-
-  void redraw(Graphics g, Rectangle here, boolean drawAll);
-
-  /**
-   * A user has clicked somewhere within you.
-   *
-   * @param here The position of the click relative to the bounding rectangle of the current Cell.
-   */
-
-  void userClicked(Point here, Rectangle surface);
 
   /**
    * Return true if this cell or any subcells are alive.
@@ -134,60 +118,4 @@ public interface Cell {
    */
   Storable createMemento();
 
-  /**
-   * The DUMMY Singleton represents a permanently dead (thus stable) cell. It's used for the edges
-   * of the grid. It's a singleton. The Dummy class is private, but it is accessed through the
-   * public DUMMY field, declared below. I'd like this class to be private, but the JLS doesn't
-   * allow private members in an interface.
-   */
-
-  public static final Cell DUMMY = new Cell() {
-    public boolean figureNextState(Cell n, Cell s, Cell e, Cell w,
-        Cell ne, Cell nw, Cell se, Cell sw) {
-      return true;
-    }
-
-    public Cell edge(int r, int c) {
-      return this;
-    }
-
-    public boolean isAlive() {
-      return false;
-    }
-
-    public Cell create() {
-      return this;
-    }
-
-    public Direction isDisruptiveTo() {
-      return Direction.NONE;
-    }
-
-    public void clear() {
-    }
-
-    public int widthInCells() {
-      return 0;
-    }
-
-    public boolean transition() {
-      return false;
-    }
-
-    public void userClicked(Point h, Rectangle s) {
-    }
-
-    public void redraw(Graphics g, Rectangle here,
-        boolean drawAll) {
-    }
-
-    public boolean transfer(Storable m, Point ul, boolean load) {
-      return false;
-    }
-
-    public Storable createMemento() {
-      throw new UnsupportedOperationException(
-          "Cannot create memento of dummy block");
-    }
-  };
 }

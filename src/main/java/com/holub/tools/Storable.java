@@ -1,6 +1,8 @@
-package com.holub.life;
+package com.holub.tools;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /***
  * All mementos created by the Cells are Storable.
