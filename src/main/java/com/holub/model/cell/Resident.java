@@ -136,10 +136,10 @@ public final class Resident implements Cell {
       if (amAlive = willBeAlive = memento.isAlive(upperLeft)) {
         return true;
       }
-    } else if (amAlive)            // store only live cells
-    {
+    } else if (amAlive) {
       memento.markAsAlive(upperLeft);
     }
+    update();
 
     return false;
   }

@@ -5,16 +5,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
 
-public class ClockMenu {
+public class ClockMenuItem implements MenuItem {
   Clock clock;
-  public ClockMenu(Clock clock, MenuSite menuSite) {
+  public ClockMenuItem(Clock clock) {
     this.clock = clock;
-    createMenus(menuSite);
   }
   /**
    * Create the menu that controls the clock speed and put it onto the menu site.
    */
-  private void createMenus(MenuSite menuSite) {
+  @Override
+  public void register(MenuSite menuSite) {
     // First set up a single listener that will handle all the
     // menu-selection events except "Exit"
 
@@ -42,5 +42,4 @@ public class ClockMenu {
     menuSite.addLine(this, "Go", "Medium", modifier);
     menuSite.addLine(this, "Go", "Fast", modifier); // {=endSetup}
   }  //{=endCreateMenus}
-
 }

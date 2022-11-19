@@ -3,7 +3,7 @@ package com.holub.life;
 import com.holub.system.Universe;
 import com.holub.system.Clock;
 import com.holub.ui.UniversePanel;
-import com.holub.ui.menu.ClockMenu;
+import com.holub.ui.menu.ClockMenuItem;
 import com.holub.ui.menu.MenuSite;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
@@ -30,7 +30,8 @@ public final class Life extends JFrame {
     MenuSite menuSite = new MenuSite();
     menuSite.establish(this);    //{=life.java.establish}
     UniversePanel universePanel = new UniversePanel(universe, menuSite);
-    ClockMenu clockMenu = new ClockMenu(clock, menuSite);
+    ClockMenuItem clockMenu = new ClockMenuItem(clock);
+    menuSite.register(clockMenu);
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     getContentPane().setLayout(new BorderLayout());

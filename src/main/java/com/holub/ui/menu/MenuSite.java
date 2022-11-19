@@ -220,6 +220,10 @@ public final class MenuSite {
     assert valid();
   }
 
+  public void register(MenuItem menuItem) {
+    menuItem.register(this);
+  }
+
   /*** **************************************************************
    *  Create and add an empty menu to the menu bar.
    *  Menus are generally created by {@link #addLine addLine(...)}.
