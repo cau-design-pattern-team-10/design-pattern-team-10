@@ -3,31 +3,36 @@ package com.holub.io;
 import java.io.File;
 import java.io.FileNotFoundException;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter; // disambiguate from java.io version
+import javax.swing.filechooser.FileFilter;
 
 /*** A utility that handles various File-related operations.
- *
- * @include /etc/license.txt
  */
 
-public class Files {
+public final class Files {
+
+  /**
+   * Files is a singleton class.
+   */
+  private Files() {
+  }
 
   /**
    * Throw up a file choser and return the file that the user selects.
    *
-   * @param extension        File extension (text following the rightmost dot in the name) that
-   *                         you're looking for. Use null if any will do.
-   * @param description      the description of what the extension means. Not used if "extension" is
-   *                         null.
+   * @param extension File extension (text following the rightmost dot in the
+   * name) that you're looking for. Use null if any will do.
+   * @param description the description of what the extension means. Not used
+   * if "extension" is null.
    * @param selectButtonText Replaces the "Open" on the chooser button.
-   * @param startHere        Name of initial directory in which to look.
+   * @param startHere Name of initial directory in which to look.
    * @return a {@link File} representing the selected file.
-   * @throws FileNotFoundException if the user didn't select a file. An exception toss (as compared
-   *                               to a null return value) makes it easy to do the following:
-   *                               <PRE>
-   *                               FileInputStream in = new FileInputStream(
-   *                               Files.userSelected(".",".txt","Text File","Open"));
-   *                               </PRE>
+   * @throws FileNotFoundException if the user didn't select a file.
+   * An exception toss (as compared to a null return value) makes it easy to
+   * do the following:
+   * <PRE>
+   * FileInputStream in = new FileInputStream(
+   *   Files.userSelected(".",".txt","Text File","Open"));
+   * </PRE>
    */
 
   public static File userSelected(final String startHere,
@@ -37,7 +42,7 @@ public class Files {
       throws FileNotFoundException {
     FileFilter filter =
         new FileFilter() {
-          public boolean accept(File f) {
+          public boolean accept(final File f) {
             return f.isDirectory()
                 || (extension != null
                 && f.getName().endsWith(extension));

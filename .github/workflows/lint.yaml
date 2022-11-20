@@ -2,7 +2,6 @@
 name: Lint Checker
 
 on:
-  push:
   pull_request:
     branches:
       - master
@@ -21,6 +20,5 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter@v4
         env:
-          VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.PAT }}

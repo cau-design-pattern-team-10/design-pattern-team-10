@@ -1,7 +1,7 @@
 package com.holub.ui.menu;
 
 import java.awt.Component;
-import java.util.ListIterator;
+import java.util.LinkedList;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -17,18 +17,66 @@ import javax.swing.MenuElement;
  */
 public class Item {
 
-  // private JMenuItem  item;
+  /**
+   *
+   */
+  private MenuSite menuSite = null;
+  /**
+   *
+   */
   private final Component item;
+  /**
+   * of JMenu or of JMenuItem's parent.
+   */
+  private final String parentSpecification;
 
-  private final String parentSpecification; // of JMenu or of
-  // JMenuItem's parent
-  private MenuElement parent;           // JMenu or JMenuBar
-
-  MenuSite menuSite = null;
+  /**
+   * JMenu or JMenuBar.
+   */
+  private MenuElement parent;
+  /**
+   *
+   */
   private final boolean isHelpMenu;
 
+  /*** Create a new Item. If the JMenuItem's name is the
+   *  string "help" then it's assumed to be the help menu and
+   *  is treated specially. Note that several help menus can
+   *  be added to a site: They'll be stacked up at the far
+   *  right in the reverse order of addition. Similarly
+   *  file menus are stacked up at the far left.
+   *
+   * @param i   the item being added
+   * @param p   The menu bar or a menu that contains the current item. Must
+   *             be a JMenuBar or a JMenu.
+   * @param ps
+   */
+
+  public Item(final Component i, final MenuElement p,
+      final String ps) {
+    if (p == null) {
+      throw new AssertionError();
+    }
+    if (!(p instanceof JMenu) && !(p instanceof JMenuBar)) {
+      throw new AssertionError("Parent must be JMenu or JMenuBar");
+    }
+
+    this.item = i;
+    this.parent = p;
+    this.parentSpecification = ps;
+    this.isHelpMenu =
+        (item instanceof JMenuItem)
+            && (item.getName().compareToIgnoreCase("help") == 0);
+
+    assert valid();
+  }
+
+  /**
+   *
+   * @return string
+   */
   public String toString() {
-    StringBuffer b = new StringBuffer(parentSpecification);
+    StringBuilder b = new StringBuilder(parentSpecification);
     if (item instanceof JMenuItem) {
       JMenuItem i = (JMenuItem) item;
       b.append(":");
@@ -40,47 +88,29 @@ public class Item {
     return b.toString();
   }
 
-  /*------------------------------------------------------------*/
-
+  /**
+   *
+   * @return menu item is valid
+   */
   private boolean valid() {
     assert item != null : "item is null";
     assert parent != null : "parent is null";
     return true;
   }
 
-  /*** Create a new Item. If the JMenuItem's name is the
-   *  string "help" then it's assumed to be the help menu and
-   *  is treated specially. Note that several help menus can
-   *  be added to a site: They'll be stacked up at the far
-   *  right in the reverse order of addition. Similarly
-   *  file menus are stacked up at the far left.
+  /**
    *
-   *  @param item     the item being added
-   *  @param parent   The menu bar or a menu that
-   *  				 contains the current item. Must
-   *  				 be a JMenuBar or a JMenu.
+   * @param specifier
+   * @return check equal using specifier
    */
-
-  public Item(Component item, MenuElement parent,
-      String parentSpecification) {
-    assert parent != null;
-    assert parent instanceof JMenu || parent instanceof JMenuBar
-        : "Parent must be JMenu or JMenuBar";
-
-    this.item = item;
-    this.parent = parent;
-    this.parentSpecification = parentSpecification;
-    this.isHelpMenu =
-        (item instanceof JMenuItem)
-            && (item.getName().compareToIgnoreCase("help") == 0);
-
-    assert valid();
-  }
-
-  public boolean specifiedBy(String specifier) {
+  public boolean specifiedBy(final String specifier) {
     return parentSpecification.equals(specifier);
   }
 
+  /**
+   *
+   * @return item
+   */
   public Component item() {
     return item;
   }
@@ -91,29 +121,27 @@ public class Item {
    * <code>menuBarContents</code> list unless a help
    * menu exists, in which case items are added at
    * the penultimate position.
+   * @param ms
    */
-
-  public final void attachYourselfToYourParent(MenuSite menuSite) {
+  public final void attachYourselfToYourParent(final MenuSite ms) {
     assert valid();
 
-    this.menuSite = menuSite;
+    this.menuSite = ms;
+    LinkedList<Item> menuBarContents = menuSite.getMenuBarContents();
     if (parent instanceof JMenu) {
       ((JMenu) parent).add(item);
-    } else if (menuSite.menuBarContents.size() <= 0) {
-      menuSite.menuBarContents.add(this);
+    } else if (menuBarContents.isEmpty()) {
+      menuBarContents.add(this);
       ((JMenuBar) parent).add(item);
     } else {
-      Item last = (Item) (menuSite.menuBarContents.getLast());
+      Item last = (Item) (menuBarContents.getLast());
       if (!last.isHelpMenu) {
-        menuSite.menuBarContents.addLast(this);
+        menuBarContents.addLast(this);
         ((JMenuBar) parent).add(item);
-      } else  // remove the help menu, add the new
-      {    // item, then put the help menu back
-        // (following the new item).
-
-        menuSite.menuBarContents.removeLast();
-        menuSite.menuBarContents.add(this);
-        menuSite.menuBarContents.add(last);
+      } else  {
+        menuBarContents.removeLast();
+        menuBarContents.add(this);
+        menuBarContents.add(last);
 
         if (parent == menuSite.getMenuBar()) {
           parent = regenerateMenuBar();
@@ -132,11 +160,11 @@ public class Item {
 
     if (parent instanceof JMenu) {
       ((JMenu) parent).remove(item);
-    } else // the parent's the menu bar.
-    {
+    } else {
       JMenuBar menuBar = menuSite.getMenuBar();
+      LinkedList<Item> menuBarContents = menuSite.getMenuBarContents();
       menuBar.remove(item);
-      menuSite.menuBarContents.remove(this);
+      menuBarContents.remove(this);
       regenerateMenuBar(); // without me on it
 
       parent = null;
@@ -146,12 +174,12 @@ public class Item {
 
   /*** ******************************************************
    * Set or reset the "disabled" state of a menu item.
+   * @param on
    */
-
-  public void setEnableAttribute(boolean on) {
+  public void setEnableAttribute(final boolean on) {
     if (item instanceof JMenuItem) {
-      JMenuItem item = (JMenuItem) this.item;
-      item.setEnabled(on);
+      JMenuItem i = (JMenuItem) this.item;
+      i.setEnabled(on);
     }
   }
 
@@ -159,18 +187,20 @@ public class Item {
    * Replace the old menu bar with a new one that reflects
    * the current state of the <code>menuBarContents</code>
    * list.
+   * @return generatedMenuBar
    */
   private JMenuBar regenerateMenuBar() {
-    assert valid();
+    if (!valid()) {
+      throw new AssertionError();
+    }
 
     // Create the new menu bar and populate it from
     // the current-contents list.
 
     JMenuBar menuBar = new JMenuBar();
-    menuSite.SetMenuBar(menuBar);
-    ListIterator i = menuSite.menuBarContents.listIterator(0);
-    while (i.hasNext()) {
-      menuBar.add(((Item) (i.next())).item);
+    menuSite.setMenuBar(menuBar);
+    for (Item i : menuSite.getMenuBarContents()) {
+      menuBar.add(i.item);
     }
 
     // Replace the old menu bar with the new one.

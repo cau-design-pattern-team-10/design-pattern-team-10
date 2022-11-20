@@ -20,53 +20,49 @@ package com.holub.tools;
  * <p>
  * Here's an example of how you might use a <code>Publisher</code>:
  * <PRE>
- *	class EventGenerator
- *  {	interface Listener
- *    {	notify( String why );
+ *  class EventGenerator {
+ *    interface Listener {
+ *      notify( String why );
  *    }
  *
- *		private Publisher publisher = new Publisher();
+ *    private Publisher publisher = new Publisher();
  *
- *		public void addEventListener( Listener l )
- *    {	publisher.subscribe(l);
+ *    public void addEventListener( Listener l ) {
+ *      publisher.subscribe(l);
  *    }
  *
- *		public void removeEventListener ( Listener l )
- *    {	publisher.cancelSubscription(l);
- *    }
+ *   public void removeEventListener ( Listener l ) {
+ *     publisher.cancelSubscription(l);
+ *   }
  *
- *		public void someEventHasHappend(final String reason)
- *    {	publisher.publish
- *			(	
- *				// Pass the publisher a Distributor that knows
- *				// how to notify EventGenerator listeners. The
- *				// Distributor's deliverTo method is called
- *				// multiple times, and is passed each listener
- *				// in turn.
+ *  public void someEventHasHappend(final String reason) {
+ *    publisher.publish(
+ *    // Pass the publisher a Distributor that knows
+ *    // how to notify EventGenerator listeners. The
+ *    // Distributor's deliverTo method is called
+ *    // multiple times, and is passed each listener
+ *    // in turn.
  *
- *				new Publisher.Distributor()
- *        {	public void deliverTo( Object subscriber )
- *          {	((Listener)subscriber).notify(reason);
- *          }
- *        }
- *			);
- *    }
- *  }
+ *    new Publisher.Distributor() {
+ *      public void deliverTo( Object subscriber ) {
+ *      ((Listener)subscriber).notify(reason);
+ *      }
+ *     });
+ *   }
+ * }
  * </PRE>
  * Since you're specifying what a notification looks like
  * by defining a Listener interface, and then also defining
  * the message passing symantics (inside the Distributor implementation),
  * you have complete control over what the notification interface looks like.
- *
- * @include /etc/license.txt
  */
 
 public class Publisher {
 
-  public interface Distributor {
-
-    void deliverTo(Object subscriber);  // the Visitor pattern's
-  }                      // "visit" method.
+  /**
+   *
+   */
+  private volatile Node subscribers = null;
 
   // The Node class is immutable. Once it's created, it can't
   // be modified. Immutable classes have the property that, in
@@ -78,58 +74,91 @@ public class Publisher {
   // fast and loose with the encapsulation without significantly
   // impacting the maintainability of the code.
 
-  private class Node {
-
-    public final Object subscriber;
-    public final Node next;
-
-    private Node(Object subscriber, Node next) {
-      this.subscriber = subscriber;
-      this.next = next;
-    }
-
-    public Node remove(Object target) {
-      if (target == subscriber) {
-        return next;
-      }
-
-      if (next == null)            // target is not in list
-      {
-        throw new java.util.NoSuchElementException
-            (target.toString());
-      }
-
-      return new Node(subscriber, next.remove(target));
-    }
-
-    public void accept(Distributor deliveryAgent) // deliveryAgent is
-    {
-      deliveryAgent.deliverTo(subscriber);     // a "visitor"
-    }
-  }
-
-  private volatile Node subscribers = null;
-
   /**
-   * Publish an event using the deliveryAgent. Note that this method isn't synchronized (and doesn't
-   * have to be). Those subscribers that are on the list at the time the publish operation is
-   * initiated will be notified. (So, in theory, it's possible for an object that cancels its
-   * subsciption to nonetheless be notified.) There's no universally "good" solution to this
+   * Publish an event using the deliveryAgent. Note that this method isn't
+   * synchronized (and doesn't have to be). Those subscribers that are on the
+   * list at the time the publish operation is initiated will be notified.
+   * (So, in theory, it's possible for an object that cancels its subscription
+   * to nonetheless be notified.) There's no universally "good" solution to this
    * problem.
+   * @param deliveryAgent
    */
-
-  public void publish(Distributor deliveryAgent) {
+  public void publish(final Distributor deliveryAgent) {
     for (Node cursor = subscribers; cursor != null; cursor = cursor.next) {
       cursor.accept(deliveryAgent);
     }
   }
 
-  synchronized public void subscribe(Object subscriber) {
+  /**
+   *
+   * @param subscriber
+   */
+  public synchronized void subscribe(final Object subscriber) {
     subscribers = new Node(subscriber, subscribers);
   }
 
-  synchronized public void cancelSubscription(Object subscriber) {
+  /**
+   *
+   * @param subscriber
+   */
+  public synchronized void cancelSubscription(final Object subscriber) {
     subscribers = subscribers.remove(subscriber);
+  }
+
+  public interface Distributor {
+
+    /**
+     *
+     * @param subscriber
+     */
+    void deliverTo(Object subscriber);  // the Visitor pattern's
+  }                      // "visit" method.
+
+  private final class Node {
+
+    /**
+     *
+     */
+    private final Object subscriber;
+    /**
+     *
+     */
+    private final Node next;
+
+    /**
+     *
+     * @param s
+     * @param n
+     */
+    private Node(final Object s, final Node n) {
+      this.subscriber = s;
+      this.next = n;
+    }
+
+    /**
+     *
+     * @param target
+     * @return next Node
+     */
+    public Node remove(final Object target) {
+      if (target == subscriber) {
+        return next;
+      }
+
+      if (next == null) {
+        throw new java.util.NoSuchElementException(target.toString());
+      }
+
+      return new Node(subscriber, next.remove(target));
+    }
+
+    /**
+     *
+     * @param deliveryAgent
+     */
+    public void accept(final Distributor deliveryAgent) {
+      deliveryAgent.deliverTo(subscriber);
+    }
   }
 
 }

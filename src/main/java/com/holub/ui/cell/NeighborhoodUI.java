@@ -12,34 +12,49 @@ import java.awt.Rectangle;
 
 public class NeighborhoodUI implements CellUI {
 
-  Neighborhood cell;
+  /**
+   *
+   */
   private final CellUI[][] grid;
+  /**
+   *
+   */
   private final Component parent;
+  /**
+   *
+   */
+  private Neighborhood cell;
 
-  public NeighborhoodUI(Neighborhood cell, Component parent) {
-    this.cell = cell;
-    this.parent = parent;
+  /**
+   *
+   * @param c
+   * @param p
+   */
+  public NeighborhoodUI(final Neighborhood c, final Component p) {
+    this.cell = c;
+    this.parent = p;
     this.cell.attach(this);
-    final int gridSize = cell.getGridSize();
+    final int gridSize = this.cell.getGridSize();
     this.grid = new CellUI[gridSize][gridSize];
     for (int row = 0; row < gridSize; ++row) {
       for (int column = 0; column < gridSize; ++column) {
-        grid[row][column] = CellUIFactory.getInstance()
-            .createCellUI(cell.grid[row][column], parent);
+        this.grid[row][column] = CellUIFactory.getInstance()
+            .createCellUI(this.cell.getGrid()[row][column], this.parent);
       }
     }
   }
 
   /**
-   * Redraw the current neighborhood only if necessary (something changed in the last transition).
+   * Redraw the current neighborhood only if necessary
+   * (something changed in the last transition).
    *
-   * @param g       Draw onto this graphics.
-   * @param here    Bounding rectangle for current Neighborhood.
+   * @param g Draw onto this graphics.
+   * @param here Bounding rectangle for current Neighborhood.
    * @param drawAll force a redraw, even if nothing has changed.
-   * @see #transition
    */
   @Override
-  public void redraw(Graphics g, Rectangle here, boolean drawAll) {
+  public void redraw(final Graphics g, final Rectangle here,
+      final boolean drawAll) {
     // If the current neighborhood is stable (nothing changed
     // in the last transition stage), then there's nothing
     // to do. Just return. Otherwise, update the current block
@@ -63,8 +78,7 @@ public class NeighborhoodUI implements CellUI {
       // so, actually wait for permission (in case there's
       // a race condition, then paint.
 
-      if (!readingPermitted.isTrue())  //{=Neighborhood.reading.not.permitted}
-      {
+      if (!readingPermitted.isTrue()) {
         return;
       }
 
@@ -72,23 +86,23 @@ public class NeighborhoodUI implements CellUI {
 
       for (int row = 0; row < gridSize; ++row) {
         for (int column = 0; column < gridSize; ++column) {
-          grid[row][column].redraw(g, subcell, drawAll);  // {=Neighborhood.redraw3}
+          grid[row][column].redraw(g, subcell, drawAll);
           subcell.translate(subcell.width, 0);
         }
         subcell.translate(-compoundWidth, subcell.height);
       }
 
-      g = g.create();
-      g.setColor(Colors.LIGHT_ORANGE);
-      g.drawRect(here.x, here.y, here.width, here.height);
+      Graphics gReplica = g.create();
+      gReplica.setColor(Colors.LIGHT_ORANGE);
+      gReplica.drawRect(here.x, here.y, here.width, here.height);
 
       if (cell.isAmActive()) {
-        g.setColor(Color.BLUE);
-        g.drawRect(here.x + 1, here.y + 1,
+        gReplica.setColor(Color.BLUE);
+        gReplica.drawRect(here.x + 1, here.y + 1,
             here.width - 2, here.height - 2);
       }
 
-      g.dispose();
+      gReplica.dispose();
     } catch (InterruptedException e) {  // thrown from waitForTrue. Just
       // ignore it, since not printing is a
       // reasonable reaction to an interrupt.
@@ -97,24 +111,29 @@ public class NeighborhoodUI implements CellUI {
 
 
   /**
-   * Notification of a mouse click. The point is relative to the upper-left corner of the surface.
+   *
+   * @param here
    */
   @Override
-  public void click(Point here) {
+  public void click(final Point here) {
     Point p = new Point();
     int unitSize = this.cell.widthInCells() / this.cell.getGridSize();
-    p.x = here.x % unitSize;
-    p.y = here.y % unitSize;
-    int row = here.y / unitSize;
-    int column = here.x / unitSize;
+    p.setX(here.getX() % unitSize);
+    p.setY(here.getY() % unitSize);
+    int row = here.getY() / unitSize;
+    int column = here.getX() / unitSize;
     grid[row][column].click(p);
     cell.setAmActive(true);
     cell.rememberThatCellAtEdgeChangedState(row, column);
     cell.update();
   }
 
+  /**
+   *
+   * @param o
+   */
   @Override
-  public void detectUpdate(Observable o) {
+  public void detectUpdate(final Observable o) {
     parent.repaint();
   }
 }

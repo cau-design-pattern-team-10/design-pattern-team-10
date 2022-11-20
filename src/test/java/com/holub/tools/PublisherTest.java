@@ -1,7 +1,5 @@
 package com.holub.tools;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 
 class PublisherTest {
@@ -27,13 +25,7 @@ class PublisherTest {
     }
 
     public void fire(final String arg) {
-      publisher.publish
-          (new Publisher.Distributor() {
-             public void deliverTo(Object subscriber) {
-               ((Observer) subscriber).notify(arg);
-             }
-           }
-          );
+      publisher.publish(subscriber -> ((Observer) subscriber).notify(arg));
     }
   }
 
@@ -42,19 +34,8 @@ class PublisherTest {
     Notifier source = new Notifier();
     int errors = 0;
 
-    Observer listener1 =
-        new Observer() {
-          public void notify(String arg) {
-            actualResults.append("1[" + arg + "]");
-          }
-        };
-
-    Observer listener2 =
-        new Observer() {
-          public void notify(String arg) {
-            actualResults.append("2[" + arg + "]");
-          }
-        };
+    Observer listener1 = arg -> actualResults.append("1[" + arg + "]");
+    Observer listener2 = arg -> actualResults.append("2[" + arg + "]");
 
     source.addObserver(listener1);
     source.addObserver(listener2);
@@ -71,9 +52,10 @@ class PublisherTest {
 
     try {
       source.removeObserver(listener1);
-      System.err.print("Removed nonexistant node!");
+      System.err.print("Removed nonexistent node!");
       ++errors;
-    } catch (java.util.NoSuchElementException e) {  // should throw an exception, which we'll catch
+    } catch (java.util.NoSuchElementException e) {
+      // should throw an exception, which we'll catch
       // (and ignore) here.
     }
 
