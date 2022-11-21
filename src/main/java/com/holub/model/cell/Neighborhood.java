@@ -88,7 +88,7 @@ public final class Neighborhood implements Cell {
   public Neighborhood(int gridSize, Cell prototype) {
     this.gridSize = gridSize;
     this.grid = new Cell[gridSize][gridSize];
-    this.observers = new LinkedList<Observer>();
+    this.observers = new LinkedList<>();
 
     for (int row = 0; row < gridSize; ++row) {
       for (int column = 0; column < gridSize; ++column) {
