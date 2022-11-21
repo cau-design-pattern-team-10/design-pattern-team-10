@@ -30,7 +30,7 @@ public class Universe implements Observable {
   public Universe(Clock clock) {
     this.observers = new LinkedList<>();
     this.clock = clock;
-    Neighborhood neighborhood = new Neighborhood
+    outermostCell = new Neighborhood
         (DEFAULT_GRID_SIZE,
             new Neighborhood
                 (DEFAULT_GRID_SIZE,
