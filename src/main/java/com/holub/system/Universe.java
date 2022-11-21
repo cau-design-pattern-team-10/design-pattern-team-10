@@ -17,7 +17,7 @@ import java.util.List;
 
 public class Universe implements Observable {
 
-  private List<Observer> observers;
+  private final List<Observer> observers;
   private final Clock clock;
   public final Neighborhood outermostCell;
   /**
@@ -37,7 +37,6 @@ public class Universe implements Observable {
                     new Resident()
                 )
         );
-    outermostCell = neighborhood;
 
     clock.addClockListener //{=Universe.clock.subscribe}
         (new Clock.Listener() {
