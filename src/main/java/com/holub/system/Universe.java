@@ -39,22 +39,20 @@ public class Universe implements Observable {
         );
 
     clock.addClockListener //{=Universe.clock.subscribe}
-        (new Clock.Listener() {
-           public void tick() {
-             // TODO: DUMMY to static final
-             Cell DUMMY = new DummyCell();
-             if (outermostCell.figureNextState
-                 (DUMMY, DUMMY, DUMMY, DUMMY,
-                     DUMMY, DUMMY, DUMMY, DUMMY
-                 )
-             ) {
-               if (outermostCell.transition()) {
-                 //refreshNow();
-                 update();
-               }
-             }
-           }
-         }
+        (() -> {
+          // TODO: DUMMY to static final
+          Cell DUMMY = new DummyCell();
+          if (outermostCell.figureNextState
+              (DUMMY, DUMMY, DUMMY, DUMMY,
+                  DUMMY, DUMMY, DUMMY, DUMMY
+              )
+          ) {
+            if (outermostCell.transition()) {
+              //refreshNow();
+              update();
+            }
+          }
+        }
         );
   }
 
