@@ -52,9 +52,9 @@ public class Files {
     chooser.setFileFilter(filter);
 
     int result = chooser.showDialog(null, selectButtonText);
-		if (result == JFileChooser.APPROVE_OPTION) {
-			return chooser.getSelectedFile();
-		}
+    if (result == JFileChooser.APPROVE_OPTION) {
+      return chooser.getSelectedFile();
+    }
 
     throw new FileNotFoundException("No file selected by user");
   }

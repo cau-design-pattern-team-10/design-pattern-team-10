@@ -6,10 +6,13 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
 
 public class ClockMenuItem implements MenuItem {
+
   Clock clock;
+
   public ClockMenuItem(Clock clock) {
     this.clock = clock;
   }
+
   /**
    * Create the menu that controls the clock speed and put it onto the menu site.
    */

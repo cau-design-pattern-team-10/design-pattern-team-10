@@ -11,9 +11,11 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 public class NeighborhoodUI implements CellUI {
+
   Neighborhood cell;
   private final CellUI[][] grid;
   private final Component parent;
+
   public NeighborhoodUI(Neighborhood cell, Component parent) {
     this.cell = cell;
     this.parent = parent;
@@ -22,7 +24,8 @@ public class NeighborhoodUI implements CellUI {
     this.grid = new CellUI[gridSize][gridSize];
     for (int row = 0; row < gridSize; ++row) {
       for (int column = 0; column < gridSize; ++column) {
-        grid[row][column] = CellUIFactory.getInstance().createCellUI(cell.grid[row][column], parent);
+        grid[row][column] = CellUIFactory.getInstance()
+            .createCellUI(cell.grid[row][column], parent);
       }
     }
   }

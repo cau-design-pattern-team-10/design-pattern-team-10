@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 public interface CellUI extends Observer {
+
   /**
    * Redraw yourself in the indicated rectangle on the indicated Graphics object if ncessary. This
    * method is meant for a conditional redraw, where some of the cells might not be refreshed (if

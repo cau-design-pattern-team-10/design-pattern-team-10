@@ -15,12 +15,15 @@ import java.util.List;
  */
 
 public final class Resident implements Cell {
+
   List<Observer> observers;
   boolean updated;
+
   public Resident() {
     super();
     this.observers = new LinkedList<>();
   }
+
   @Override
   public boolean isUpdated() {
     return updated;
@@ -110,6 +113,7 @@ public final class Resident implements Cell {
     amAlive = willBeAlive;
     return changed;
   }
+
   public void clear() {
     amAlive = willBeAlive = false;
   }

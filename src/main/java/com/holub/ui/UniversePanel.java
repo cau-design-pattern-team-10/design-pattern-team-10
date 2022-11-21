@@ -29,6 +29,7 @@ import javax.swing.JPanel;
  */
 
 public class UniversePanel extends JPanel implements Observer {
+
   Universe universe;
   CellUI outermostCellUI;
 
@@ -41,7 +42,8 @@ public class UniversePanel extends JPanel implements Observer {
   // The constructor is private so that the universe can be created
   // only by an outer-class method [Neighborhood.createUniverse()].
 
-  public UniversePanel(Universe universe, MenuSite menuSite) {  // Create the nested Cells that comprise the "universe." A bug
+  public UniversePanel(Universe universe,
+      MenuSite menuSite) {  // Create the nested Cells that comprise the "universe." A bug
     // in the current implementation causes the program to fail
     // miserably if the overall size of the grid is too big to fit
     // on the screen.
@@ -67,7 +69,7 @@ public class UniversePanel extends JPanel implements Observer {
         );
 
     setBackground(Color.white);
-    final Dimension PREFERRED_SIZE = new Dimension (
+    final Dimension PREFERRED_SIZE = new Dimension(
         universe.widthInCells() * cellSize,
         universe.widthInCells() * cellSize
     );
@@ -127,6 +129,7 @@ public class UniversePanel extends JPanel implements Observer {
         );
 
   }
+
   /**
    * Override paint to ask the outermost Neighborhood (and any subcells) to draw themselves
    * recursively. All knowledge of screen size is also encapsulated. (The size is passed into the

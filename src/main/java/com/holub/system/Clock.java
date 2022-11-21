@@ -99,9 +99,9 @@ public class Clock {
     publisher.publish
         (new Publisher.Distributor() {
            public void deliverTo(Object subscriber) {
-						 if (!menuIsActive()) {
-							 ((Listener) subscriber).tick();
-						 }
+             if (!menuIsActive()) {
+               ((Listener) subscriber).tick();
+             }
            }
          }
         );

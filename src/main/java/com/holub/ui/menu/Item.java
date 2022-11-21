@@ -16,6 +16,7 @@ import javax.swing.MenuElement;
  * here.
  */
 public class Item {
+
   // private JMenuItem  item;
   private Component item;
 

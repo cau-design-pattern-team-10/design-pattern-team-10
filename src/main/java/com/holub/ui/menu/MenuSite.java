@@ -115,16 +115,21 @@ import javax.swing.MenuElement;
 public final class MenuSite {
 
   private JFrame menuFrame = null;
+
   public JFrame getMenuFrame() {
     return menuFrame;
   }
+
   private JMenuBar menuBar = null;
+
   public void SetMenuBar(JMenuBar menuBar) {
     this.menuBar = menuBar;
   }
+
   public JMenuBar getMenuBar() {
     return menuBar;
   }
+
   /*** The "requesters" table keeps track of who requested which
    * menu items. It is indexed by requester and contains a
    * Set of MenuSite.Item objects that identify all

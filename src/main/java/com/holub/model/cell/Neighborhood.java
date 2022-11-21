@@ -33,6 +33,7 @@ import java.util.List;
  */
 
 public final class Neighborhood implements Cell {
+
   List<Observer> observers;
   boolean updated;
 
@@ -49,6 +50,7 @@ public final class Neighborhood implements Cell {
    */
   private static final ConditionVariable readingPermitted =
       new ConditionVariable(true);
+
   public ConditionVariable getReadingPermitted() {
     return readingPermitted;
   }
@@ -73,6 +75,7 @@ public final class Neighborhood implements Cell {
    * The neighborhood is square, so gridSize is both the horizontal and vertical size.
    */
   private final int gridSize;
+
   public int getGridSize() {
     return gridSize;
   }
@@ -87,11 +90,11 @@ public final class Neighborhood implements Cell {
     this.grid = new Cell[gridSize][gridSize];
     this.observers = new LinkedList<Observer>();
 
-		for (int row = 0; row < gridSize; ++row) {
-			for (int column = 0; column < gridSize; ++column) {
-				grid[row][column] = prototype.create();
-			}
-		}
+    for (int row = 0; row < gridSize; ++row) {
+      for (int column = 0; column < gridSize; ++column) {
+        grid[row][column] = prototype.create();
+      }
+    }
   }
 
   /**
@@ -261,9 +264,9 @@ public final class Neighborhood implements Cell {
       }
     }
 
-		if (amActive && nothingHappened) {
-			oneLastRefreshRequired = true;
-		}
+    if (amActive && nothingHappened) {
+      oneLastRefreshRequired = true;
+    }
 
     amActive = !nothingHappened;
     return amActive;
@@ -289,25 +292,25 @@ public final class Neighborhood implements Cell {
 
     boolean someSubcellChangedState = false;
 
-		if (++nestingLevel == 0) {
-			readingPermitted.set(false);
-		}
+    if (++nestingLevel == 0) {
+      readingPermitted.set(false);
+    }
 
     activeEdges.clear();              /*(1)*/
 
-		for (int row = 0; row < gridSize; ++row) //{=transition.start}
-		{
-			for (int column = 0; column < gridSize; ++column) {
-				if (grid[row][column].transition()) {
-					rememberThatCellAtEdgeChangedState(row, column);
-					someSubcellChangedState = true;
-				}                 //{=transition.end}
-			}
-		}
+    for (int row = 0; row < gridSize; ++row) //{=transition.start}
+    {
+      for (int column = 0; column < gridSize; ++column) {
+        if (grid[row][column].transition()) {
+          rememberThatCellAtEdgeChangedState(row, column);
+          someSubcellChangedState = true;
+        }                 //{=transition.end}
+      }
+    }
 
-		if (nestingLevel-- == 0) {
-			readingPermitted.set(true);
-		}
+    if (nestingLevel-- == 0) {
+      readingPermitted.set(true);
+    }
 
     return someSubcellChangedState;
   }
@@ -331,19 +334,19 @@ public final class Neighborhood implements Cell {
     if (row == 0) {
       activeEdges.add(Direction.NORTH);
 
-			if (column == 0) {
-				activeEdges.add(Direction.NORTHWEST);
-			} else if (column == gridSize - 1) {
-				activeEdges.add(Direction.NORTHEAST);
-			}
+      if (column == 0) {
+        activeEdges.add(Direction.NORTHWEST);
+      } else if (column == gridSize - 1) {
+        activeEdges.add(Direction.NORTHEAST);
+      }
     } else if (row == gridSize - 1) {
       activeEdges.add(Direction.SOUTH);
 
-			if (column == 0) {
-				activeEdges.add(Direction.SOUTHWEST);
-			} else if (column == gridSize - 1) {
-				activeEdges.add(Direction.SOUTHEAST);
-			}
+      if (column == 0) {
+        activeEdges.add(Direction.SOUTHWEST);
+      } else if (column == gridSize - 1) {
+        activeEdges.add(Direction.SOUTHEAST);
+      }
     }
 
     if (column == 0) {
@@ -377,11 +380,11 @@ public final class Neighborhood implements Cell {
   public void clear() {
     activeEdges.clear();
 
-		for (int row = 0; row < gridSize; ++row) {
-			for (int column = 0; column < gridSize; ++column) {
-				grid[row][column].clear();
-			}
-		}
+    for (int row = 0; row < gridSize; ++row) {
+      for (int column = 0; column < gridSize; ++column) {
+        grid[row][column].clear();
+      }
+    }
 
     amActive = false;
   }
@@ -398,16 +401,16 @@ public final class Neighborhood implements Cell {
 
     for (int row = 0; row < gridSize; ++row) {
       for (int column = 0; column < gridSize; ++column) {
-				if (grid[row][column].transfer(memento, upperLeft, load)) {
-					amActive = true;
-				}
+        if (grid[row][column].transfer(memento, upperLeft, load)) {
+          amActive = true;
+        }
 
         Direction d =
             grid[row][column].isDisruptiveTo();
 
-				if (!d.equals(Direction.NONE)) {
-					activeEdges.add(d);
-				}
+        if (!d.equals(Direction.NONE)) {
+          activeEdges.add(d);
+        }
 
         upperLeft.translate(subcellWidth, 0);
       }
@@ -493,9 +496,9 @@ public final class Neighborhood implements Cell {
       StringBuffer b = new StringBuffer();
 
       b.append("NeighborhoodState:\n");
-			for (Iterator i = liveCells.iterator(); i.hasNext(); ) {
-				b.append(((Point) i.next()).toString() + "\n");
-			}
+      for (Iterator i = liveCells.iterator(); i.hasNext(); ) {
+        b.append(((Point) i.next()).toString() + "\n");
+      }
       return b.toString();
     }
   }

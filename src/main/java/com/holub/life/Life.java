@@ -15,6 +15,7 @@ import javax.swing.JFrame;
  */
 
 public final class Life extends JFrame {
+
   public static void main(String[] arguments) {
     new Life();
   }

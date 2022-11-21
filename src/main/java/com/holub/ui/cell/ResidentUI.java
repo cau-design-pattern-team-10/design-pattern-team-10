@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 public class ResidentUI implements CellUI {
+
   Resident cell;
   private static final Color BORDER_COLOR = Colors.DARK_YELLOW;
   private static final Color LIVE_COLOR = Color.RED;
@@ -21,6 +22,7 @@ public class ResidentUI implements CellUI {
     this.parent = parent;
     cell.attach(this);
   }
+
   public void redraw(Graphics g, Rectangle here, boolean drawAll) {
     g = g.create();
     g.setColor(this.cell.isAlive() ? LIVE_COLOR : DEAD_COLOR);

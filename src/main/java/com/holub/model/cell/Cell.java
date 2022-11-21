@@ -17,6 +17,7 @@ import com.holub.tools.Observable;
 public interface Cell extends Observable {
 
   boolean isUpdated();
+
   /**
    * Figure out the next state of the cell, given the specified neighbors.
    *
