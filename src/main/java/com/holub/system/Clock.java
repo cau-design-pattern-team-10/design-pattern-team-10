@@ -97,13 +97,11 @@ public class Clock {
    */
   public void tick() {
     publisher.publish
-        (new Publisher.Distributor() {
-           public void deliverTo(Object subscriber) {
-             if (!menuIsActive()) {
-               ((Listener) subscriber).tick();
-             }
-           }
-         }
+        (subscriber -> {
+          if (!menuIsActive()) {
+            ((Listener) subscriber).tick();
+          }
+        }
         );
   }
 
