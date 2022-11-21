@@ -16,15 +16,16 @@ import javax.swing.MenuElement;
  * here.
  */
 public class Item {
-  // private JMenuItem  item;
-  private Component item;
 
-  private String parentSpecification; // of JMenu or of
+  // private JMenuItem  item;
+  private final Component item;
+
+  private final String parentSpecification; // of JMenu or of
   // JMenuItem's parent
   private MenuElement parent;           // JMenu or JMenuBar
 
   MenuSite menuSite = null;
-  private boolean isHelpMenu;
+  private final boolean isHelpMenu;
 
   public String toString() {
     StringBuffer b = new StringBuffer(parentSpecification);

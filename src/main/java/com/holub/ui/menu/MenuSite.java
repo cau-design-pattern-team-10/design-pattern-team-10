@@ -115,22 +115,27 @@ import javax.swing.MenuElement;
 public final class MenuSite {
 
   private JFrame menuFrame = null;
+
   public JFrame getMenuFrame() {
     return menuFrame;
   }
+
   private JMenuBar menuBar = null;
+
   public void SetMenuBar(JMenuBar menuBar) {
     this.menuBar = menuBar;
   }
+
   public JMenuBar getMenuBar() {
     return menuBar;
   }
+
   /*** The "requesters" table keeps track of who requested which
    * menu items. It is indexed by requester and contains a
    * Set of MenuSite.Item objects that identify all
    * items added by that requester.
    */
-  private static Map requesters = new HashMap();
+  private static final Map<Object, LinkedList<Object>> requesters = new HashMap<>();
 
   /*** Maps "names" to the visible labels that actually
    *  appear on the screen.
@@ -148,17 +153,15 @@ public final class MenuSite {
    *  After matching, group(1) holds the label and group(2) either
    *  holds the shortcut or is null if no shortcut is specified.
    */
-  private static Pattern shortcutExtractor =
-      Pattern.compile(
-          "\\s*([^;]+?)\\s*"        // value
-              + "(;\\s*([^\\s].*?))?\\s*$");  // ; shortcut
+  private static final Pattern shortcutExtractor =
+      Pattern.compile("\\s*([^;]+?)\\s*(;\\s*([^\\s].*?))?\\s*$");  // ; shortcut
 
   /*** Isolate the menu names. Given an input string of the
    *  form "one:two:three:four", after matching
    *  group(1) holds "one", group(2) holds "two", etc.
    *  up to 7 colons are recognized.
    */
-  private static Pattern submenuExtractor =
+  private static final Pattern submenuExtractor =
       Pattern.compile("(.*?)(?::(.*?))?"
           + "(?::(.*?))?"
           + "(?::(.*?))?"
@@ -181,7 +184,7 @@ public final class MenuSite {
    *	will appear on the screen (left to right).
    */
 
-  public final LinkedList menuBarContents = new LinkedList();
+  public final LinkedList<Object> menuBarContents = new LinkedList<>();
 
   /*** ***************************************************************
    * MenuSite is a singleton. A private constructor prevents
@@ -391,12 +394,11 @@ public final class MenuSite {
     assert requester != null;
     assert valid();
 
-    Collection allItems = (Collection) (requesters.remove(requester));
+    LinkedList<Object> allItems = requesters.remove(requester);
 
     if (allItems != null) {
-      Iterator i = allItems.iterator();
-      while (i.hasNext()) {
-        Item current = (Item) i.next();
+      for (Object allItem : allItems) {
+        Item current = (Item) allItem;
         current.detachYourselfFromYourParent();
       }
     }
@@ -417,12 +419,11 @@ public final class MenuSite {
     assert requester != null;
     assert valid();
 
-    Collection allItems = (Collection) (requesters.get(requester));
+    LinkedList<Object> allItems = requesters.get(requester);
 
     if (allItems != null) {
-      Iterator i = allItems.iterator();
-      while (i.hasNext()) {
-        Item current = (Item) i.next();
+      for (Object allItem : allItems) {
+        Item current = (Item) allItem;
         current.setEnableAttribute(enable);
       }
     }
@@ -483,12 +484,11 @@ public final class MenuSite {
     assert menuSpecifier != null;
     assert valid();
 
-    Collection allItems = (Collection) (requesters.get(requester));
+    LinkedList<Object> allItems = requesters.get(requester);
 
     if (allItems != null) {
-      Iterator i = allItems.iterator();
-      while (i.hasNext()) {
-        Item current = (Item) i.next();
+      for (Object allItem : allItems) {
+        Item current = (Item) allItem;
         if (current.specifiedBy(menuSpecifier)) {
           if (current.item() instanceof JSeparator) {
             continue;
@@ -498,7 +498,7 @@ public final class MenuSite {
             return (JMenu) (current.item());
           }
 
-          if (((JMenuItem) current.item()).getName().equals(name)) {
+          if ((current.item()).getName().equals(name)) {
             return (JMenuItem) current.item();
           }
         }
@@ -544,8 +544,7 @@ public final class MenuSite {
           throw new IllegalArgumentException(
               "Specifier identifes line item, not menu.");
         }
-      } else // it doesn't exist, create it
-      {
+      } else { // it doesn't exist, create it
         child = new JMenu(childName);
         child.setName(childName);
         setLabelAndShortcut(child);
@@ -570,8 +569,6 @@ public final class MenuSite {
       MenuElement[] contents) {
     JMenuItem found = null;
     for (int i = 0; found == null && i < contents.length; ++i) {
-      // This is not documented, but the system creates internal
-      // popup menus for empty submenus. If we come across one of
       // these, then look for "name" in the popup's contents. This
       // would be a lot easier if PopupMenu and JMenuItem
       // implemented a common interface, but they don't.
@@ -580,8 +577,7 @@ public final class MenuSite {
       // are manufactured by Swing, not by me.
 
       if (contents[i] instanceof JPopupMenu) {
-        found = getSubmenuByName(name,
-            ((JPopupMenu) contents[i]).getSubElements());
+        found = getSubmenuByName(name, contents[i].getSubElements());
       } else if (((JMenuItem) contents[i]).getName().equals(name)) {
         found = (JMenuItem) contents[i];
       }
@@ -763,14 +759,14 @@ public final class MenuSite {
    * if there are no menus associated with the requester at
    * present.
    */
-  private Collection menusAddedBy(Object requester) {
+  private LinkedList<Object> menusAddedBy(Object requester) {
     assert requester != null : "Bad argument";
     assert requesters != null : "No requesters";
     assert valid();
 
-    Collection menus = (Collection) (requesters.get(requester));
+    LinkedList<Object> menus = requesters.get(requester);
     if (menus == null) {
-      menus = new LinkedList();
+      menus = new LinkedList<>();
       requesters.put(requester, menus);
     }
     return menus;
@@ -787,7 +783,7 @@ public final class MenuSite {
 
     public interface Visitor {
 
-      public void visit(JMenu e, int depth);
+       void visit(JMenu e, int depth);
     }
 
     private static int traversalDepth = -1;
@@ -818,12 +814,12 @@ public final class MenuSite {
 
       if (me.getClass() != JMenuItem.class) {
         MenuElement[] contents = me.getSubElements();
-        for (int i = 0; i < contents.length; ++i) {
-          if (contents[i].getClass() != JMenuItem.class) {
+        for (MenuElement content : contents) {
+          if (content.getClass() != JMenuItem.class) {
             ++traversalDepth;
-            visitPostorder(contents[i], v);
-            if (!(contents[i] instanceof JPopupMenu)) {
-              v.visit((JMenu) contents[i], traversalDepth);
+            visitPostorder(content, v);
+            if (!(content instanceof JPopupMenu)) {
+              v.visit((JMenu) content, traversalDepth);
             }
             --traversalDepth;
           }

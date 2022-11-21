@@ -89,15 +89,15 @@ public class Publisher {
     }
 
     public Node remove(Object target) {
-			if (target == subscriber) {
-				return next;
-			}
+      if (target == subscriber) {
+        return next;
+      }
 
-			if (next == null)            // target is not in list
-			{
-				throw new java.util.NoSuchElementException
-						(target.toString());
-			}
+      if (next == null)            // target is not in list
+      {
+        throw new java.util.NoSuchElementException
+            (target.toString());
+      }
 
       return new Node(subscriber, next.remove(target));
     }
@@ -119,9 +119,9 @@ public class Publisher {
    */
 
   public void publish(Distributor deliveryAgent) {
-		for (Node cursor = subscribers; cursor != null; cursor = cursor.next) {
-			cursor.accept(deliveryAgent);
-		}
+    for (Node cursor = subscribers; cursor != null; cursor = cursor.next) {
+      cursor.accept(deliveryAgent);
+    }
   }
 
   synchronized public void subscribe(Object subscriber) {

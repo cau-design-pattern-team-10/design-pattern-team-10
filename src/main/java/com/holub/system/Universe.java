@@ -16,7 +16,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Universe implements Observable {
-  private List<Observer> observers;
+
+  private final List<Observer> observers;
   private final Clock clock;
   public final Neighborhood outermostCell;
   /**
@@ -29,32 +30,29 @@ public class Universe implements Observable {
   public Universe(Clock clock) {
     this.observers = new LinkedList<>();
     this.clock = clock;
-    Neighborhood neighborhood = new Neighborhood
+    outermostCell = new Neighborhood
         (DEFAULT_GRID_SIZE,
             new Neighborhood
                 (DEFAULT_GRID_SIZE,
                     new Resident()
                 )
         );
-    outermostCell = neighborhood;
 
     clock.addClockListener //{=Universe.clock.subscribe}
-        (new Clock.Listener() {
-          public void tick() {
-            // TODO: DUMMY to static final
-            Cell DUMMY = new DummyCell();
-            if (outermostCell.figureNextState
-                (DUMMY, DUMMY, DUMMY, DUMMY,
-                    DUMMY, DUMMY, DUMMY, DUMMY
-                )
-            ) {
-              if (outermostCell.transition()) {
-                //refreshNow();
-                update();
-              }
+        (() -> {
+          // TODO: DUMMY to static final
+          Cell DUMMY = new DummyCell();
+          if (outermostCell.figureNextState
+              (DUMMY, DUMMY, DUMMY, DUMMY,
+                  DUMMY, DUMMY, DUMMY, DUMMY
+              )
+          ) {
+            if (outermostCell.transition()) {
+              //refreshNow();
+              update();
             }
           }
-         }
+        }
         );
   }
 
@@ -63,31 +61,31 @@ public class Universe implements Observable {
   }
 
   public void doLoad() throws IOException {
-      FileInputStream in = new FileInputStream(
-          Files.userSelected(".", ".life", "Life File", "Load"));
+    FileInputStream in = new FileInputStream(
+        Files.userSelected(".", ".life", "Life File", "Load"));
 
-      clock.stop();    // stop the game and
-      outermostCell.clear();      // clear the board.
+    clock.stop();    // stop the game and
+    outermostCell.clear();      // clear the board.
 
-      Storable memento = outermostCell.createMemento();
-      memento.load(in);
-      outermostCell.transfer(memento, new Point(0, 0), Cell.LOAD);
+    Storable memento = outermostCell.createMemento();
+    memento.load(in);
+    outermostCell.transfer(memento, new Point(0, 0), Cell.LOAD);
 
-      in.close();
+    in.close();
     update();
   }
 
   public void doStore() throws IOException {
-      FileOutputStream out = new FileOutputStream(
-          Files.userSelected(".", ".life", "Life File", "Write"));
+    FileOutputStream out = new FileOutputStream(
+        Files.userSelected(".", ".life", "Life File", "Write"));
 
-      clock.stop();    // stop the game
+    clock.stop();    // stop the game
 
-      Storable memento = outermostCell.createMemento();
-      outermostCell.transfer(memento, new Point(0, 0), Cell.STORE);
-      memento.flush(out);
+    Storable memento = outermostCell.createMemento();
+    outermostCell.transfer(memento, new Point(0, 0), Cell.STORE);
+    memento.flush(out);
 
-      out.close();
+    out.close();
   }
 
   public int widthInCells() {

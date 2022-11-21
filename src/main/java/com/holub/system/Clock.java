@@ -27,7 +27,7 @@ import com.holub.tools.Publisher;
 
 public class Clock {
 
-  private Timer clock = new Timer();
+  private final Timer clock = new Timer();
   private TimerTask tick = null;
 
   // The clock can't be an everything-is-static singleton because
@@ -68,7 +68,7 @@ public class Clock {
     startTicking(0);
   }
 
-  private Publisher publisher = new Publisher();
+  private final Publisher publisher = new Publisher();
 
   /**
    * Add a listener that's notified every time the clock ticks:
@@ -97,13 +97,11 @@ public class Clock {
    */
   public void tick() {
     publisher.publish
-        (new Publisher.Distributor() {
-           public void deliverTo(Object subscriber) {
-						 if (!menuIsActive()) {
-							 ((Listener) subscriber).tick();
-						 }
-           }
-         }
+        (subscriber -> {
+          if (!menuIsActive()) {
+            ((Listener) subscriber).tick();
+          }
+        }
         );
   }
 

@@ -3,6 +3,7 @@ package com.holub.model.cell;
 import com.holub.life.Direction;
 import com.holub.tools.Storable;
 import com.holub.tools.Observer;
+
 public class DummyCell implements Cell {
 
   @Override
