@@ -135,7 +135,7 @@ public final class MenuSite {
    * Set of MenuSite.Item objects that identify all
    * items added by that requester.
    */
-  private static Map requesters = new HashMap();
+  private static final Map requesters = new HashMap();
 
   /*** Maps "names" to the visible labels that actually
    *  appear on the screen.
