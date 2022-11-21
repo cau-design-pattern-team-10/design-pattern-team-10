@@ -131,7 +131,7 @@ public final class Neighborhood implements Cell {
     return activeEdges;
   }
 
-  private Direction activeEdges = new Direction(Direction.NONE);
+  private final Direction activeEdges = new Direction(Direction.NONE);
 
   /**
    * Figures the next state of the current neighborhood and the contained neigborhoods (or cells).
