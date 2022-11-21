@@ -496,8 +496,8 @@ public final class Neighborhood implements Cell {
       StringBuffer b = new StringBuffer();
 
       b.append("NeighborhoodState:\n");
-      for (Iterator i = liveCells.iterator(); i.hasNext(); ) {
-        b.append(((Point) i.next()).toString() + "\n");
+      for (Object liveCell : liveCells) {
+        b.append(((Point) liveCell).toString()).append("\n");
       }
       return b.toString();
     }
