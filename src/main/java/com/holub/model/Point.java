@@ -1,35 +1,71 @@
 package com.holub.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Point implements Serializable {
 
-  public int x, y;
+  /**
+   *
+   */
+  private int x;
+  /**
+   *
+   */
+  private int y;
 
+  /**
+   *
+   */
   public Point() {
+    // do nothing
   }
 
-  public Point(java.awt.Point pt) {
+  /**
+   * for compatibility with java.awt.Point.
+   * @param pt
+   */
+  public Point(final java.awt.Point pt) {
     this.x = pt.x;
     this.y = pt.y;
   }
 
-  public Point(Point p) {
+  /**
+   * copy constructor.
+   * @param p
+   */
+  public Point(final Point p) {
     this.x = p.x;
     this.y = p.y;
   }
 
-  public Point(int x, int y) {
-    this.x = x;
-    this.y = y;
+  /**
+   * basic constructor.
+   * @param newX
+   * @param newY
+   */
+  public Point(final int newX, final int newY) {
+    this.x = newX;
+    this.y = newY;
   }
 
-  public void translate(int dx, int dy) {
+  /**
+   * translate using parameters as offsets.
+   * @param dx
+   * @param dy
+   */
+  public void translate(final int dx, final int dy) {
     this.x += dx;
     this.y += dy;
   }
 
-  public boolean equals(Object obj) {
+  /**
+   *
+   * @param obj
+   * @return
+   */
+  @Override
+  public boolean equals(final Object obj) {
     if (obj instanceof Point) {
       Point pt = (Point) obj;
       return (x == pt.x) && (y == pt.y);
@@ -38,5 +74,46 @@ public class Point implements Serializable {
       return (x == pt.x) && (y == pt.y);
     }
     return super.equals(obj);
+  }
+
+  /**
+   *
+   * @return
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.x, this.y);
+  }
+
+  /**
+   *
+   * @return x
+   */
+  public int getX() {
+    return x;
+  }
+
+  /**
+   *
+   * @return y
+   */
+  public int getY() {
+    return y;
+  }
+
+  /**
+   *
+   * @param newX
+   */
+  public void setX(final int newX) {
+    this.x = newX;
+  }
+
+  /**
+   *
+   * @param newY
+   */
+  public void setY(final int newY) {
+    this.y = newY;
   }
 }

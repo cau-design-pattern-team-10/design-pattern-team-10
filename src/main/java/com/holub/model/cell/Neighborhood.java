@@ -1,18 +1,16 @@
 package com.holub.model.cell;
 
-import com.holub.life.Direction;
-import com.holub.tools.Storable;
-import com.holub.model.Point;
-import com.holub.tools.Observer;
-
 import com.holub.asynch.ConditionVariable;
+import com.holub.life.Direction;
+import com.holub.model.Point;
+import com.holub.model.cell.NearestCellsDTO.NearestCellsDTOBuilder;
+import com.holub.tools.Observer;
+import com.holub.tools.Storable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,67 +24,69 @@ import java.util.List;
  * <p>11-29-04
  * Alexy Marinichev fixed the disapearing-glider problem by clearing
  * the active edges in transistion() rather then figureNextState().
- * The original call is commented out and the new line is marked 
+ * The original call is commented out and the new line is marked
  * with "(1)"
- *
- * @include /etc/license.txt
  */
 
 public final class Neighborhood implements Cell {
 
-  List<Observer> observers;
-  boolean updated;
-
-  @Override
-  public boolean isUpdated() {
-    return updated;
-  }
-
-
   /**
-   * Block if reading is not permitted because the grid is transitioning to the next state. Only one
-   * lock is used (for the outermost neighborhood) since all updates must be requested through the
-   * outermost neighborhood.
+   * Block if reading is not permitted because the grid is transitioning to
+   * the next state. Only one lock is used (for the outermost neighborhood)
+   * since all updates must be requested through the outermost neighborhood.
    */
-  private static final ConditionVariable readingPermitted =
+  private static final ConditionVariable READING_PERMITTED =
       new ConditionVariable(true);
-
-  public ConditionVariable getReadingPermitted() {
-    return readingPermitted;
-  }
-
   /**
-   * Returns true only if none of the cells in the Neighborhood changed state during the last
-   * transition.
+   * The following variable is used only by the transition()
+   * method. Since Java doesn't support static local variables,
+   * I am forced to declare it in class scope, but I deliberately
+   * don't put it up at the top of the class definition because
+   * it's not really an attribute of the class---it's just
+   * an implementation detail of the immediately preceding
+   * method.
    */
-
-  private boolean amActive = false;
-
-  public boolean isAmActive() {
-    return amActive;
-  }
-
+  private static int nestingLevel = -1;
   /**
    * The actual grid of Cells contained within this neighborhood.
    */
-  public final Cell[][] grid;
-
+  private final Cell[][] grid;
   /**
-   * The neighborhood is square, so gridSize is both the horizontal and vertical size.
+   * The neighborhood is square, so gridSize is both the horizontal and
+   * vertical size.
    */
   private final int gridSize;
-
-  public int getGridSize() {
-    return gridSize;
-  }
-
   /**
-   * Create a new Neigborhood containing gridSize-by-gridSize clones of the prototype. The Protype
-   * is deliberately not put into the grid, so you can reuse it if you like.
+   *
+   */
+  private List<Observer> observers;
+  /**
+   * Returns true only if none of the cells in the Neighborhood changed
+   * state during the last transition.
    */
 
-  public Neighborhood(int gridSize, Cell prototype) {
-    this.gridSize = gridSize;
+  private boolean amActive = false;
+  /**
+   * Became stable on the last clock tick. One more refresh is required.
+   */
+
+  private boolean oneLastRefreshRequired = false;
+  /**
+   *
+   */
+  private final Direction activeEdges = new Direction(Direction.NONE);
+
+  /**
+   * Create a new Neighborhood containing gridSize-by-gridSize clones of the
+   * prototype. The Prototype is deliberately not put into the grid, so you
+   * can reuse it if you like.
+   *
+   * @param gs
+   * @param prototype
+   */
+
+  public Neighborhood(final int gs, final Cell prototype) {
+    this.gridSize = gs;
     this.grid = new Cell[gridSize][gridSize];
     this.observers = new LinkedList<>();
 
@@ -98,9 +98,47 @@ public final class Neighborhood implements Cell {
   }
 
   /**
-   * The "clone" method used to create copies of the current neighborhood. This method is called
-   * from the containing neighborhood's constructor. (The current neighborhood is passed into the
-   * containing-neighborhood constructor as the "prototype" argument.
+   * @return reading permission
+   */
+  public ConditionVariable getReadingPermitted() {
+    return READING_PERMITTED;
+  }
+
+  /**
+   *
+   * @return gridSize
+   */
+  public int getGridSize() {
+    return gridSize;
+  }
+
+  /**
+   *
+   * @return grid
+   */
+  public Cell[][] getGrid() {
+    return grid;
+  }
+
+
+  /**
+   *
+   * @return is this cell amActive
+   */
+  public boolean isAmActive() {
+    return amActive;
+  }
+
+  /**
+   * @param newAmActive
+   */
+  public void setAmActive(final boolean newAmActive) {
+    this.amActive = newAmActive;
+  }
+
+  /**
+   *
+   * @return how many cell
    */
 
   public Cell create() {
@@ -108,57 +146,60 @@ public final class Neighborhood implements Cell {
   }
 
   /**
-   * Became stable on the last clock tick. One more refresh is required.
+   *
+   * @return refresh required
    */
-
-  private boolean oneLastRefreshRequired = false;
-
   public boolean isOneLastRefreshRequired() {
     return oneLastRefreshRequired;
   }
 
-  public void setOneLastRefreshRequired(boolean oneLastRefreshRequired) {
-    this.oneLastRefreshRequired = oneLastRefreshRequired;
+  /**
+   * @param newOneLastRefreshRequired
+   */
+  public void setOneLastRefreshRequired(
+      final boolean newOneLastRefreshRequired) {
+    this.oneLastRefreshRequired = newOneLastRefreshRequired;
   }
 
   /**
-   * Shows the direction of the cells along the edge of the block that will change  state in the
-   * next transition. For example, if the upper-left corner has changed, then the current Cell is
-   * disruptive in the NORTH, WEST, and NORTHWEST directions. If this is the case, the neigboring
-   * cells may need to be updated, even if they were previously stable.
+   * Shows the direction of the cells along the edge of the block that will
+   * change state in the next transition. For example, if the upper-left corner
+   * has changed, then the current Cell is disruptive in the NORTH, WEST, and
+   * NORTHWEST directions. If this is the case, the neighboring cells may need
+   * to be updated, even if they were previously stable.
+   * @return activeEdges;
    */
   public Direction isDisruptiveTo() {
     return activeEdges;
   }
 
-  private final Direction activeEdges = new Direction(Direction.NONE);
-
   /**
-   * Figures the next state of the current neighborhood and the contained neigborhoods (or cells).
-   * Does not transition to the next state, however. Note that the neighboring cells are passed in
-   * as arguments rather than being stored internally---an example of the Flyweight pattern.
+   * Figures the next state of the current neighborhood and the contained
+   * neighborhoods (or cells).
+   * Does not transition to the next state, however. Note that the neighboring
+   * cells are passed in as arguments rather than being stored internally
+   * ---an example of the Flyweight pattern.
    *
-   * @param north     The neighbor to our north
-   * @param south     The neighbor to our south
-   * @param east      The neighbor to our east
-   * @param west      The neighbor to our west
-   * @param northeast The neighbor to our northeast
-   * @param northwest The neighbor to our northwest
-   * @param southeast The neighbor to our southeast
-   * @param southwest The neighbor to our southwest
-   * @return true if this neighborhood (i.e. any of it's cells) will change state in the next
-   * transition.
+   * @param dto
+   * @return true if this neighborhood (i.e. any of it's cells) will change
+   * state in the next transition.
    * @see #transition
    */
 
-  public boolean figureNextState(Cell north, Cell south,
-      Cell east, Cell west,
-      Cell northeast, Cell northwest,
-      Cell southeast, Cell southwest) {
+  @Override
+  public boolean figureNextState(final NearestCellsDTO dto) {
+    final Cell north = dto.getNorth();
+    final Cell south = dto.getSouth();
+    final Cell east = dto.getEast();
+    final Cell west = dto.getWest();
+    final Cell northeast = dto.getNortheast();
+    final Cell northwest = dto.getNorthwest();
+    final Cell southeast = dto.getSoutheast();
+    final Cell southwest = dto.getSouthwest();
     boolean nothingHappened = true;
 
-    // Is some ajacent neigborhood active on the edge
-    // that ajoins me?
+    // Is some adjacent neighborhood active on the edge
+    // that adjoins me?
 
     if (amActive
         || north.isDisruptiveTo().the(Direction.SOUTH)
@@ -170,78 +211,69 @@ public final class Neighborhood implements Cell {
         || southeast.isDisruptiveTo().the(Direction.NORTHWEST)
         || southwest.isDisruptiveTo().the(Direction.NORTHEAST)
     ) {
-      Cell northCell, southCell,
-          eastCell, westCell,
-          northeastCell, northwestCell,
-          southeastCell, southwestCell;
-
-      // activeEdges.clear();
+      Cell northCell;
+      Cell southCell;
+      Cell eastCell;
+      Cell westCell;
+      Cell northeastCell;
+      Cell northwestCell;
+      Cell southeastCell;
+      Cell southwestCell;
 
       for (int row = 0; row < gridSize; ++row) {
         for (int column = 0; column < gridSize; ++column) {
           // Get the current cell's eight neighbors
 
-          if (row == 0)    //{=Neighborhood.get.neighbors}
-          {
+          if (row == 0) {
             northwestCell = (column == 0)
                 ? northwest.edge(gridSize - 1, gridSize - 1)
-                : north.edge(gridSize - 1, column - 1)
-            ;
+                : north.edge(gridSize - 1, column - 1);
 
             northCell = north.edge(gridSize - 1, column);
 
             northeastCell = (column == gridSize - 1)
                 ? northeast.edge(gridSize - 1, 0)
-                : north.edge(gridSize - 1, column + 1)
-            ;
+                : north.edge(gridSize - 1, column + 1);
           } else {
             northwestCell = (column == 0)
                 ? west.edge(row - 1, gridSize - 1)
-                : grid[row - 1][column - 1]
-            ;
+                : grid[row - 1][column - 1];
 
             northCell = grid[row - 1][column];
 
             northeastCell = (column == gridSize - 1)
                 ? east.edge(row - 1, 0)
-                : grid[row - 1][column + 1]
-            ;
+                : grid[row - 1][column + 1];
           }
 
           westCell = (column == 0)
               ? west.edge(row, gridSize - 1)
-              : grid[row][column - 1]
-          ;
+              : grid[row][column - 1];
 
           eastCell = (column == gridSize - 1)
               ? east.edge(row, 0)
-              : grid[row][column + 1]
-          ;
+              : grid[row][column + 1];
 
           if (row == gridSize - 1) {
             southwestCell = (column == 0)
                 ? southwest.edge(0, gridSize - 1)
-                : south.edge(0, column - 1)
-            ;
+                : south.edge(0, column - 1);
 
             southCell = south.edge(0, column);
 
             southeastCell = (column == gridSize - 1)
                 ? southeast.edge(0, 0)
-                : south.edge(0, column + 1)
-            ;
+                : south.edge(0, column + 1);
           } else {
             southwestCell = (column == 0)
                 ? west.edge(row + 1, gridSize - 1)
-                : grid[row + 1][column - 1]
-            ;
+                : grid[row + 1][column - 1];
 
             southCell = grid[row + 1][column];
 
             southeastCell = (column == gridSize - 1)
                 ? east.edge(row + 1, 0)
-                : grid[row + 1][column + 1]
-            ;
+                : grid[row + 1][column + 1];
           }
 
           // Tell the cell to change its state. If
@@ -251,13 +283,17 @@ public final class Neighborhood implements Cell {
           // edge of the block modify activeEdges to
           //  indicate which edge or edges changed.
 
-          if (grid[row][column].figureNextState
-              (northCell, southCell,
-                  eastCell, westCell,
-                  northeastCell, northwestCell,
-                  southeastCell, southwestCell
-              )
-          ) {
+
+          if (grid[row][column].figureNextState(
+              new NearestCellsDTOBuilder()
+                  .north(northCell)
+                  .south(southCell)
+                  .east(eastCell)
+                  .west(westCell)
+                  .northeast(northeastCell)
+                  .northwest(northwestCell)
+                  .southeast(southeastCell)
+                  .southwest(southwestCell).build())) {
             nothingHappened = false;
           }
         }
@@ -271,7 +307,6 @@ public final class Neighborhood implements Cell {
     amActive = !nothingHappened;
     return amActive;
   }
-
 
   /**
    * Transition the neighborhood to the previously-computed state.
@@ -292,45 +327,38 @@ public final class Neighborhood implements Cell {
 
     boolean someSubcellChangedState = false;
 
-    if (++nestingLevel == 0) {
-      readingPermitted.set(false);
+    nestingLevel++;
+    if (nestingLevel == 0) {
+      READING_PERMITTED.set(false);
     }
 
     activeEdges.clear();              /*(1)*/
 
-    for (int row = 0; row < gridSize; ++row) //{=transition.start}
-    {
+    for (int row = 0; row < gridSize; ++row) {
       for (int column = 0; column < gridSize; ++column) {
         if (grid[row][column].transition()) {
           rememberThatCellAtEdgeChangedState(row, column);
           someSubcellChangedState = true;
-        }                 //{=transition.end}
+        }
       }
     }
 
-    if (nestingLevel-- == 0) {
-      readingPermitted.set(true);
+    nestingLevel--;
+    if (nestingLevel < 0) {
+      READING_PERMITTED.set(true);
     }
 
     return someSubcellChangedState;
   }
 
-  // The following variable is used only by the transition()
-  // method. Since Java doesn't support static local variables,
-  // I am forced to declare it in class scope, but I deliberately
-  // don't put it up at the top of the class defintion because
-  // it's not really an attribute of the class---it's just
-  // an implemenation detail of the immediately preceding
-  // method.
-  //
-  private static int nestingLevel = -1;
-
-
   /**
-   * Modifies activeEdges to indicate whether the addition of the cell at (row,column) makes an edge
-   * active.
+   * Modifies activeEdges to indicate whether the addition of the cell at
+   * (row,column) makes an edge active.
+   * @param row
+   * @param column
    */
-  public void rememberThatCellAtEdgeChangedState(int row, int column) {
+  public void rememberThatCellAtEdgeChangedState(
+      final int row, final int column) {
     if (row == 0) {
       activeEdges.add(Direction.NORTH);
 
@@ -359,24 +387,37 @@ public final class Neighborhood implements Cell {
 
   /**
    * Return the edge cell in the indicated row and column.
+   * @param row
+   * @param column
+   *
+   * @return target grid cell
    */
-  public Cell edge(int row, int column) {
-    assert (row == 0 || row == gridSize - 1)
-        || (column == 0 || column == gridSize - 1)
-        : "central cell requested from edge()";
+  public Cell edge(final int row, final int column) {
+    if ((row != 0 && row != gridSize - 1)
+        && (column != 0 && column != gridSize - 1)) {
+      throw new AssertionError("central cell requested from edge()");
+    }
 
     return grid[row][column];
   }
 
-
+  /**
+   * @return always true
+   */
   public boolean isAlive() {
     return true;
   }
 
+  /**
+   * @return total widthInCell
+   */
   public int widthInCells() {
     return gridSize * grid[0][0].widthInCells();
   }
 
+  /**
+   *
+   */
   public void clear() {
     activeEdges.clear();
 
@@ -390,11 +431,17 @@ public final class Neighborhood implements Cell {
   }
 
   /**
-   * Cause subcells to add an annotation to the indicated memento if they happen to be alive.
+   * Cause subcells to add an annotation to the indicated memento if they
+   * happen to be alive.
+   *
+   * @param memento
+   * @param corner
+   * @param load
+   * @return next state
    */
 
-  public boolean transfer(Storable memento, Point corner,
-      boolean load) {
+  public boolean transfer(final Storable memento, final Point corner,
+      final boolean load) {
     int subcellWidth = grid[0][0].widthInCells();
     int myWidth = widthInCells();
     Point upperLeft = new Point(corner);
@@ -405,8 +452,7 @@ public final class Neighborhood implements Cell {
           amActive = true;
         }
 
-        Direction d =
-            grid[row][column].isDisruptiveTo();
+        Direction d = grid[row][column].isDisruptiveTo();
 
         if (!d.equals(Direction.NONE)) {
           activeEdges.add(d);
@@ -419,59 +465,75 @@ public final class Neighborhood implements Cell {
     return amActive;
   }
 
+  /**
+   * @return Neighborhood dedicated Memento
+   */
   public Storable createMemento() {
     Memento m = new NeighborhoodState();
     transfer(m, new Point(0, 0), Cell.STORE);
     return m;
   }
 
-  public void setAmActive(boolean amActive) {
-    this.amActive = amActive;
-  }
-
+  /**
+   *
+   */
   @Override
   public void update() {
     for (Observer observer : observers) {
       observer.detectUpdate(this);
     }
-    updated = false;
   }
 
+  /**
+   *
+   * @param observer
+   */
   @Override
-  public void attach(Observer observer) {
+  public void attach(final Observer observer) {
     observers.add(observer);
   }
 
+  /**
+   *
+   * @param observer
+   */
   @Override
-  public void detach(Observer observer) {
+  public void detach(final Observer observer) {
     observers.remove(observer);
   }
 
   /**
-   * The NeighborhoodState stores the state of this neighborhood and all its sub-neighborhoods. For
-   * the moment, I'm storing state with serialization, but a future modification might rewrite
-   * load() and flush() to use XML.
+   * The NeighborhoodState stores the state of this neighborhood and all its
+   * sub-neighborhoods. For the moment, I'm storing state with serialization,
+   * but a future modification might rewrite load() and flush() to use XML.
    */
 
   private static class NeighborhoodState implements Cell.Memento {
 
-    Collection liveCells = new LinkedList();
+    /**
+     *
+     */
+    private List<Point> liveCells = new LinkedList<>();
 
-    public NeighborhoodState(InputStream in) throws IOException {
+    NeighborhoodState(final InputStream in) throws IOException {
       load(in);
     }
 
-    public NeighborhoodState() {
+    NeighborhoodState() {
     }
 
-    public void load(InputStream in) throws IOException {
+    public void load(final InputStream in) throws IOException {
       try {
         ObjectInputStream source = new ObjectInputStream(in);
-        liveCells = (Collection) (source.readObject());
-      } catch (ClassNotFoundException e) {  // This exception shouldn't be rethrown as
+        Object sourceObject = source.readObject();
+        if (sourceObject instanceof List) {
+          liveCells = (List) sourceObject;
+        }
+      } catch (ClassNotFoundException e) {
+        // This exception shouldn't be rethrown as
         // a ClassNotFoundException because the
         // outside world shouldn't know (or care) that we're
-        // using serialization to load the object. Nothring
+        // using serialization to load the object. Nothing
         // wrong with treating it as an I/O error, however.
 
         throw new IOException(
@@ -479,25 +541,25 @@ public final class Neighborhood implements Cell {
       }
     }
 
-    public void flush(OutputStream out) throws IOException {
+    public void flush(final OutputStream out) throws IOException {
       ObjectOutputStream sink = new ObjectOutputStream(out);
       sink.writeObject(liveCells);
     }
 
-    public void markAsAlive(Point location) {
+    public void markAsAlive(final Point location) {
       liveCells.add(new Point(location));
     }
 
-    public boolean isAlive(Point location) {
+    public boolean isAlive(final Point location) {
       return liveCells.contains(location);
     }
 
     public String toString() {
-      StringBuffer b = new StringBuffer();
+      StringBuilder b = new StringBuilder();
 
       b.append("NeighborhoodState:\n");
-      for (Object liveCell : liveCells) {
-        b.append(((Point) liveCell).toString()).append("\n");
+      for (Point p : liveCells) {
+        b.append(p.toString()).append("\n");
       }
       return b.toString();
     }

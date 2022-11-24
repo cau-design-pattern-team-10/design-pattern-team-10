@@ -6,13 +6,21 @@ import java.io.OutputStream;
 
 /***
  * All mementos created by the Cells are Storable.
- *
- * @include /etc/license.txt
  */
 
 public interface Storable {
 
+  /**
+   *
+   * @param in
+   * @throws IOException
+   */
   void load(InputStream in) throws IOException;
 
+  /**
+   *
+   * @param out
+   * @throws IOException
+   */
   void flush(OutputStream out) throws IOException;
 }

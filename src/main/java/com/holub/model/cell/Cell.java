@@ -10,35 +10,38 @@ import com.holub.tools.Observable;
  * It's implemented both by {@link Resident} (which represents
  * an individual cell on the board) and {@link Neighborhood},
  * which represents a group of cells.
- *
- * @include /etc/license.txt
  */
 
 public interface Cell extends Observable {
 
-  boolean isUpdated();
+  /**
+   * Possible value for the "load" argument to transfer().
+   */
+  boolean STORE = false;
+  /**
+   * Possible value for the "load" argument to transfer().
+   */
+  boolean LOAD = true;
 
   /**
    * Figure out the next state of the cell, given the specified neighbors.
-   *
+   * @param dto
    * @return true if the cell is unstable (changed state).
    */
-  boolean figureNextState(Cell north, Cell south,
-      Cell east, Cell west,
-      Cell northeast, Cell northwest,
-      Cell southeast, Cell southwest);
+  boolean figureNextState(NearestCellsDTO dto);
 
   /**
    * Access a specific contained cell located at the edge of the composite cell.
    *
-   * @param row    The requested row. Must be on the edge of the block.
+   * @param row The requested row. Must be on the edge of the block.
    * @param column The requested column. Must be on the edge of the block.
    * @return true  if the the state changed.
    */
   Cell edge(int row, int column);
 
   /**
-   * Transition to the state computed by the most recent call to {@link #figureNextState}
+   * Transition to the state computed by the most recent call to
+   * {@link #figureNextState}.
    *
    * @return true if a changed of state happened during the transition.
    */
@@ -47,23 +50,30 @@ public interface Cell extends Observable {
 
   /**
    * Return true if this cell or any subcells are alive.
+   *
+   * @return this cell is alive.
    */
   boolean isAlive();
 
   /**
-   * Return the specified width plus the current cell's width
+   * Return the specified width plus the current cell's width.
+   *
+   * @return this cell width
    */
   int widthInCells();
 
   /**
    * Return a fresh (newly created) object identical to yourself in content.
+   * @return cell replica
    */
   Cell create();
 
   /**
-   * Returns a Direction indicated the directions of the cells that have changed state.
+   * Returns a Direction indicated the directions of the cells that have changed
+   * state.
    *
-   * @return A Direction object that indicates the edge or edges on which a change has occured.
+   * @return A Direction object that indicates the edge or edges on which
+   * a change has occurred.
    */
 
   Direction isDisruptiveTo();
@@ -75,8 +85,30 @@ public interface Cell extends Observable {
   void clear();
 
   /**
-   * The Cell.Memento interface stores the state of a Cell and all its subcells for future
-   * restoration.
+   * This method is used internally to save or restore the state of a cell
+   * from a memento.
+   *
+   * @param memento
+   * @param upperLeftCorner
+   * @param doLoad
+   * @return true if this cell was modified by the transfer.
+   */
+  boolean transfer(Storable memento, Point upperLeftCorner,
+      boolean doLoad);
+
+  /**
+   * This method is used by container of the outermost cell. It is not used
+   * internally. It need be implemented only by whatever class defines the
+   * outermost cell in the universe. Other cell implementations should throw
+   * an UnsupportedOperationException when this method is called.
+   *
+   * @return memento
+   */
+  Storable createMemento();
+
+  /**
+   * The Cell.Memento interface stores the state of a Cell and all its
+   * subcells for future restoration.
    *
    * @see Cell
    */
@@ -85,38 +117,16 @@ public interface Cell extends Observable {
 
     /**
      * On creation of the memento, indicate that a cell is alive.
+     * @param location
      */
     void markAsAlive(Point location);
 
     /**
      * On restoration of a cell from a memento, indicate that a cell is alive.
+     * @param location
+     * @return does cell exist on the location.
      */
     boolean isAlive(Point location);
   }
-
-  /**
-   * This method is used internally to save or restore the state of a cell from a memento.
-   *
-   * @return true if this cell was modified by the transfer.
-   */
-  boolean transfer(Storable memento, Point upperLeftCorner,
-      boolean doLoad);
-
-  /**
-   * Possible value for the "load" argument to transfer()
-   */
-  public static boolean STORE = false;
-
-  /**
-   * Possible value for the "load" argument to transfer()
-   */
-  public static boolean LOAD = true;
-
-  /**
-   * This method is used by container of the outermost cell. It is not used internally. It need be
-   * implemented only by whatever class defines the outermost cell in the universe. Other cell
-   * implementions should throw an UnsupportedOperationException when this method is called.
-   */
-  Storable createMemento();
 
 }

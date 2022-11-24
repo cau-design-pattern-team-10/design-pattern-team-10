@@ -1,42 +1,63 @@
 package com.holub.model.cell;
 
 import com.holub.life.Direction;
-import com.holub.tools.Storable;
 import com.holub.model.Point;
 import com.holub.tools.Observer;
+import com.holub.tools.Storable;
 import java.util.LinkedList;
 import java.util.List;
 
 /*** ****************************************************************
  * The Resident class implements a single cell---a "resident" of a
  * block.
- *
- * @include /etc/license.txt
  */
 
 public final class Resident implements Cell {
+  /**
+   *
+   */
+  private static final int ALIVE_NEIGHBOR_NUM = 2;
+  /**
+   *
+   */
+  private static final int GENERATING_NEIGHBOR_NUM = 3;
+  /**
+   *
+   */
+  private List<Observer> observers;
+  /**
+   *
+   */
+  private boolean updated;
+  /**
+   *
+   */
+  private boolean amAlive = false;
+  /**
+   *
+   */
+  private boolean willBeAlive = false;
 
-  List<Observer> observers;
-  boolean updated;
-
+  /**
+   *
+   */
   public Resident() {
     super();
     this.observers = new LinkedList<>();
   }
 
-  @Override
-  public boolean isUpdated() {
-    return updated;
-  }
-
+  /**
+   *
+   */
   public void toggle() {
     amAlive = !amAlive;
     updated = true;
   }
 
-  private boolean amAlive = false;
-  private boolean willBeAlive = false;
-
+  /**
+   *
+   * @return currentState equals nextState
+   */
   private boolean isStable() {
     return amAlive == willBeAlive;
   }
@@ -44,13 +65,19 @@ public final class Resident implements Cell {
   /**
    * figure the next state.
    *
-   * @return true if the cell is not stable (will change state on the next transition().
+   * @param dto
+   * @return true if the cell is not stable (will change state on the next
+   * transition().
    */
-  public boolean figureNextState(
-      Cell north, Cell south,
-      Cell east, Cell west,
-      Cell northeast, Cell northwest,
-      Cell southeast, Cell southwest) {
+  public boolean figureNextState(NearestCellsDTO dto) {
+    final Cell north = dto.getNorth();
+    final Cell south = dto.getSouth();
+    final Cell east = dto.getEast();
+    final Cell west = dto.getWest();
+    final Cell northeast = dto.getNortheast();
+    final Cell northwest = dto.getNorthwest();
+    final Cell southeast = dto.getSoutheast();
+    final Cell southwest = dto.getSouthwest();
     verify(north, "north");
     verify(south, "south");
     verify(east, "east");
@@ -87,57 +114,97 @@ public final class Resident implements Cell {
       ++neighbors;
     }
 
-    willBeAlive = (neighbors == 3 || (amAlive && neighbors == 2));
+    willBeAlive = (neighbors == GENERATING_NEIGHBOR_NUM
+        || (amAlive && neighbors == ALIVE_NEIGHBOR_NUM));
     return !isStable();
   }
 
-  private void verify(Cell c, String direction) {
-    // TODO: change dummy to final static
-    Cell DUMMY = new DummyCell();
-    assert (c instanceof Resident) || (c == DUMMY)
-        : "incorrect type for " + direction + ": " +
-        c.getClass().getName();
+  private void verify(final Cell c, final String direction) {
+    Cell dummy = DummyCell.getInstance();
+    assert (c instanceof Resident) || (c == dummy)
+        : "incorrect type for " + direction + ": " + c.getClass().getName();
   }
 
   /**
-   * This cell is monetary, so it's at every edge of itself. It's an internal error for any position
-   * except for (0,0) to be requsted since the width is 1.
+   * This cell is monetary, so it's at every edge of itself. It's an internal
+   * error for any position except for (0,0) to be requested since the width
+   * is 1.
+   *
+   * @param row
+   * @param column
+   * @return always this
    */
-  public Cell edge(int row, int column) {
-    assert row == 0 && column == 0;
+  public Cell edge(final int row, final int column) {
+    if (row != 0 || column != 0) {
+      throw new AssertionError();
+    }
     return this;
   }
 
+  /**
+   *
+   * @return changed state
+   */
   public boolean transition() {
     boolean changed = isStable();
     amAlive = willBeAlive;
     return changed;
   }
 
+  /**
+   *
+   */
   public void clear() {
-    amAlive = willBeAlive = false;
+    amAlive = false;
+    willBeAlive = false;
   }
 
+  /**
+   *
+   * @return Is this cell alive
+   */
   public boolean isAlive() {
     return amAlive;
   }
 
+  /**
+   *
+   * @return replica
+   */
   public Cell create() {
     return new Resident();
   }
 
+  /**
+   *
+   * @return always 1
+   */
   public int widthInCells() {
     return 1;
   }
 
+  /**
+   *
+   * @return disruptive
+   */
   public Direction isDisruptiveTo() {
     return isStable() ? Direction.NONE : Direction.ALL;
   }
 
-  public boolean transfer(Storable blob, Point upperLeft, boolean doLoad) {
+  /**
+   *
+   * @param blob
+   * @param upperLeft
+   * @param doLoad
+   * @return next state
+   */
+  public boolean transfer(final Storable blob,
+      final Point upperLeft, final boolean doLoad) {
     Memento memento = (Memento) blob;
     if (doLoad) {
-      if (amAlive = willBeAlive = memento.isAlive(upperLeft)) {
+      amAlive = memento.isAlive(upperLeft);
+      willBeAlive = amAlive;
+      if (amAlive) {
         return true;
       }
     } else if (amAlive) {
@@ -149,8 +216,9 @@ public final class Resident implements Cell {
   }
 
   /**
-   * Mementos must be created by Neighborhood objects. Throw an exception if anybody tries to do it
-   * here.
+   * Mementos must be created by Neighborhood objects. Throw an exception if
+   * anybody tries to do it here.
+   * @return always throw Exception
    */
   public Storable createMemento() {
     throw new UnsupportedOperationException(
@@ -166,12 +234,12 @@ public final class Resident implements Cell {
   }
 
   @Override
-  public void attach(Observer observer) {
+  public void attach(final Observer observer) {
     observers.add(observer);
   }
 
   @Override
-  public void detach(Observer observer) {
+  public void detach(final Observer observer) {
     observers.remove(observer);
   }
 }

@@ -1,14 +1,15 @@
 package com.holub.system;
 
 import com.holub.io.Files;
-import com.holub.tools.Storable;
 import com.holub.model.Point;
 import com.holub.model.cell.Cell;
 import com.holub.model.cell.DummyCell;
+import com.holub.model.cell.NearestCellsDTO.NearestCellsDTOBuilder;
 import com.holub.model.cell.Neighborhood;
 import com.holub.model.cell.Resident;
 import com.holub.tools.Observable;
 import com.holub.tools.Observer;
+import com.holub.tools.Storable;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,49 +18,67 @@ import java.util.List;
 
 public class Universe implements Observable {
 
-  private final List<Observer> observers;
-  private final Clock clock;
-  public final Neighborhood outermostCell;
   /**
-   * The default height and width of a Neighborhood in cells. If it's too big, you'll run too slowly
-   * because you have to update the entire block as a unit, so there's more to do. If it's too
-   * small, you have too many blocks to check. I've found that 8 is a good compromise.
+   * The default height and width of a Neighborhood in cells. If it's too big,
+   * you'll run too slowly because you have to update the entire block as
+   * a unit, so there's more to do. If it's too small, you have too many blocks
+   * to check. I've found that 8 is a good compromise.
    */
   private static final int DEFAULT_GRID_SIZE = 8;
+  /**
+   *
+   */
+  private final Neighborhood outermostCell;
+  /**
+   *
+   */
+  private final Clock clock;
+  /**
+   *
+   */
+  private final List<Observer> observers;
 
-  public Universe(Clock clock) {
+  /**
+   *
+   * @param c
+   */
+  public Universe(final Clock c) {
     this.observers = new LinkedList<>();
-    this.clock = clock;
-    outermostCell = new Neighborhood
-        (DEFAULT_GRID_SIZE,
-            new Neighborhood
-                (DEFAULT_GRID_SIZE,
-                    new Resident()
-                )
-        );
+    this.clock = c;
+    Neighborhood neighborhood = new Neighborhood(DEFAULT_GRID_SIZE,
+            new Neighborhood(DEFAULT_GRID_SIZE, new Resident()));
+    outermostCell = neighborhood;
 
-    clock.addClockListener //{=Universe.clock.subscribe}
-        (() -> {
-          // TODO: DUMMY to static final
-          Cell DUMMY = new DummyCell();
-          if (outermostCell.figureNextState
-              (DUMMY, DUMMY, DUMMY, DUMMY,
-                  DUMMY, DUMMY, DUMMY, DUMMY
-              )
-          ) {
-            if (outermostCell.transition()) {
-              //refreshNow();
-              update();
-            }
-          }
-        }
-        );
+    clock.addClockListener(() -> {
+      Cell dummy = DummyCell.getInstance();
+      boolean nextState = outermostCell.figureNextState(
+          new NearestCellsDTOBuilder()
+              .north(dummy)
+              .south(dummy)
+              .east(dummy)
+              .west(dummy)
+              .northeast(dummy)
+              .northwest(dummy)
+              .southeast(dummy)
+              .southwest(dummy).build());
+      if (nextState && outermostCell.transition()) {
+          update();
+      }
+    }
+    );
   }
 
+  /**
+   *
+   */
   public void clear() {
     outermostCell.clear();
   }
 
+  /**
+   *
+   * @throws IOException
+   */
   public void doLoad() throws IOException {
     FileInputStream in = new FileInputStream(
         Files.userSelected(".", ".life", "Life File", "Load"));
@@ -75,6 +94,10 @@ public class Universe implements Observable {
     update();
   }
 
+  /**
+   *
+   * @throws IOException
+   */
   public void doStore() throws IOException {
     FileOutputStream out = new FileOutputStream(
         Files.userSelected(".", ".life", "Life File", "Write"));
@@ -88,10 +111,25 @@ public class Universe implements Observable {
     out.close();
   }
 
+  /**
+   *
+   * @return outermostCell;
+   */
+  public Cell getOutermostCell() {
+    return outermostCell;
+  }
+
+  /**
+   *
+   * @return total cell size
+   */
   public int widthInCells() {
     return outermostCell.widthInCells();
   }
 
+  /**
+   *
+   */
   @Override
   public void update() {
     for (Observer observer : observers) {
@@ -99,13 +137,21 @@ public class Universe implements Observable {
     }
   }
 
+  /**
+   *
+   * @param observer
+   */
   @Override
-  public void attach(Observer observer) {
+  public void attach(final Observer observer) {
     observers.add(observer);
   }
 
+  /**
+   *
+   * @param observer
+   */
   @Override
-  public void detach(Observer observer) {
+  public void detach(final Observer observer) {
     observers.remove(observer);
   }
 }
