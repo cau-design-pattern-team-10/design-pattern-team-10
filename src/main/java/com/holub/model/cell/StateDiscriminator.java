@@ -94,12 +94,14 @@ public class StateDiscriminator {
   }
 
   public boolean figureNextState(Neighborhood neighborhood) {
+    final Cell[][] grid = neighborhood.getGrid();
+    final int gridSize = neighborhood.getGridSize();
     boolean nothingHappened = true;
 
     // Is some adjacent neighborhood active on the edge
     // that adjoins me?
 
-    if (amActive
+    if (neighborhood.isAmActive()
         || north.isDisruptiveTo().the(Direction.SOUTH)
         || south.isDisruptiveTo().the(Direction.NORTH)
         || east.isDisruptiveTo().the(Direction.WEST)
@@ -198,12 +200,12 @@ public class StateDiscriminator {
       }
     }
 
-    if (amActive && nothingHappened) {
-      oneLastRefreshRequired = true;
+    if (neighborhood.isAmActive() && nothingHappened) {
+      neighborhood.setOneLastRefreshRequired(true);
     }
 
-    amActive = !nothingHappened;
-    return amActive;
+    neighborhood.setAmActive(!nothingHappened);
+    return neighborhood.isAmActive();
   }
 
   private void verify(final Cell c, final String direction) {
