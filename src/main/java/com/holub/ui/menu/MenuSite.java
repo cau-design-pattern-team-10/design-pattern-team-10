@@ -116,7 +116,7 @@ public final class MenuSite {
    * Set of MenuSite.Item objects that identify all
    * items added by that requester.
    */
-  private final Map<Object, List<Object>> requesters = new HashMap<>();
+  private final Map<Object, List<Item>> requesters = new HashMap<>();
   /*** Maps "names" to the visible labels that actually
    *  appear on the screen.
    */
@@ -622,14 +622,9 @@ public final class MenuSite {
       throw new AssertionError();
     }
 
-    List<Object> allItems = requesters.remove(requester);
-
-    if (allItems != null) {
-      for (Object allItem : allItems) {
-        Item current = (Item) allItem;
-        current.detachYourselfFromYourParent();
-      }
-    }
+    Stream.ofNullable(requesters.remove(requester))
+        .flatMap(Collection::stream)
+        .forEach(Item::detachYourselfFromYourParent);
   }
 
   /*** **************************************************************
@@ -651,14 +646,10 @@ public final class MenuSite {
       throw new AssertionError();
     }
 
-    List<Object> allItems = requesters.get(requester);
-
-    if (allItems != null) {
-      for (Object allItem : allItems) {
-        Item current = (Item) allItem;
-        current.setEnableAttribute(enable);
-      }
-    }
+    Stream.ofNullable(requesters.get(requester))
+        .flatMap(Collection::stream)
+        .map(item -> (Item) item)
+        .forEach(item -> item.setEnableAttribute(enable));
   }
 
   /*** **************************************************************
@@ -696,7 +687,6 @@ public final class MenuSite {
 
     List<Item> allItems = Stream.ofNullable(requesters.get(requester))
         .flatMap(Collection::stream)
-        .map((item) -> (Item) item)
         .collect(Collectors.toList());
 
     for (Item current : allItems) {
@@ -788,7 +778,7 @@ public final class MenuSite {
    * @param requester
    * @return List of Item
    */
-  private LinkedList<Object> menusAddedBy(final Object requester) {
+  private LinkedList<Item> menusAddedBy(final Object requester) {
     if (requester == null) {
       throw new AssertionError("Bad argument");
     }
@@ -799,7 +789,7 @@ public final class MenuSite {
       throw new AssertionError();
     }
 
-    LinkedList<Object> menus = Stream.ofNullable(requesters.get(requester))
+    LinkedList<Item> menus = Stream.ofNullable(requesters.get(requester))
         .flatMap(Collection::stream)
         .collect(Collectors.toCollection(LinkedList::new));
     requesters.put(requester, menus);
