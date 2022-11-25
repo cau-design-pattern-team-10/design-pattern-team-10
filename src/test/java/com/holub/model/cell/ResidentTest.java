@@ -1,7 +1,5 @@
 package com.holub.model.cell;
 
-import com.holub.tools.Observable;
-import com.holub.tools.Observer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

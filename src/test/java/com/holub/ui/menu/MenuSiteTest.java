@@ -1,6 +1,5 @@
 package com.holub.ui.menu;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -13,40 +12,28 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class MenuSiteTest extends JFrame {
-
-  static MenuSiteTest instance; // = new Test();
-  static boolean isDisabled1 = false;
-  static boolean isDisabled2 = false;
-
+class MenuSiteTest {
   MenuSite menuSite;
+  JFrame testFrame;
+  boolean isDisabled1;
+  boolean isDisabled2;
 
-  MenuSiteTest() {
-    this.menuSite = new MenuSite();
-    setSize(400, 200);
-    addWindowListener(new WindowAdapter() {
+  @BeforeEach
+  void initialize() {
+    menuSite = new MenuSite();
+    testFrame = new JFrame();
+    testFrame.setSize(400, 200);
+    testFrame.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
         System.exit(1);
       }
     });
-    menuSite.establish(this);
-    show();
+    menuSite.establish(testFrame);
+    testFrame.show();
   }
-
-  //------------------------------------------------------------
-  static class RemoveListener implements ActionListener {
-    MenuSite menuSite;
-    RemoveListener(MenuSite menuSite) {
-      this.menuSite = menuSite;
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      menuSite.removeMyMenus(instance);
-    }
-  }
-  //------------------------------------------------------------
 
   @Test()
   void menuSiteTest() throws UnsupportedLookAndFeelException,
@@ -54,8 +41,6 @@ class MenuSiteTest extends JFrame {
       IOException {
     com.holub.tools.Log.toScreen("com.holub.ui");
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-    instance = this;
 
     // Create a generic reporter.
 
@@ -78,24 +63,24 @@ class MenuSiteTest extends JFrame {
 
     // Now, make a few more menus.
 
-    menuSite.addMenu(instance, "Main");
-    menuSite.addLine(instance, "Main", "Add Line Item to Menu",
-        e -> menuSite.addLine(instance, "Main", "Remove Main and Help menus",
-            e1 -> menuSite.removeMyMenus(instance)));
+    menuSite.addMenu(testFrame, "Main");
+    menuSite.addLine(testFrame, "Main", "Add Line Item to Menu",
+        e -> menuSite.addLine(testFrame, "Main", "Remove Main and Help menus",
+            e1 -> menuSite.removeMyMenus(testFrame)));
 
     //---------------------------------------------------------
-    menuSite.addLine(instance, "Main", "-", null);
+    menuSite.addLine(testFrame, "Main", "-", null);
     //---------------------------------------------------------
     final Object disable1 = new Object();
 
-    menuSite.addLine(instance, "Main", "Toggle1", e -> {
+    menuSite.addLine(testFrame, "Main", "Toggle1", e -> {
       isDisabled1 = !isDisabled1;
       menuSite.setEnable(disable1, !isDisabled1);
-      Objects.requireNonNull(menuSite.getMyMenuItem(instance, "Main", "Toggle1"))
+      Objects.requireNonNull(menuSite.getMyMenuItem(testFrame, "Main", "Toggle1"))
         .setText(isDisabled1 ? "Enable following Item" : "Disable following Item");
 
     });
-    Objects.requireNonNull(menuSite.getMyMenuItem(instance,
+    Objects.requireNonNull(menuSite.getMyMenuItem(testFrame,
         "Main", "Toggle1")).setText("Disable following Item");
 
     menuSite.addLine(disable1, "Main", "Disabled", reportIt);
@@ -103,13 +88,13 @@ class MenuSiteTest extends JFrame {
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     final Object disable2 = new Object();
 
-    menuSite.addLine(instance, "Main", "Toggle2", e -> {
+    menuSite.addLine(testFrame, "Main", "Toggle2", e -> {
       isDisabled2 = !isDisabled2;
       menuSite.setEnable(disable2, !isDisabled2);
-      menuSite.getMyMenuItem(instance, "Main", "Toggle2")
+      menuSite.getMyMenuItem(testFrame, "Main", "Toggle2")
         .setText(isDisabled2 ? "Enable following Item" : "Disable following Item");
     });
-    Objects.requireNonNull(menuSite.getMyMenuItem(instance,
+    Objects.requireNonNull(menuSite.getMyMenuItem(testFrame,
         "Main", "Toggle2")).setText("Disable following Item");
     menuSite.addLine(disable2, "Main", "Disabled", reportIt);
 
@@ -128,18 +113,18 @@ class MenuSiteTest extends JFrame {
     // that remove the submenus to make sure that removal works
     // correctly.
 
-    menuSite.addLine(instance, "Main", "-", null);
-    menuSite.addLine(instance, "Main:Submenu1", "Submenu One Item", reportIt);
-    menuSite.addLine(instance, "Main:Submenu2", "Submenu Two Item", reportIt);
-    menuSite.addLine(instance, "Main:Submenu3", "Submenu Three Item", reportIt);
-    menuSite.addLine(instance, "Main:Submenu2:SubSubmenu2", "Sub-Submenu Two Item", reportIt);
+    menuSite.addLine(testFrame, "Main", "-", null);
+    menuSite.addLine(testFrame, "Main:Submenu1", "Submenu One Item", reportIt);
+    menuSite.addLine(testFrame, "Main:Submenu2", "Submenu Two Item", reportIt);
+    menuSite.addLine(testFrame, "Main:Submenu3", "Submenu Three Item", reportIt);
+    menuSite.addLine(testFrame, "Main:Submenu2:SubSubmenu2", "Sub-Submenu Two Item", reportIt);
 
-    menuSite.addLine(instance, "Main:Submenu3:SubSubmenu3", "Sub-Submenu Three Item", reportIt);
+    menuSite.addLine(testFrame, "Main:Submenu3:SubSubmenu3", "Sub-Submenu Three Item", reportIt);
 
-    menuSite.addLine(instance, "Main:Submenu3:SubSubmenu3:SubSubSubmenu3",
+    menuSite.addLine(testFrame, "Main:Submenu3:SubSubmenu3:SubSubSubmenu3",
         "Sub-Sub-Submenu Three Item", reportIt);
 
-    menuSite.addLine(instance, "Main", "-", null);
+    menuSite.addLine(testFrame, "Main", "-", null);
 
     // Check that the map file works correctly.
     // Items 5 and 6 are deliberately malformed in the map
@@ -150,20 +135,20 @@ class MenuSiteTest extends JFrame {
     System.out.println(currentRelativePath.toAbsolutePath());
     menuSite.mapNames(new URL("file:" + currentRelativePath.toAbsolutePath()));
 
-    menuSite.addLine(instance, "Main", "item.1", reportIt);
-    menuSite.addLine(instance, "Main", "item.2", reportIt);
-    menuSite.addLine(instance, "Main", "item.3", reportIt);
-    menuSite.addLine(instance, "Main", "item.4", reportIt);
-    menuSite.addLine(instance, "Main", "item.5", reportIt);
-    menuSite.addLine(instance, "Main", "item.6", reportIt);
-    menuSite.addLine(instance, "Main", "item.7", reportIt);
+    menuSite.addLine(testFrame, "Main", "item.1", reportIt);
+    menuSite.addLine(testFrame, "Main", "item.2", reportIt);
+    menuSite.addLine(testFrame, "Main", "item.3", reportIt);
+    menuSite.addLine(testFrame, "Main", "item.4", reportIt);
+    menuSite.addLine(testFrame, "Main", "item.5", reportIt);
+    menuSite.addLine(testFrame, "Main", "item.6", reportIt);
+    menuSite.addLine(testFrame, "Main", "item.7", reportIt);
 
     // Create a help menu. Do it in the middle of things
     // to make sure that it ends up on the far right.
     // Use all three mechanisms for adding menu items directly
     // using the menu's "name," and using the menu's "text").
 
-    menuSite.addLine(instance, "Help", "Get Help", reportIt);
+    menuSite.addLine(testFrame, "Help", "Get Help", reportIt);
 
     // Create a second "requester" and have it add a Removal
     // menu with the name RemovalMenu. Picking that menu
