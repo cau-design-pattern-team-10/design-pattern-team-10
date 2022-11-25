@@ -7,29 +7,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @fileName : StateDiscriminator.java
- * @Description : {@link Resident}와 {@link Neighborhood}의 figureNextState 메서드를
+ *
+ * {@link Resident}와 {@link Neighborhood}의 figureNextState 메서드를
  * 분리하는 클래스
  */
 
 public class StateDiscriminator {
-
   /**
    *
    */
-  Cell north;
-  Cell south;
-  Cell east;
-  Cell west;
-  Cell northeast;
-  Cell northwest;
-  Cell southeast;
-  Cell southwest;
-
+  private List<Cell> neighborsList;
   /**
    *
    */
-  List<Cell> neighborsList;
+  private final List<String> directionList = new ArrayList<>(
+      List.of(
+          "north", "south", "east", "west",
+          "northeast", "northwest", "southeast", "southwest"
+      ));
 
   /**
    *
@@ -37,20 +32,22 @@ public class StateDiscriminator {
    *
    */
   public StateDiscriminator(final NearestCellsDTO dto) {
-    north = dto.getNorth();
-    south = dto.getSouth();
-    east = dto.getEast();
-    west = dto.getWest();
-    northeast = dto.getNortheast();
-    northwest = dto.getNorthwest();
-    southeast = dto.getSoutheast();
-    southwest = dto.getSouthwest();
-
     neighborsList = new ArrayList<>(
-        List.of(north, south, east, west, northeast, northwest, southeast, southwest)
-    );
+        List.of(
+            dto.getNorth(),
+            dto.getSouth(),
+            dto.getEast(),
+            dto.getWest(),
+            dto.getNortheast(),
+            dto.getNorthwest(),
+            dto.getSoutheast(),
+            dto.getSouthwest()
+        ));
   }
 
+  /**
+   *
+   */
   private static final int ALIVE_NEIGHBOR_NUM = 2;
   /**
    *
@@ -63,20 +60,17 @@ public class StateDiscriminator {
    * @return
    */
   public boolean figureNextState(Resident resident) {
-    verify(north, "north");
-    verify(south, "south");
-    verify(east, "east");
-    verify(west, "west");
-    verify(northeast, "northeast");
-    verify(northwest, "northwest");
-    verify(southeast, "southeast");
-    verify(southwest, "southwest");
+    for(int i = 0; i < neighborsList.size(); ++i){
+      verify(neighborsList.get(i), directionList.get(i));
+    }
 
     int neighbors = 0;
 
-    for(Cell neighbor : neighborsList)
-      if(neighbor.isAlive())
+    for(Cell neighbor : neighborsList){
+      if(neighbor.isAlive()){
         ++neighbors;
+      }
+    }
 
     resident.setWillBeAlive( (neighbors == GENERATING_NEIGHBOR_NUM
         || (resident.isAlive() && neighbors == ALIVE_NEIGHBOR_NUM))
@@ -100,14 +94,14 @@ public class StateDiscriminator {
     // that adjoins me?
 
     if (neighborhood.isAmActive()
-        || north.isDisruptiveTo().the(Direction.SOUTH)
-        || south.isDisruptiveTo().the(Direction.NORTH)
-        || east.isDisruptiveTo().the(Direction.WEST)
-        || west.isDisruptiveTo().the(Direction.EAST)
-        || northeast.isDisruptiveTo().the(Direction.SOUTHWEST)
-        || northwest.isDisruptiveTo().the(Direction.SOUTHEAST)
-        || southeast.isDisruptiveTo().the(Direction.NORTHWEST)
-        || southwest.isDisruptiveTo().the(Direction.NORTHEAST)
+        || neighborsList.get(0).isDisruptiveTo().the(Direction.SOUTH)
+        || neighborsList.get(1).isDisruptiveTo().the(Direction.NORTH)
+        || neighborsList.get(2).isDisruptiveTo().the(Direction.WEST)
+        || neighborsList.get(3).isDisruptiveTo().the(Direction.EAST)
+        || neighborsList.get(4).isDisruptiveTo().the(Direction.SOUTHWEST)
+        || neighborsList.get(5).isDisruptiveTo().the(Direction.SOUTHEAST)
+        || neighborsList.get(6).isDisruptiveTo().the(Direction.NORTHWEST)
+        || neighborsList.get(7).isDisruptiveTo().the(Direction.NORTHEAST)
     ) {
       Cell northCell;
       Cell southCell;
@@ -124,53 +118,53 @@ public class StateDiscriminator {
 
           if (row == 0) {
             northwestCell = (column == 0)
-                ? northwest.edge(gridSize - 1, gridSize - 1)
-                : north.edge(gridSize - 1, column - 1);
+                ? neighborsList.get(5).edge(gridSize - 1, gridSize - 1)
+                : neighborsList.get(0).edge(gridSize - 1, column - 1);
 
-            northCell = north.edge(gridSize - 1, column);
+            northCell = neighborsList.get(0).edge(gridSize - 1, column);
 
             northeastCell = (column == gridSize - 1)
-                ? northeast.edge(gridSize - 1, 0)
-                : north.edge(gridSize - 1, column + 1);
+                ? neighborsList.get(4).edge(gridSize - 1, 0)
+                : neighborsList.get(0).edge(gridSize - 1, column + 1);
           } else {
             northwestCell = (column == 0)
-                ? west.edge(row - 1, gridSize - 1)
+                ? neighborsList.get(3).edge(row - 1, gridSize - 1)
                 : grid[row - 1][column - 1];
 
             northCell = grid[row - 1][column];
 
             northeastCell = (column == gridSize - 1)
-                ? east.edge(row - 1, 0)
+                ? neighborsList.get(2).edge(row - 1, 0)
                 : grid[row - 1][column + 1];
           }
 
           westCell = (column == 0)
-              ? west.edge(row, gridSize - 1)
+              ? neighborsList.get(3).edge(row, gridSize - 1)
               : grid[row][column - 1];
 
           eastCell = (column == gridSize - 1)
-              ? east.edge(row, 0)
+              ? neighborsList.get(2).edge(row, 0)
               : grid[row][column + 1];
 
           if (row == gridSize - 1) {
             southwestCell = (column == 0)
-                ? southwest.edge(0, gridSize - 1)
-                : south.edge(0, column - 1);
+                ? neighborsList.get(7).edge(0, gridSize - 1)
+                : neighborsList.get(1).edge(0, column - 1);
 
-            southCell = south.edge(0, column);
+            southCell = neighborsList.get(1).edge(0, column);
 
             southeastCell = (column == gridSize - 1)
-                ? southeast.edge(0, 0)
-                : south.edge(0, column + 1);
+                ? neighborsList.get(6).edge(0, 0)
+                : neighborsList.get(1).edge(0, column + 1);
           } else {
             southwestCell = (column == 0)
-                ? west.edge(row + 1, gridSize - 1)
+                ? neighborsList.get(3).edge(row + 1, gridSize - 1)
                 : grid[row + 1][column - 1];
 
             southCell = grid[row + 1][column];
 
             southeastCell = (column == gridSize - 1)
-                ? east.edge(row + 1, 0)
+                ? neighborsList.get(2).edge(row + 1, 0)
                 : grid[row + 1][column + 1];
           }
 
