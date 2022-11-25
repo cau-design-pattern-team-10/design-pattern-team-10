@@ -36,6 +36,8 @@ public final class Resident implements Cell {
   /**
    *
    */
+  @Getter
+  @Setter
   private boolean willBeAlive = false;
 
   /**

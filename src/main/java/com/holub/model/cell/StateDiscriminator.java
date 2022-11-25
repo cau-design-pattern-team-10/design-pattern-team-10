@@ -8,29 +8,46 @@ package com.holub.model.cell;
  */
 
 public class StateDiscriminator {
+
   /**
    *
    */
+  Cell north;
+  Cell south;
+  Cell east;
+  Cell west;
+  Cell northeast;
+  Cell northwest;
+  Cell southeast;
+  Cell southwest;
+
+  /**
+   *
+   * @param dto
+   *
+   */
+  public StateDiscriminator(final NearestCellsDTO dto) {
+    north = dto.getNorth();
+    south = dto.getSouth();
+    east = dto.getEast();
+    west = dto.getWest();
+    northeast = dto.getNortheast();
+    northwest = dto.getNorthwest();
+    southeast = dto.getSoutheast();
+    southwest = dto.getSouthwest();
+  }
+
   private static final int ALIVE_NEIGHBOR_NUM = 2;
   /**
    *
    */
   private static final int GENERATING_NEIGHBOR_NUM = 3;
-
   /**
    *
-   * @param dto
+   * @param resident
    * @return
    */
-  public boolean figureNextState(final NearestCellsDTO dto) {
-    final Cell north = dto.getNorth();
-    final Cell south = dto.getSouth();
-    final Cell east = dto.getEast();
-    final Cell west = dto.getWest();
-    final Cell northeast = dto.getNortheast();
-    final Cell northwest = dto.getNorthwest();
-    final Cell southeast = dto.getSoutheast();
-    final Cell southwest = dto.getSouthwest();
+  public boolean figureNextState(Resident resident) {
     verify(north, "north");
     verify(south, "south");
     verify(east, "east");
@@ -67,9 +84,10 @@ public class StateDiscriminator {
       ++neighbors;
     }
 
-    willBeAlive = (neighbors == GENERATING_NEIGHBOR_NUM
-        || (alive && neighbors == ALIVE_NEIGHBOR_NUM));
-    return !isStable();
+    resident.setWillBeAlive( (neighbors == GENERATING_NEIGHBOR_NUM
+        || (resident.isAlive() && neighbors == ALIVE_NEIGHBOR_NUM))
+    );
+    return resident.isAlive() == resident.isWillBeAlive();
   }
 
   private void verify(final Cell c, final String direction) {
