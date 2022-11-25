@@ -3,6 +3,8 @@ package com.holub.model.cell;
 
 import com.holub.life.Direction;
 import com.holub.model.cell.NearestCellsDTO.NearestCellsDTOBuilder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @fileName : StateDiscriminator.java
@@ -26,6 +28,11 @@ public class StateDiscriminator {
 
   /**
    *
+   */
+  List<Cell> neighborsList;
+
+  /**
+   *
    * @param dto
    *
    */
@@ -38,6 +45,10 @@ public class StateDiscriminator {
     northwest = dto.getNorthwest();
     southeast = dto.getSoutheast();
     southwest = dto.getSouthwest();
+
+    neighborsList = new ArrayList<>(
+        List.of(north, south, east, west, northeast, northwest, southeast, southwest)
+    );
   }
 
   private static final int ALIVE_NEIGHBOR_NUM = 2;
@@ -46,6 +57,7 @@ public class StateDiscriminator {
    */
   private static final int GENERATING_NEIGHBOR_NUM = 3;
   /**
+   * Resident 인스턴스에 대한 메소드
    *
    * @param resident
    * @return
@@ -62,37 +74,23 @@ public class StateDiscriminator {
 
     int neighbors = 0;
 
-    if (north.isAlive()) {
-      ++neighbors;
-    }
-    if (south.isAlive()) {
-      ++neighbors;
-    }
-    if (east.isAlive()) {
-      ++neighbors;
-    }
-    if (west.isAlive()) {
-      ++neighbors;
-    }
-    if (northeast.isAlive()) {
-      ++neighbors;
-    }
-    if (northwest.isAlive()) {
-      ++neighbors;
-    }
-    if (southeast.isAlive()) {
-      ++neighbors;
-    }
-    if (southwest.isAlive()) {
-      ++neighbors;
-    }
+    for(Cell neighbor : neighborsList)
+      if(neighbor.isAlive())
+        ++neighbors;
 
     resident.setWillBeAlive( (neighbors == GENERATING_NEIGHBOR_NUM
         || (resident.isAlive() && neighbors == ALIVE_NEIGHBOR_NUM))
     );
+
     return resident.isAlive() == resident.isWillBeAlive();
   }
 
+  /**
+   * Neighborhood 인스턴스에 대한 메소드
+   *
+   * @param neighborhood
+   * @return
+   */
   public boolean figureNextState(Neighborhood neighborhood) {
     final Cell[][] grid = neighborhood.getGrid();
     final int gridSize = neighborhood.getGridSize();
