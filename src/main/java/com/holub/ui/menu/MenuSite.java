@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,8 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -115,7 +116,7 @@ public final class MenuSite {
    * Set of MenuSite.Item objects that identify all
    * items added by that requester.
    */
-  private final Map<Object, List> requesters = new HashMap<>();
+  private final Map<Object, List<Item>> requesters = new HashMap<>();
   /*** Maps "names" to the visible labels that actually
    *  appear on the screen.
    */
@@ -342,11 +343,11 @@ public final class MenuSite {
       if (!m.matches()) {
         i.setText(name);
         Logger.getLogger("com.holub.ui").warning(
-                "Bad "
-                    + "name-to-label map entry:"
-                    + "\n\tinput=[" + name + "=" + label + "]"
-                    + "\n\tSetting label to " + name
-            );
+            "Bad "
+                + "name-to-label map entry:"
+                + "\n\tinput=[" + name + "=" + label + "]"
+                + "\n\tSetting label to " + name
+        );
       } else {
         i.setText(m.group(1));
 
@@ -356,9 +357,9 @@ public final class MenuSite {
         if (shortcut != null) {
           if (shortcut.length() == 1) {
             i.setAccelerator(KeyStroke.getKeyStroke(
-                    shortcut.toUpperCase().charAt(0),
-                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(),
-                        false));
+                shortcut.toUpperCase().charAt(0),
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(),
+                false));
           } else {
             KeyStroke key = KeyStroke.getKeyStroke(shortcut);
             if (key != null) {
@@ -376,7 +377,6 @@ public final class MenuSite {
   }
 
   /**
-   *
    * @return menuFrame
    */
   public JFrame getMenuFrame() {
@@ -384,7 +384,6 @@ public final class MenuSite {
   }
 
   /**
-   *
    * @param mb
    */
   public void setMenuBar(final JMenuBar mb) {
@@ -392,7 +391,6 @@ public final class MenuSite {
   }
 
   /**
-   *
    * @return menuBar
    */
   public JMenuBar getMenuBar() {
@@ -437,7 +435,6 @@ public final class MenuSite {
   }
 
   /**
-   *
    * @param menuItem
    */
   public void register(final MenuItem menuItem) {
@@ -625,14 +622,9 @@ public final class MenuSite {
       throw new AssertionError();
     }
 
-    List<Object> allItems = requesters.remove(requester);
-
-    if (allItems != null) {
-      for (Object allItem : allItems) {
-        Item current = (Item) allItem;
-        current.detachYourselfFromYourParent();
-      }
-    }
+    Stream.ofNullable(requesters.remove(requester))
+        .flatMap(Collection::stream)
+        .forEach(Item::detachYourselfFromYourParent);
   }
 
   /*** **************************************************************
@@ -654,15 +646,10 @@ public final class MenuSite {
       throw new AssertionError();
     }
 
-    Collection allItems = (Collection) (requesters.get(requester));
-
-    if (allItems != null) {
-      Iterator i = allItems.iterator();
-      while (i.hasNext()) {
-        Item current = (Item) i.next();
-        current.setEnableAttribute(enable);
-      }
-    }
+    Stream.ofNullable(requesters.get(requester))
+        .flatMap(Collection::stream)
+        .map(item -> (Item) item)
+        .forEach(item -> item.setEnableAttribute(enable));
   }
 
   /*** **************************************************************
@@ -698,22 +685,22 @@ public final class MenuSite {
       throw new AssertionError();
     }
 
-    List<Item> allItems = (List<Item>) requesters.get(requester);
+    List<Item> allItems = Stream.ofNullable(requesters.get(requester))
+        .flatMap(Collection::stream)
+        .collect(Collectors.toList());
 
-    if (allItems != null) {
-      for (Item current: allItems) {
-        if (current.specifiedBy(menuSpecifier)) {
-          if (current.item() instanceof JSeparator) {
-            continue;
-          }
+    for (Item current : allItems) {
+      if (current.specifiedBy(menuSpecifier)) {
+        if (current.item() instanceof JSeparator) {
+          continue;
+        }
 
-          if (name == null && current.item() instanceof JMenu) {
-            return (JMenu) (current.item());
-          }
+        if (name == null && current.item() instanceof JMenu) {
+          return (JMenu) (current.item());
+        }
 
-          if (current.item().getName().equals(name)) {
-            return (JMenuItem) current.item();
-          }
+        if (current.item().getName().equals(name)) {
+          return (JMenuItem) current.item();
         }
       }
     }
@@ -722,12 +709,12 @@ public final class MenuSite {
 
 
   /**
-   *
    * @return menuBarContent
    */
   public LinkedList<Item> getMenuBarContents() {
     return menuBarContents;
   }
+
   /*** **************************************************************
    * Find the submenu specified by <code>specifier</code>. If it
    * doesn't exist, create it.
@@ -791,7 +778,7 @@ public final class MenuSite {
    * @param requester
    * @return List of Item
    */
-  private Collection menusAddedBy(final Object requester) {
+  private LinkedList<Item> menusAddedBy(final Object requester) {
     if (requester == null) {
       throw new AssertionError("Bad argument");
     }
@@ -802,11 +789,10 @@ public final class MenuSite {
       throw new AssertionError();
     }
 
-    List<Item> menus = requesters.get(requester);
-    if (menus == null) {
-      menus = new LinkedList<>();
-      requesters.put(requester, menus);
-    }
+    LinkedList<Item> menus = Stream.ofNullable(requesters.get(requester))
+        .flatMap(Collection::stream)
+        .collect(Collectors.toCollection(LinkedList::new));
+    requesters.put(requester, menus);
     return menus;
   }
 }
