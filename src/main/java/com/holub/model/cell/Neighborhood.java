@@ -13,6 +13,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /***
  * A group of {@link Cell} objects. Cells are grouped into neighborhoods
@@ -50,11 +52,13 @@ public final class Neighborhood implements Cell {
   /**
    * The actual grid of Cells contained within this neighborhood.
    */
+  @Getter
   private final Cell[][] grid;
   /**
    * The neighborhood is square, so gridSize is both the horizontal and
    * vertical size.
    */
+  @Getter
   private final int gridSize;
   /**
    *
@@ -65,11 +69,14 @@ public final class Neighborhood implements Cell {
    * state during the last transition.
    */
 
+  @Getter
+  @Setter
   private boolean amActive = false;
   /**
    * Became stable on the last clock tick. One more refresh is required.
    */
-
+  @Getter
+  @Setter
   private boolean oneLastRefreshRequired = false;
   /**
    *
@@ -106,59 +113,11 @@ public final class Neighborhood implements Cell {
 
   /**
    *
-   * @return gridSize
-   */
-  public int getGridSize() {
-    return gridSize;
-  }
-
-  /**
-   *
-   * @return grid
-   */
-  public Cell[][] getGrid() {
-    return grid;
-  }
-
-
-  /**
-   *
-   * @return is this cell amActive
-   */
-  public boolean isAmActive() {
-    return amActive;
-  }
-
-  /**
-   * @param newAmActive
-   */
-  public void setAmActive(final boolean newAmActive) {
-    this.amActive = newAmActive;
-  }
-
-  /**
-   *
    * @return how many cell
    */
 
   public Cell create() {
     return new Neighborhood(gridSize, grid[0][0]);
-  }
-
-  /**
-   *
-   * @return refresh required
-   */
-  public boolean isOneLastRefreshRequired() {
-    return oneLastRefreshRequired;
-  }
-
-  /**
-   * @param newOneLastRefreshRequired
-   */
-  public void setOneLastRefreshRequired(
-      final boolean newOneLastRefreshRequired) {
-    this.oneLastRefreshRequired = newOneLastRefreshRequired;
   }
 
   /**
@@ -444,7 +403,7 @@ public final class Neighborhood implements Cell {
       final boolean load) {
     int subcellWidth = grid[0][0].widthInCells();
     int myWidth = widthInCells();
-    Point upperLeft = new Point(corner);
+    Point upperLeft = corner.toBuilder().build();
 
     for (int row = 0; row < gridSize; ++row) {
       for (int column = 0; column < gridSize; ++column) {
@@ -547,7 +506,7 @@ public final class Neighborhood implements Cell {
     }
 
     public void markAsAlive(final Point location) {
-      liveCells.add(new Point(location));
+      liveCells.add(location.toBuilder().build());
     }
 
     public boolean isAlive(final Point location) {

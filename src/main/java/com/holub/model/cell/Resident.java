@@ -6,6 +6,8 @@ import com.holub.tools.Observer;
 import com.holub.tools.Storable;
 import java.util.LinkedList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /*** ****************************************************************
  * The Resident class implements a single cell---a "resident" of a
@@ -28,11 +30,9 @@ public final class Resident implements Cell {
   /**
    *
    */
-  private boolean updated;
-  /**
-   *
-   */
-  private boolean amAlive = false;
+  @Getter
+  @Setter
+  private boolean alive = false;
   /**
    *
    */
@@ -50,8 +50,7 @@ public final class Resident implements Cell {
    *
    */
   public void toggle() {
-    amAlive = !amAlive;
-    updated = true;
+    alive = !alive;
   }
 
   /**
@@ -59,7 +58,7 @@ public final class Resident implements Cell {
    * @return currentState equals nextState
    */
   private boolean isStable() {
-    return amAlive == willBeAlive;
+    return alive == willBeAlive;
   }
 
   /**
@@ -69,7 +68,7 @@ public final class Resident implements Cell {
    * @return true if the cell is not stable (will change state on the next
    * transition().
    */
-  public boolean figureNextState(NearestCellsDTO dto) {
+  public boolean figureNextState(final NearestCellsDTO dto) {
     final Cell north = dto.getNorth();
     final Cell south = dto.getSouth();
     final Cell east = dto.getEast();
@@ -115,7 +114,7 @@ public final class Resident implements Cell {
     }
 
     willBeAlive = (neighbors == GENERATING_NEIGHBOR_NUM
-        || (amAlive && neighbors == ALIVE_NEIGHBOR_NUM));
+        || (alive && neighbors == ALIVE_NEIGHBOR_NUM));
     return !isStable();
   }
 
@@ -147,7 +146,7 @@ public final class Resident implements Cell {
    */
   public boolean transition() {
     boolean changed = isStable();
-    amAlive = willBeAlive;
+    alive = willBeAlive;
     return changed;
   }
 
@@ -155,16 +154,8 @@ public final class Resident implements Cell {
    *
    */
   public void clear() {
-    amAlive = false;
+    alive = false;
     willBeAlive = false;
-  }
-
-  /**
-   *
-   * @return Is this cell alive
-   */
-  public boolean isAlive() {
-    return amAlive;
   }
 
   /**
@@ -202,12 +193,12 @@ public final class Resident implements Cell {
       final Point upperLeft, final boolean doLoad) {
     Memento memento = (Memento) blob;
     if (doLoad) {
-      amAlive = memento.isAlive(upperLeft);
-      willBeAlive = amAlive;
-      if (amAlive) {
+      alive = memento.isAlive(upperLeft);
+      willBeAlive = alive;
+      if (alive) {
         return true;
       }
-    } else if (amAlive) {
+    } else if (alive) {
       memento.markAsAlive(upperLeft);
     }
     update();
@@ -230,7 +221,6 @@ public final class Resident implements Cell {
     for (Observer o : observers) {
       o.detectUpdate(this);
     }
-    updated = false;
   }
 
   @Override

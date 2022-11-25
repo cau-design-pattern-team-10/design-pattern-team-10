@@ -4,7 +4,7 @@ import com.holub.io.Files;
 import com.holub.model.Point;
 import com.holub.model.cell.Cell;
 import com.holub.model.cell.DummyCell;
-import com.holub.model.cell.NearestCellsDTO.NearestCellsDTOBuilder;
+import com.holub.model.cell.NearestCellsDTO;
 import com.holub.model.cell.Neighborhood;
 import com.holub.model.cell.Resident;
 import com.holub.tools.Observable;
@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import lombok.Getter;
 
 public class Universe implements Observable {
 
@@ -28,6 +29,7 @@ public class Universe implements Observable {
   /**
    *
    */
+  @Getter
   private final Neighborhood outermostCell;
   /**
    *
@@ -52,7 +54,7 @@ public class Universe implements Observable {
     clock.addClockListener(() -> {
       Cell dummy = DummyCell.getInstance();
       boolean nextState = outermostCell.figureNextState(
-          new NearestCellsDTOBuilder()
+         NearestCellsDTO.builder()
               .north(dummy)
               .south(dummy)
               .east(dummy)
@@ -109,14 +111,6 @@ public class Universe implements Observable {
     memento.flush(out);
 
     out.close();
-  }
-
-  /**
-   *
-   * @return outermostCell;
-   */
-  public Cell getOutermostCell() {
-    return outermostCell;
   }
 
   /**
