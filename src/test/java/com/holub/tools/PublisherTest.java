@@ -1,5 +1,6 @@
 package com.holub.tools;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class PublisherTest {
@@ -80,10 +81,7 @@ class PublisherTest {
       ++errors;
     } catch (Exception e) { /*everything's okay, do nothing*/ }
 
-    if (errors == 0) {
-      System.err.println("com.holub.tools.Publisher: OKAY");
-    }
-    System.exit(errors);
+    Assertions.assertEquals(0, errors);
   }
 
 }
