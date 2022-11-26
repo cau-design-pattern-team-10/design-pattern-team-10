@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 
 class ResidentTest {
   @Test
-  void TestCreate() {
+  void testCreate() {
     Resident resident = new Resident();
     Assertions.assertFalse(resident.isAlive());
   }
 
   @Test
-  void TestToggle() {
+  void testToggle() {
     Resident resident = new Resident();
     boolean previousState = resident.isAlive();
     resident.toggle();
@@ -19,17 +19,18 @@ class ResidentTest {
   }
 
   @Test
-  void TestUpdate() {
+  void testUpdate() {
     Resident resident = new Resident();
     resident.attach(o -> Assertions.assertEquals(resident, o));
     resident.update();
   }
 
   @Test
-  void TestToggleUpdate() {
+  void testToggleUpdate() {
     Resident resident = new Resident();
     boolean previousState = resident.isAlive();
-    resident.attach(o -> Assertions.assertEquals(previousState, resident.isAlive()));
+    resident.attach(o ->
+        Assertions.assertEquals(previousState, resident.isAlive()));
     resident.toggle();
   }
 }
