@@ -7,9 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * {@link Resident}와 {@link Neighborhood}의 figureNextState 메서드를
- * 분리하는 클래스
+ * 분리하는 클래스.
  */
 
 public class StateDiscriminator {
@@ -20,7 +19,7 @@ public class StateDiscriminator {
   /**
    *
    */
-  private final List<String> directionList = new ArrayList<>(
+  private final List<String> directionNameList = new ArrayList<>(
       List.of(
           "north", "south", "east", "west",
           "northeast", "northwest", "southeast", "southwest"
@@ -54,25 +53,26 @@ public class StateDiscriminator {
    */
   private static final int GENERATING_NEIGHBOR_NUM = 3;
   /**
-   * Resident 인스턴스에 대한 메소드
+   * Resident 인스턴스에 대한 메소드.
    *
    * @param resident
-   * @return
+   * @return true if the cell is not stable (will change state on the next
+   * transition().
    */
-  public boolean figureNextState(Resident resident) {
-    for(int i = 0; i < neighborsList.size(); ++i){
-      verify(neighborsList.get(i), directionList.get(i));
+  public boolean figureNextState(final Resident resident) {
+    for (int i = 0; i < neighborsList.size(); ++i) {
+      verify(neighborsList.get(i), directionNameList.get(i));
     }
 
     int neighbors = 0;
 
-    for(Cell neighbor : neighborsList){
-      if(neighbor.isAlive()){
+    for (Cell neighbor : neighborsList) {
+      if (neighbor.isAlive()) {
         ++neighbors;
       }
     }
 
-    resident.setWillBeAlive( (neighbors == GENERATING_NEIGHBOR_NUM
+    resident.setWillBeAlive ((neighbors == GENERATING_NEIGHBOR_NUM
         || (resident.isAlive() && neighbors == ALIVE_NEIGHBOR_NUM))
     );
 
@@ -85,7 +85,7 @@ public class StateDiscriminator {
    * @param neighborhood
    * @return
    */
-  public boolean figureNextState(Neighborhood neighborhood) {
+  public boolean figureNextState(final Neighborhood neighborhood) {
     final Cell[][] grid = neighborhood.getGrid();
     final int gridSize = neighborhood.getGridSize();
     boolean nothingHappened = true;
@@ -93,16 +93,21 @@ public class StateDiscriminator {
     // Is some adjacent neighborhood active on the edge
     // that adjoins me?
 
-    if (neighborhood.isAmActive()
-        || neighborsList.get(0).isDisruptiveTo().the(Direction.SOUTH)
-        || neighborsList.get(1).isDisruptiveTo().the(Direction.NORTH)
-        || neighborsList.get(2).isDisruptiveTo().the(Direction.WEST)
-        || neighborsList.get(3).isDisruptiveTo().the(Direction.EAST)
-        || neighborsList.get(4).isDisruptiveTo().the(Direction.SOUTHWEST)
-        || neighborsList.get(5).isDisruptiveTo().the(Direction.SOUTHEAST)
-        || neighborsList.get(6).isDisruptiveTo().the(Direction.NORTHWEST)
-        || neighborsList.get(7).isDisruptiveTo().the(Direction.NORTHEAST)
-    ) {
+    List<Direction> directionList= new ArrayList<>(
+        List.of(
+            Direction.SOUTH, Direction.NORTH, Direction.WEST, Direction.EAST,
+            Direction.SOUTHWEST, Direction.SOUTHEAST, Direction.NORTHWEST, Direction.NORTHEAST
+        ));
+
+    boolean disrupted = false;
+    for (int i = 0; i < 8; ++i) {
+      disrupted = neighborsList.get(i).isDisruptiveTo().the(directionList.get(i));
+      if (disrupted) {
+        break;
+      }
+    }
+
+    if (neighborhood.isAmActive() || disrupted) {
       Cell northCell;
       Cell southCell;
       Cell eastCell;
