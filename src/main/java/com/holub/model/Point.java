@@ -12,6 +12,10 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 public class Point implements Serializable {
 
+  public Point(java.awt.Point p) {
+    x = p.x;
+    y = p.y;
+  }
   /**
    *
    */
