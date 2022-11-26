@@ -1,3 +1,5 @@
+# When .idea should be trackted, use force add
+.idea/**
 # Created by https://www.toptal.com/developers/gitignore/api/macos,windows,linux,intellij,java,gradle
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,windows,linux,intellij,java,gradle
 
