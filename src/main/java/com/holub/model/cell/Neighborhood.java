@@ -488,12 +488,8 @@ public final class Neighborhood implements Cell {
         Object sourceObject = source.readObject();
         if (sourceObject instanceof List) {
           /* 하위 호환성 유지 */
-          if (((List)sourceObject).get(0) instanceof java.awt.Point) {
-            liveCells = ((List<java.awt.Point>) sourceObject)
-                .stream().map(Point::new).collect(Collectors.toList());
-          } else {
-            liveCells = (List) sourceObject;
-          }
+            liveCells = (List<Point>) ((List) sourceObject).stream()
+                .map(Point::new).collect(Collectors.toList());
         }
       } catch (ClassNotFoundException e) {
         // This exception shouldn't be rethrown as
