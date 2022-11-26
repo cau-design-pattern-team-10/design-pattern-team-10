@@ -13,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -486,7 +487,9 @@ public final class Neighborhood implements Cell {
         ObjectInputStream source = new ObjectInputStream(in);
         Object sourceObject = source.readObject();
         if (sourceObject instanceof List) {
-          liveCells = (List) sourceObject;
+          /* 하위 호환성 유지 */
+            liveCells = (List<Point>) ((List) sourceObject).stream()
+                .map(Point::new).collect(Collectors.toList());
         }
       } catch (ClassNotFoundException e) {
         // This exception shouldn't be rethrown as
