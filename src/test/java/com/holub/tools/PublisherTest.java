@@ -1,11 +1,9 @@
 package com.holub.tools;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class PublisherTest {
-
-  static final StringBuffer actualResults = new StringBuffer();
-  static final StringBuffer expectedResults = new StringBuffer();
 
   interface Observer {
 
@@ -14,13 +12,16 @@ class PublisherTest {
 
   static class Notifier {
 
-    private Publisher publisher = new Publisher();
+    /**
+     *
+     */
+    private final Publisher publisher = new Publisher();
 
-    public void addObserver(Observer l) {
+    public void addObserver(final Observer l) {
       publisher.subscribe(l);
     }
 
-    public void removeObserver(Observer l) {
+    public void removeObserver(final Observer l) {
       publisher.cancelSubscription(l);
     }
 
@@ -34,8 +35,13 @@ class PublisherTest {
     Notifier source = new Notifier();
     int errors = 0;
 
-    Observer listener1 = arg -> actualResults.append("1[" + arg + "]");
-    Observer listener2 = arg -> actualResults.append("2[" + arg + "]");
+    final StringBuilder actualResults = new StringBuilder();
+    final StringBuilder expectedResults = new StringBuilder();
+
+    Observer listener1 = arg ->
+        actualResults.append("1[").append(arg).append("]");
+    Observer listener2 = arg ->
+        actualResults.append("2[").append(arg).append("]");
 
     source.addObserver(listener1);
     source.addObserver(listener2);
@@ -65,9 +71,9 @@ class PublisherTest {
     if (!expectedResults.toString().equals(actualResults.toString())) {
       System.err.print("add/remove/fire failure.\n");
       System.err.print("Expected:[");
-      System.err.print(expectedResults.toString());
+      System.err.print(expectedResults);
       System.err.print("]\nActual:  [");
-      System.err.print(actualResults.toString());
+      System.err.print(actualResults);
       System.err.print("]");
       ++errors;
     }
@@ -80,10 +86,7 @@ class PublisherTest {
       ++errors;
     } catch (Exception e) { /*everything's okay, do nothing*/ }
 
-    if (errors == 0) {
-      System.err.println("com.holub.tools.Publisher: OKAY");
-    }
-    System.exit(errors);
+    Assertions.assertEquals(0, errors);
   }
 
 }
