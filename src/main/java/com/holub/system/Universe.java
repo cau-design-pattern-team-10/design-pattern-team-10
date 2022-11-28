@@ -20,10 +20,9 @@ import lombok.Getter;
 public class Universe implements Observable {
 
   /**
-   * The default height and width of a Neighborhood in cells. If it's too big,
-   * you'll run too slowly because you have to update the entire block as
-   * a unit, so there's more to do. If it's too small, you have too many blocks
-   * to check. I've found that 8 is a good compromise.
+   * The default height and width of a Neighborhood in cells. If it's too big, you'll run too slowly
+   * because you have to update the entire block as a unit, so there's more to do. If it's too
+   * small, you have too many blocks to check. I've found that 8 is a good compromise.
    */
   private static final int DEFAULT_GRID_SIZE = 8;
   /**
@@ -40,21 +39,26 @@ public class Universe implements Observable {
    */
   private final List<Observer> observers;
 
-  /**
+  /***
    *
+   */
+  private Storable pastTickStore;
+
+  /**
    * @param c
    */
   public Universe(final Clock c) {
     this.observers = new LinkedList<>();
     this.clock = c;
     Neighborhood neighborhood = new Neighborhood(DEFAULT_GRID_SIZE,
-            new Neighborhood(DEFAULT_GRID_SIZE, new Resident()));
+        new Neighborhood(DEFAULT_GRID_SIZE, new Resident()));
     outermostCell = neighborhood;
+    pastTickStore = neighborhood.createMemento();
 
     clock.addClockListener(() -> {
       Cell dummy = DummyCell.getInstance();
       boolean nextState = outermostCell.figureNextState(
-         NearestCellsDTO.builder()
+          NearestCellsDTO.builder()
               .north(dummy)
               .south(dummy)
               .east(dummy)
@@ -63,11 +67,11 @@ public class Universe implements Observable {
               .northwest(dummy)
               .southeast(dummy)
               .southwest(dummy).build());
+      pastTickStore = outermostCell.createMemento();
       if (nextState && outermostCell.transition()) {
-          update();
+        update();
       }
-    }
-    );
+    });
   }
 
   /**
@@ -78,7 +82,6 @@ public class Universe implements Observable {
   }
 
   /**
-   *
    * @throws IOException
    */
   public void doLoad() throws IOException {
@@ -97,7 +100,6 @@ public class Universe implements Observable {
   }
 
   /**
-   *
    * @throws IOException
    */
   public void doStore() throws IOException {
@@ -113,8 +115,12 @@ public class Universe implements Observable {
     out.close();
   }
 
+  public void doRollback() throws IOException {
+    outermostCell.transfer(pastTickStore, new Point(0, 0), Cell.LOAD);
+    update();
+  }
+
   /**
-   *
    * @return total cell size
    */
   public int widthInCells() {
@@ -132,7 +138,6 @@ public class Universe implements Observable {
   }
 
   /**
-   *
    * @param observer
    */
   @Override
@@ -141,7 +146,6 @@ public class Universe implements Observable {
   }
 
   /**
-   *
    * @param observer
    */
   @Override

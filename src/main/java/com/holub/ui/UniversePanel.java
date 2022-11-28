@@ -126,6 +126,16 @@ public class UniversePanel extends JPanel implements Observer {
                     "The Game of Life", JOptionPane.ERROR_MESSAGE);
               }
             });
+    menuSite.addLine(this, "Grid", "Undo",
+        e -> {
+          try {
+            universe.doRollback();
+          } catch (IOException theException) {
+            JOptionPane.showMessageDialog(null, "Undo Failed!",
+                "The Game of Life", JOptionPane.ERROR_MESSAGE);
+          }
+        });
+
 
     menuSite.addLine(this, "Grid", "Exit",
             e -> System.exit(0));
