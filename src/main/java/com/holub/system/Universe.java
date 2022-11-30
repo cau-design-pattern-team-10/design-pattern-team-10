@@ -115,6 +115,10 @@ public class Universe implements Observable {
     out.close();
   }
 
+  /**
+   *
+   * @throws IOException
+   */
   public void doRollback() throws IOException {
     outermostCell.transfer(pastTickStore, new Point(0, 0), Cell.LOAD);
     update();
