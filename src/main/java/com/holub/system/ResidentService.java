@@ -12,6 +12,7 @@ public class ResidentService {
 
   public ResidentService() {
     mappingTable = new HashMap<>();
+    inverseMappingTable = new HashMap<>();
   }
 
   /**
@@ -19,9 +20,9 @@ public class ResidentService {
    * @param r
    * @param p
    * @return if the Point p already exists, return false;
-   *         otherwise, return true
+   *         otherwise, return true.
    */
-  public boolean register(Resident r, Point p) {
+  public boolean register(final Resident r, final Point p) {
     if (mappingTable.containsKey(p)) {
       return false;
     }
@@ -35,7 +36,7 @@ public class ResidentService {
    * @param p
    * @return get resident on a specific point.
    */
-  public Optional<Resident> getResident(Point p) {
+  public Optional<Resident> getResident(final Point p) {
     return Optional.ofNullable(mappingTable.get(p));
   }
 
@@ -44,16 +45,18 @@ public class ResidentService {
    * @param resident
    * @param dx
    * @param dy
-   * @return get resident using offset
+   * @return get resident using offset.
    */
-  public Optional<Resident> getResident(Resident resident, int dx, int dy) {
+  public Optional<Resident> getResident(final Resident resident, final int dx, final int dy) {
     Point p = inverseMappingTable.get(resident);
     if (p == null) {
       return Optional.empty();
     }
 
-    p.setX(p.getX() + dx);
-    p.setY(p.getY() + dy);
-    return getResident(p);
+    return getResident(
+        Point.builder()
+            .x(p.getX() + dx)
+            .y(p.getY() + dy)
+            .build());
   }
 }
