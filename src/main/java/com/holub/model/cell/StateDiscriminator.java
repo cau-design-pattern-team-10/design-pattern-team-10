@@ -15,6 +15,10 @@ public class StateDiscriminator {
   /**
    *
    */
+  private NearestCellsDTO dto;
+  /**
+   *
+   */
   private List<Cell> neighborsList;
   /**
    *
@@ -31,6 +35,7 @@ public class StateDiscriminator {
    *
    */
   public StateDiscriminator(final NearestCellsDTO dto) {
+    this.dto = dto;
     neighborsList = new ArrayList<>(
         List.of(
             dto.getNorth(),
@@ -123,53 +128,53 @@ public class StateDiscriminator {
 
           if (row == 0) {
             northwestCell = (column == 0)
-                ? neighborsList.get(5).edge(gridSize - 1, gridSize - 1)
-                : neighborsList.get(0).edge(gridSize - 1, column - 1);
+                ? dto.getNorthwest().edge(gridSize - 1, gridSize - 1)
+                : dto.getNorth().edge(gridSize - 1, column - 1);
 
             northCell = neighborsList.get(0).edge(gridSize - 1, column);
 
             northeastCell = (column == gridSize - 1)
-                ? neighborsList.get(4).edge(gridSize - 1, 0)
-                : neighborsList.get(0).edge(gridSize - 1, column + 1);
+                ? dto.getNortheast().edge(gridSize - 1, 0)
+                : dto.getNorth().edge(gridSize - 1, column + 1);
           } else {
             northwestCell = (column == 0)
-                ? neighborsList.get(3).edge(row - 1, gridSize - 1)
+                ? dto.getWest().edge(row - 1, gridSize - 1)
                 : grid[row - 1][column - 1];
 
             northCell = grid[row - 1][column];
 
             northeastCell = (column == gridSize - 1)
-                ? neighborsList.get(2).edge(row - 1, 0)
+                ? dto.getEast().edge(row - 1, 0)
                 : grid[row - 1][column + 1];
           }
 
           westCell = (column == 0)
-              ? neighborsList.get(3).edge(row, gridSize - 1)
+              ? dto.getWest().edge(row, gridSize - 1)
               : grid[row][column - 1];
 
           eastCell = (column == gridSize - 1)
-              ? neighborsList.get(2).edge(row, 0)
+              ? dto.getEast().edge(row, 0)
               : grid[row][column + 1];
 
           if (row == gridSize - 1) {
             southwestCell = (column == 0)
-                ? neighborsList.get(7).edge(0, gridSize - 1)
-                : neighborsList.get(1).edge(0, column - 1);
+                ? dto.getSouthwest().edge(0, gridSize - 1)
+                : dto.getSouth().edge(0, column - 1);
 
             southCell = neighborsList.get(1).edge(0, column);
 
             southeastCell = (column == gridSize - 1)
-                ? neighborsList.get(6).edge(0, 0)
-                : neighborsList.get(1).edge(0, column + 1);
+                ? dto.getSoutheast().edge(0, 0)
+                : dto.getSouth().edge(0, column + 1);
           } else {
             southwestCell = (column == 0)
-                ? neighborsList.get(3).edge(row + 1, gridSize - 1)
+                ? dto.getWest().edge(row + 1, gridSize - 1)
                 : grid[row + 1][column - 1];
 
             southCell = grid[row + 1][column];
 
             southeastCell = (column == gridSize - 1)
-                ? neighborsList.get(2).edge(row + 1, 0)
+                ? dto.getEast().edge(row + 1, 0)
                 : grid[row + 1][column + 1];
           }
 
