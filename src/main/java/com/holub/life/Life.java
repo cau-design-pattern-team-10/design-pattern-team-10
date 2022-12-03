@@ -9,6 +9,9 @@ import com.holub.ui.UniversePanel;
 import com.holub.ui.menu.ClockMenuItem;
 import com.holub.ui.menu.MenuSite;
 import java.awt.BorderLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
 import javax.swing.JFrame;
 
 /**
@@ -32,6 +35,30 @@ public final class Life extends JFrame {
     TickSystem tickSystem = new TickSystem(clock);
     ClockMenuItem clockMenu = new ClockMenuItem(tickSystem);
     menuSite.register(clockMenu);
+    addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        System.out.println(e);
+        switch (e.getKeyCode()) {
+          case KeyEvent.VK_RIGHT:
+            tickSystem.tick();
+            break;
+          case KeyEvent.VK_LEFT:
+          case KeyEvent.VK_U:
+            try {
+              universe.doRollback();
+            } catch (IOException ex) {
+              throw new RuntimeException(ex);
+            }
+            break;
+          case KeyEvent.VK_SPACE:
+            if(tickSystem.isRunning()) {
+              tickSystem.stop();
+            } else {
+              tickSystem.resume();
+            }
+        }
+      }
+    });
 
     StatusBar statusBar = new StatusBar();
     tickSystem.attach(statusBar);
@@ -46,6 +73,7 @@ public final class Life extends JFrame {
 
   /**
    * Life.main() provides an entrypoint for this program.
+   *
    * @param arguments command line arguments. Not used.
    */
   public static void main(final String[] arguments) {
