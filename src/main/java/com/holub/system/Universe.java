@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 import lombok.Getter;
 
 public class Universe implements Observable {
@@ -49,7 +50,7 @@ public class Universe implements Observable {
   /**
    *
    */
-  private Storable pastTickStore;
+  private Stack<Storable> pastTickStore = new Stack<>();
 
   /**
    * @param c
@@ -74,7 +75,7 @@ public class Universe implements Observable {
         }
       }
     }
-    pastTickStore = outermostCell.createMemento();
+    pastTickStore.push(outermostCell.createMemento());
 
     clock.addClockListener(() -> {
       Cell dummy = DummyCell.getInstance();
@@ -88,7 +89,7 @@ public class Universe implements Observable {
               .northwest(dummy)
               .southeast(dummy)
               .southwest(dummy).build());
-      pastTickStore = outermostCell.createMemento();
+      pastTickStore.push(outermostCell.createMemento());
       if (nextState && outermostCell.transition()) {
         update();
       }
@@ -141,8 +142,10 @@ public class Universe implements Observable {
    * @throws IOException
    */
   public void doRollback() throws IOException {
-    outermostCell.transfer(pastTickStore, new Point(0, 0), Cell.LOAD);
-    update();
+    if(!pastTickStore.isEmpty()) {
+      outermostCell.transfer(pastTickStore.pop(), new Point(0, 0), Cell.LOAD);
+      update();
+    }
   }
 
   /**
