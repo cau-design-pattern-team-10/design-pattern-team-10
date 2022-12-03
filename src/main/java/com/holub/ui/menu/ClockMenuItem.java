@@ -1,40 +1,16 @@
 package com.holub.ui.menu;
 
 import com.holub.system.Clock;
+import com.holub.system.TickSystem;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JMenuItem;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class ClockMenuItem implements MenuItem {
-
-  /**
-   *
-   */
-  private static final int AGONIZING_MS = 500;
-  /**
-   *
-   */
-  private static final int SLOW_MS = 150;
-  /**
-   *
-   */
-  private static final int MEDIUM_MS = 70;
-  /**
-   *
-   */
-  private static final int FAST_MS = 30;
-  /**
-   *
-   */
-  private Clock clock;
-
-  /**
-   * @param c
-   */
-  public ClockMenuItem(final Clock c) {
-    this.clock = c;
-  }
+  final TickSystem tickSystem;
 
   /**
    * Create the menu that controls the clock speed and put it onto the menu
@@ -45,31 +21,10 @@ public class ClockMenuItem implements MenuItem {
   public void register(final MenuSite menuSite) {
     // First set up a single listener that will handle all the
     // menu-selection events except "Exit"
-
-    ActionListener modifier = e -> {
-      String name = ((JMenuItem) e.getSource()).getName();
-      char toDo = name.charAt(0);
-
-      if (toDo == 'T') {
-        clock.tick();              // single tick
-      } else {
-        Map<Character, Integer> tickMap = new HashMap<>();
-        tickMap.put('A', AGONIZING_MS); // agonizing
-        tickMap.put('S', SLOW_MS); // slow
-        tickMap.put('M', MEDIUM_MS); // medium
-        tickMap.put('F', FAST_MS); // fast
-        Integer speed = tickMap.get(toDo);
-        if (speed == null) {
-          speed = 0;
-        }
-        clock.startTicking(speed); // fast
-      }
-    };
-    menuSite.addLine(this, "Go", "Halt", modifier);
-    menuSite.addLine(this, "Go", "Tick (Single Step)", modifier);
-    menuSite.addLine(this, "Go", "Agonizing", modifier);
-    menuSite.addLine(this, "Go", "Slow", modifier);
-    menuSite.addLine(this, "Go", "Medium", modifier);
-    menuSite.addLine(this, "Go", "Fast", modifier);
+    menuSite.addLine(this, "Go", "Halt", e -> { tickSystem.stop(); });
+    menuSite.addLine(this, "Go", "Tick (Single Step)", e-> { tickSystem.tick();});
+    for (String speedName : tickSystem.getSupportedSpeeds()) {
+      menuSite.addLine(this, "Go", speedName, e->{tickSystem.setSpeed(((JMenuItem)e.getSource()).getName());});
+    }
   }
 }

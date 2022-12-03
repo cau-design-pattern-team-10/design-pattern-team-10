@@ -1,6 +1,8 @@
 package com.holub.life;
 
 import com.holub.system.Clock;
+import com.holub.system.Clock.Listener;
+import com.holub.system.TickSystem;
 import com.holub.system.Universe;
 import com.holub.ui.UniversePanel;
 import com.holub.ui.menu.ClockMenuItem;
@@ -26,7 +28,8 @@ public final class Life extends JFrame {
     MenuSite menuSite = new MenuSite();
     menuSite.establish(this);
     UniversePanel universePanel = new UniversePanel(universe, menuSite);
-    ClockMenuItem clockMenu = new ClockMenuItem(clock);
+    TickSystem tickSystem = new TickSystem(clock);
+    ClockMenuItem clockMenu = new ClockMenuItem(tickSystem);
     menuSite.register(clockMenu);
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
