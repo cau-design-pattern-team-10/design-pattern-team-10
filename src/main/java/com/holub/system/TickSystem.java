@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class TickSystem implements Observable {
   final Clock clock;
   String currentSpeed;
+  Boolean isRunning = true;
   Map<String, Integer> tickMap;
   List<Observer> observers;
   /**
@@ -55,9 +56,14 @@ public class TickSystem implements Observable {
     return currentSpeed;
   }
 
+  public Boolean isRunning() {
+    return isRunning;
+  }
+
   public void setSpeed(final String speedName) {
     currentSpeed = speedName;
     clock.startTicking(tickMap.get(speedName));
+    isRunning = true;
     update();
   }
 
@@ -66,8 +72,14 @@ public class TickSystem implements Observable {
   }
 
   public void stop() {
-    currentSpeed = "Halt";
+    isRunning = false;
     clock.stop();
+    update();
+  }
+
+  public void resume() {
+    isRunning = true;
+    clock.startTicking(tickMap.get(currentSpeed));
     update();
   }
 
