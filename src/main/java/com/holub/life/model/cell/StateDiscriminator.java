@@ -81,7 +81,7 @@ public class StateDiscriminator {
         || (resident.isAlive() && neighbors == ALIVE_NEIGHBOR_NUM))
     );
 
-    return resident.isAlive() == resident.isWillBeAlive();
+    return resident.isAlive() != resident.isWillBeAlive();
   }
 
   /**

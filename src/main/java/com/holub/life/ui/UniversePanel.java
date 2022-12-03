@@ -96,7 +96,6 @@ public class UniversePanel extends JPanel implements Observer {
              Point p = new Point();
              p.setX(mouseRealPoint.x / cellSize);
              p.setY(mouseRealPoint.y / cellSize);
-             System.out.printf("%d, %d\n", p.getX(), p.getY());
              outermostCellUI.click(p);
            }
          });
