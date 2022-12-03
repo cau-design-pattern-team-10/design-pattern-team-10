@@ -39,7 +39,14 @@ public class Universe implements Observable {
    */
   private final List<Observer> observers;
 
-  /***
+
+  /**
+   * To control, resident
+   * Created by Min Uk Lee
+   */
+  private final ResidentService residentService;
+
+  /**
    *
    */
   private Storable pastTickStore;
@@ -50,10 +57,24 @@ public class Universe implements Observable {
   public Universe(final Clock c) {
     this.observers = new LinkedList<>();
     this.clock = c;
-    Neighborhood neighborhood = new Neighborhood(DEFAULT_GRID_SIZE,
-        new Neighborhood(DEFAULT_GRID_SIZE, new Resident()));
-    outermostCell = neighborhood;
-    pastTickStore = neighborhood.createMemento();
+    this.residentService = new ResidentService();
+    outermostCell = new Neighborhood(DEFAULT_GRID_SIZE,
+            new Neighborhood(DEFAULT_GRID_SIZE, new Resident()));
+
+    Cell[][] neighborhood = outermostCell.getGrid();
+    for (int x = 0; x < DEFAULT_GRID_SIZE; x ++) {
+      for (int y = 0; y < DEFAULT_GRID_SIZE; y ++) {
+        Cell[][] residents = ((Neighborhood)neighborhood[x][y]).getGrid();
+        for (int innerX = 0; innerX < DEFAULT_GRID_SIZE; innerX ++) {
+          for (int innerY = 0; innerY < DEFAULT_GRID_SIZE; innerY ++) {
+            residentService.register((Resident)residents[innerY][innerX],
+                Point.builder().x(x * DEFAULT_GRID_SIZE + innerX)
+                    .y(y * DEFAULT_GRID_SIZE + innerY).build());
+          }
+        }
+      }
+    }
+    pastTickStore = outermostCell.createMemento();
 
     clock.addClockListener(() -> {
       Cell dummy = DummyCell.getInstance();
