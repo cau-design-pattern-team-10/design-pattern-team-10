@@ -2,6 +2,7 @@ package com.holub.life.ui;
 
 import com.holub.life.model.Point;
 import com.holub.life.system.Universe;
+import com.holub.tools.Log;
 import com.holub.tools.Observable;
 import com.holub.tools.Observer;
 import com.holub.life.ui.cell.CellUI;
@@ -16,6 +17,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -116,7 +118,17 @@ public class UniversePanel extends JPanel implements Observer {
               }
             });
 
-    menuSite.addLine(this, "Grid", "Store",
+    menuSite.addLine(this, "Grid", "Overlap Load",
+        e-> {
+      try {
+        universe.doOverlapLoad();
+        } catch (IOException theException) {
+      JOptionPane.showMessageDialog(null, "Read Failed!",
+          "The Game of Life", JOptionPane.ERROR_MESSAGE);
+    }
+  });
+
+      menuSite.addLine(this, "Grid", "Store",
             e -> {
               try {
                 universe.doStore();

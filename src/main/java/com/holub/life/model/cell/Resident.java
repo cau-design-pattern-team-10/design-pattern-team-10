@@ -144,7 +144,7 @@ public final class Resident implements Cell {
       final Point upperLeft, final boolean doLoad) {
     Memento memento = (Memento) blob;
     if (doLoad) {
-      alive = memento.isAlive(upperLeft);
+      alive = alive || memento.isAlive(upperLeft);
       willBeAlive = alive;
       if (alive) {
         return true;
