@@ -1,13 +1,12 @@
 package com.holub.life;
 
-import com.holub.system.Clock;
-import com.holub.system.Clock.Listener;
-import com.holub.system.TickSystem;
-import com.holub.system.Universe;
-import com.holub.ui.StatusBar;
-import com.holub.ui.UniversePanel;
-import com.holub.ui.menu.ClockMenuItem;
-import com.holub.ui.menu.MenuSite;
+import com.holub.life.system.Clock;
+import com.holub.life.system.TickSystem;
+import com.holub.life.system.Universe;
+import com.holub.life.ui.StatusBar;
+import com.holub.life.ui.UniversePanel;
+import com.holub.life.ui.menu.ClockMenuItem;
+import com.holub.life.ui.menu.MenuSite;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
