@@ -1,7 +1,7 @@
 package com.holub.life.model.cell;
 
 
-import com.holub.life.Direction;
+import com.holub.life.model.Direction;
 import com.holub.life.model.cell.NearestCellsDTO.NearestCellsDTOBuilder;
 import java.util.ArrayList;
 import java.util.List;

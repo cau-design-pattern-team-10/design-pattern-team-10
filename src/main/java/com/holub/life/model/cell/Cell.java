@@ -1,6 +1,6 @@
 package com.holub.life.model.cell;
 
-import com.holub.life.Direction;
+import com.holub.life.model.Direction;
 import com.holub.tools.Storable;
 import com.holub.life.model.Point;
 import com.holub.tools.Observable;
