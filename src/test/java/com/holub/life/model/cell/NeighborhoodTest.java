@@ -1,6 +1,5 @@
 package com.holub.life.model.cell;
 
-import com.holub.life.model.Direction;
 import com.holub.life.model.Point;
 import com.holub.tools.Observer;
 import com.holub.tools.Storable;
@@ -27,7 +26,7 @@ public class NeighborhoodTest {
   static class CellForTest implements Cell {
 
     @Override
-    public boolean figureNextState(final NearestCellsDTO dto) {
+    public boolean figureNextState() {
       return false;
     }
 

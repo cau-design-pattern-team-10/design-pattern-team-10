@@ -1,6 +1,5 @@
 package com.holub.life.model.cell;
 
-import com.holub.life.model.Direction;
 import com.holub.tools.Storable;
 import com.holub.life.model.Point;
 import com.holub.tools.Observable;
@@ -28,7 +27,7 @@ public interface Cell extends Observable {
    * @param dto
    * @return true if the cell is unstable (changed state).
    */
-  boolean figureNextState(NearestCellsDTO dto);
+  boolean figureNextState();
 
   /**
    * Access a specific contained cell located at the edge of the composite cell.
@@ -67,16 +66,6 @@ public interface Cell extends Observable {
    * @return cell replica
    */
   Cell create();
-
-  /**
-   * Returns a Direction indicated the directions of the cells that have changed
-   * state.
-   *
-   * @return A Direction object that indicates the edge or edges on which
-   * a change has occurred.
-   */
-
-  Direction isDisruptiveTo();
 
   /**
    * Set the cell and all subcells into a "dead" state.
