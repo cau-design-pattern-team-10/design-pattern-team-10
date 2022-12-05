@@ -26,38 +26,23 @@ public class Universe implements Observable {
    * small, you have too many blocks to check. I've found that 8 is a good compromise.
    */
   private static final int DEFAULT_GRID_SIZE = 8;
-  /**
-   *
-   */
   @Getter
   private final Neighborhood outermostCell;
-  /**
-   *
-   */
+  @Getter
   private final Clock clock;
-  /**
-   *
-   */
   private final List<Observer> observers;
-
-
-  /**
-   * To control, resident
-   * Created by Min Uk Lee
-   */
   private final ResidentService residentService;
-
-  /**
-   *
-   */
   private Stack<Storable> pastTickStore = new Stack<>();
+  @Getter
+  private TickSystem tickSystem;
 
   /**
    * @param c
    */
-  public Universe(final Clock c) {
+  public Universe() {
     this.observers = new LinkedList<>();
-    this.clock = c;
+    this.clock =  new Clock();
+    this.tickSystem = new TickSystem(clock);
     this.residentService = new ResidentService();
     outermostCell = new Neighborhood(DEFAULT_GRID_SIZE,
             new Neighborhood(DEFAULT_GRID_SIZE, new Resident()));
