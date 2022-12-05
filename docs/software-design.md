@@ -2,10 +2,11 @@
 
 ## 프로젝트 내용 요약
 - 개념설계 및 UseCase 정리
-- UI와 Model 의 분리:
+- UI와 Model 의 분리: - "모듈 구조", "기존 코드에서의 설계 변경 사항" 참고
   - 화면상의 좌표(java.awt.Point)와 개념상의 좌표(com.holub.life.model.Point) 분리
   - 옵저버 패턴을 통한 모델변화만을 통해 화면 갱신 가능
-- 확장기능(E-Undo, E-Load Overlap, E-상태 표시) 추가
+- `figureNextState()` 메서드 리펙토링 및 `Direction` 클래스 삭제 - "기존 코드에서의 설계 변경 사항" 참고
+- 확장기능(E-Undo, E-Load Overlap, E-상태 표시) 추가 - "Usecase - 확장기능" 참고
 
 ## 개념 설계
 ### 시스템 구조

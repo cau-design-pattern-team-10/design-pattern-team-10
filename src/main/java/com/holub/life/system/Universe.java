@@ -113,6 +113,7 @@ public class Universe implements Observable {
    */
   public void doRollback() throws IOException {
     if(!pastTickStore.isEmpty() && pastTickStore.size() > 1) {
+      outermostCell.clear();
       outermostCell.transfer(pastTickStore.pop(), new Point(0, 0), Cell.LOAD);
       update();
     }
