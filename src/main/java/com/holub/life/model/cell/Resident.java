@@ -1,6 +1,6 @@
 package com.holub.life.model.cell;
 
-import com.holub.life.Direction;
+import com.holub.life.model.Direction;
 import com.holub.life.model.Point;
 import com.holub.tools.Observer;
 import com.holub.tools.Storable;
@@ -144,7 +144,7 @@ public final class Resident implements Cell {
       final Point upperLeft, final boolean doLoad) {
     Memento memento = (Memento) blob;
     if (doLoad) {
-      alive = memento.isAlive(upperLeft);
+      alive = alive || memento.isAlive(upperLeft);
       willBeAlive = alive;
       if (alive) {
         return true;
