@@ -92,6 +92,18 @@
     - Model과 UI 는 Observer 패턴으로 연결되며, Model 을 변경하고 UI에 반영되기를 원한다면 `update()` 를 호출한다.
 
 ### 모듈 간의 관계
-- Universe:
+- Universe의 구성요소는 `TickSystem`, `Clock`, `Neighborhood` 로 구성된다.
+- `TickSystem` 은 `Clock` 과 `UI` 간을 연결해주는 Mediator 이다.
 
-### 자료 설계
+
+### 기존 코드에서의 설계 변경 사항
+
+- Cell 의 동작 방식 변경:
+  - 기존 `Resident` 는 자신의 상태를 가져오기 위하여 옆 `Resident` 들이 필요하였으며, 이는 `Neighborhood` 와 `Direction`, `Resident` 클래스들간의 강결합을 유도하였다.
+  - `ResidentService` 를 도입함으로써, 자신의 옆 Resident를 쉽게 획득할수 있게 만들었다.
+  - `StateDiscriminator` 를 Visitor 패턴으로 도입하면서 Cell 의 `figureNextState()` 동작들을 한곳에서 모았다.
+  - 이렇게 변경함에 따라 기존 존재하였던 edge 의 개념을 삭제하였으며, `Direction` 클래스가 삭제되었다.
+
+- UI의 분리:
+  - 기존에는 UI와 데이터가 동일한 객체에서 관리되고 있었으며, 좌표에 대한 개념이 UI와 강결합 되어 있었다.
+  - Observer 패턴을 활용하여 이를 분리함에 따라 객체의 역할을 분리하였다.
