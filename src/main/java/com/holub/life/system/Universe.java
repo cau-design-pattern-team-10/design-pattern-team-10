@@ -3,8 +3,6 @@ package com.holub.life.system;
 import com.holub.io.Files;
 import com.holub.life.model.Point;
 import com.holub.life.model.cell.Cell;
-import com.holub.life.model.cell.DummyCell;
-import com.holub.life.model.cell.NearestCellsDTO;
 import com.holub.life.model.cell.Neighborhood;
 import com.holub.life.model.cell.Resident;
 import com.holub.tools.Observable;
@@ -36,21 +34,18 @@ public class Universe implements Observable {
   @Getter
   private TickSystem tickSystem;
 
-  /**
-   * @param c
-   */
   public Universe() {
     this.observers = new LinkedList<>();
     this.clock =  new Clock();
     this.tickSystem = new TickSystem(clock);
-    this.residentService = new ResidentService();
+    this.residentService = ResidentService.getInstance();
     outermostCell = new Neighborhood(DEFAULT_GRID_SIZE,
             new Neighborhood(DEFAULT_GRID_SIZE, new Resident()));
 
     Cell[][] neighborhood = outermostCell.getGrid();
     for (int x = 0; x < DEFAULT_GRID_SIZE; x ++) {
       for (int y = 0; y < DEFAULT_GRID_SIZE; y ++) {
-        Cell[][] residents = ((Neighborhood)neighborhood[x][y]).getGrid();
+        Cell[][] residents = ((Neighborhood)neighborhood[y][x]).getGrid();
         for (int innerX = 0; innerX < DEFAULT_GRID_SIZE; innerX ++) {
           for (int innerY = 0; innerY < DEFAULT_GRID_SIZE; innerY ++) {
             residentService.register((Resident)residents[innerY][innerX],
@@ -63,17 +58,7 @@ public class Universe implements Observable {
     pastTickStore.push(outermostCell.createMemento());
 
     clock.addClockListener(() -> {
-      Cell dummy = DummyCell.getInstance();
-      boolean nextState = outermostCell.figureNextState(
-          NearestCellsDTO.builder()
-              .north(dummy)
-              .south(dummy)
-              .east(dummy)
-              .west(dummy)
-              .northeast(dummy)
-              .northwest(dummy)
-              .southeast(dummy)
-              .southwest(dummy).build());
+      boolean nextState = outermostCell.figureNextState();
       pastTickStore.push(outermostCell.createMemento());
       if (nextState && outermostCell.transition()) {
         update();

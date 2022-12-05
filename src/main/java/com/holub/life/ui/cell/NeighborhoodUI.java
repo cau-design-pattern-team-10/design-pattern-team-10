@@ -124,7 +124,6 @@ public class NeighborhoodUI implements CellUI {
     int column = here.getX() / unitSize;
     grid[row][column].click(p);
     cell.setAmActive(true);
-    cell.rememberThatCellAtEdgeChangedState(row, column);
     cell.update();
   }
 
