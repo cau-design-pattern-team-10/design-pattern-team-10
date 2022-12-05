@@ -119,6 +119,20 @@ public class Universe implements Observable {
     }
   }
 
+  public void doOverlapLoad() throws IOException {
+    FileInputStream in = new FileInputStream(
+        Files.userSelected(".", ".life", "Life File", "Load"));
+
+    clock.stop();    // stop the game and
+
+    Storable memento = outermostCell.createMemento();
+    memento.load(in);
+    outermostCell.transfer(memento, new Point(0, 0), Cell.LOAD);
+
+    in.close();
+    update();
+  }
+
   /**
    * @return total cell size
    */

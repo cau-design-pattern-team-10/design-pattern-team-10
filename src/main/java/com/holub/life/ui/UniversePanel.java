@@ -188,6 +188,16 @@ public class UniversePanel extends JPanel implements Observer {
           }
         });
 
+    menuSite.addLine(this, "Grid", "Load(Overlap)",
+        e -> {
+          try {
+            universe.doOverlapLoad();
+          } catch (IOException theException) {
+            JOptionPane.showMessageDialog(null, "Read Failed!",
+                "The Game of Life", JOptionPane.ERROR_MESSAGE);
+          }
+        });
+
     menuSite.addLine(this, "Grid", "Store",
         e -> {
           try {
@@ -197,7 +207,7 @@ public class UniversePanel extends JPanel implements Observer {
                 "The Game of Life", JOptionPane.ERROR_MESSAGE);
           }
         });
-    menuSite.addLine(this, "Grid", "Undo",
+    menuSite.addLine(this, "Go", "Undo",
         e -> {
           try {
             universe.doRollback();
