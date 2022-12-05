@@ -1,23 +1,31 @@
 package com.holub.life.ui;
 
+import com.holub.life.Life;
 import com.holub.life.model.Point;
+import com.holub.life.system.TickSystem;
 import com.holub.life.system.Universe;
+import com.holub.life.ui.menu.ClockMenuItem;
 import com.holub.tools.Observable;
 import com.holub.tools.Observer;
 import com.holub.life.ui.cell.CellUI;
 import com.holub.life.ui.cell.CellUIFactory;
 import com.holub.life.ui.menu.MenuSite;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import lombok.Getter;
 
 /**
  * The Universe is a mediator that sits between the Swing event model and the
@@ -34,36 +42,57 @@ public class UniversePanel extends JPanel implements Observer {
    * "draw yourself" method.
    */
   public static final int DEFAULT_CELL_SIZE = 8;
-  /**
-   *
-   */
   private Universe universe;
-  /**
-   *
-   */
   private CellUI outermostCellUI;
-  /**
-   *
-   */
   private int cellSize = DEFAULT_CELL_SIZE;
+  @Getter
+  private StatusBar statusBar;
+  @Getter
+  private MenuSite menuSite;
 
   /**
    * The constructor is private so that the universe can be created.
    * only by an outer-class method [Neighborhood.createUniverse()].
    * @param u
-   * @param menuSite
    */
-  public UniversePanel(final Universe u,
-      final MenuSite menuSite) {
+  public UniversePanel(final Universe u) {
     // Create the nested Cells that comprise the "universe." A bug
     // in the current implementation causes the program to fail
     // miserably if the overall size of the grid is too big to fit
     // on the screen.
     this.universe = u;
     this.universe.attach(this);
+    this.statusBar = new StatusBar();
+    this.universe.getTickSystem().attach(statusBar);
+    this.menuSite = new MenuSite();
     CellUIFactory cellUIFactory = CellUIFactory.getInstance();
     this.outermostCellUI = cellUIFactory.createCellUI(
         universe.getOutermostCell(), this);
+
+    addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        TickSystem tickSystem = universe.getTickSystem();
+        switch (e.getKeyCode()) {
+          case KeyEvent.VK_RIGHT:
+            tickSystem.tick();
+            break;
+          case KeyEvent.VK_LEFT:
+          case KeyEvent.VK_U:
+            try {
+              universe.doRollback();
+            } catch (IOException ex) {
+              throw new RuntimeException(ex);
+            }
+            break;
+          case KeyEvent.VK_SPACE:
+            if(tickSystem.isRunning()) {
+              tickSystem.stop();
+            } else {
+              tickSystem.resume();
+            }
+        }
+      }
+    });
 
     addComponentListener(new ComponentAdapter() {
            public void componentResized(final ComponentEvent e) {
@@ -100,45 +129,6 @@ public class UniversePanel extends JPanel implements Observer {
            }
          });
 
-    menuSite.addLine(this, "Grid", "Clear",
-        e -> {
-          universe.clear();
-          repaint();
-        });
-
-    menuSite.addLine(this, "Grid", "Load",
-            e -> {
-              try {
-                universe.doLoad();
-              } catch (IOException theException) {
-                JOptionPane.showMessageDialog(null, "Read Failed!",
-                    "The Game of Life", JOptionPane.ERROR_MESSAGE);
-              }
-            });
-
-    menuSite.addLine(this, "Grid", "Store",
-            e -> {
-              try {
-                universe.doStore();
-              } catch (IOException theException) {
-                JOptionPane.showMessageDialog(null, "Write Failed!",
-                    "The Game of Life", JOptionPane.ERROR_MESSAGE);
-              }
-            });
-    menuSite.addLine(this, "Grid", "Undo",
-        e -> {
-          try {
-            universe.doRollback();
-          } catch (IOException theException) {
-            JOptionPane.showMessageDialog(null, "Undo Failed!",
-                "The Game of Life", JOptionPane.ERROR_MESSAGE);
-          }
-        });
-
-
-    menuSite.addLine(this, "Grid", "Exit",
-            e -> System.exit(0));
-
   }
 
   /**
@@ -168,5 +158,58 @@ public class UniversePanel extends JPanel implements Observer {
       return;
     }
     throw new UnsupportedOperationException("only support Universe");
+  }
+
+  public void setFrame(JFrame jframe) {
+    ClockMenuItem clockMenu = new ClockMenuItem(universe.getTickSystem());
+    menuSite.establish(jframe);
+
+    registerGridMenu();
+    menuSite.register(clockMenu);
+    jframe.getContentPane().setLayout(new BorderLayout());
+    jframe.getContentPane().add(this, BorderLayout.CENTER);
+    jframe.getContentPane().add(statusBar, BorderLayout.SOUTH);
+  }
+
+  private void registerGridMenu() {
+    menuSite.addLine(this, "Grid", "Clear",
+        e -> {
+          universe.clear();
+          repaint();
+        });
+
+    menuSite.addLine(this, "Grid", "Load",
+        e -> {
+          try {
+            universe.doLoad();
+          } catch (IOException theException) {
+            JOptionPane.showMessageDialog(null, "Read Failed!",
+                "The Game of Life", JOptionPane.ERROR_MESSAGE);
+          }
+        });
+
+    menuSite.addLine(this, "Grid", "Store",
+        e -> {
+          try {
+            universe.doStore();
+          } catch (IOException theException) {
+            JOptionPane.showMessageDialog(null, "Write Failed!",
+                "The Game of Life", JOptionPane.ERROR_MESSAGE);
+          }
+        });
+    menuSite.addLine(this, "Grid", "Undo",
+        e -> {
+          try {
+            universe.doRollback();
+          } catch (IOException theException) {
+            JOptionPane.showMessageDialog(null, "Undo Failed!",
+                "The Game of Life", JOptionPane.ERROR_MESSAGE);
+          }
+        });
+
+
+    menuSite.addLine(this, "Grid", "Exit",
+        e -> System.exit(0));
+
   }
 }
