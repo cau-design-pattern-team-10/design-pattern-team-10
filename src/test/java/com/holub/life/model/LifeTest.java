@@ -36,9 +36,9 @@ public class LifeTest {
 
     for (TestCase tc : testCases) {
       Universe universe = new Universe();
-      Memento[] currentState = new Memento[tc.num];
-      Memento[] nextState = new Memento[tc.num];
-      for (int step = 1; step < tc.num; step++) {
+      Memento[] currentState = new Memento[tc.num + 1];
+      Memento[] nextState = new Memento[tc.num + 1];
+      for (int step = 1; step <= tc.num; step++) {
 
         File file = new File("testcases/" + tc.name + "/" + step);
 
@@ -49,15 +49,15 @@ public class LifeTest {
         universe.getOutermostCell().transfer(memento, new Point(0, 0), Cell.LOAD);
         in.close();
 
-        currentState[step - 1] = (Memento) universe.getOutermostCell().createMemento();
-
-        if(step != 1) {
-          assertEquals(currentState[step], nextState[step - 1], "At " + tc.name + " step " + step);
-        }
+        currentState[step] = (Memento) universe.getOutermostCell().createMemento();
 
         // tick
         universe.getTickSystem().tick();
-        nextState[step - 1] = (Memento) universe.getOutermostCell().createMemento();
+        nextState[step] = (Memento) universe.getOutermostCell().createMemento();
+
+        if (step != 1) {
+          assertEquals(currentState[step], nextState[step - 1], "At " + tc.name + " step " + step);
+        }
       }
     }
   }
