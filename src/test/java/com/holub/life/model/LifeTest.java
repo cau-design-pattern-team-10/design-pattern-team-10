@@ -1,5 +1,7 @@
 package com.holub.life.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.holub.io.Files;
 import com.holub.life.model.cell.Cell;
 import com.holub.life.model.cell.Cell.Memento;
@@ -34,21 +36,35 @@ public class LifeTest {
 
     for (TestCase tc: testCases) {
       Universe universe = new Universe();
-      Memento[] currentState = new Memento[tc.num];
-      Memento[] nextState = new Memento[tc.num];
-      for (int step = 1; step <= tc.num; step ++) {
-        File file = new File("testcases/" + tc.name + "/" + step);
-
-        FileInputStream in = new FileInputStream(file);
-
-        Storable memento = universe.getOutermostCell().createMemento();
-        memento.load(in);
+      for (int step = 1; step < tc.num; step ++) {
+        Storable memento = ReadMemento(tc.name, step);
         universe.getOutermostCell().transfer(memento, new Point(0, 0), Cell.LOAD);
-        in.close();
 
-        universe.getOutermostCell().createMemento();
+        // tick to next state
+        universe.getOutermostCell().figureNextState();
+        universe.getOutermostCell().transition();
+        Storable nextState = universe.getOutermostCell().createMemento();
+
+        memento = ReadMemento(tc.name, step + 1);
+        universe.getOutermostCell().transfer(memento, new Point(0, 0), Cell.LOAD);
+        Storable expectedState = universe.getOutermostCell().createMemento();
+
+        assertEquals(expectedState, nextState);
       }
     }
+  }
+
+  private Storable ReadMemento (String testCase, int step) throws IOException {
+    Universe universe = new Universe();
+
+    File file = new File("testcases/" + testCase + "/" + step);
+    FileInputStream in = new FileInputStream(file);
+
+    Storable memento = universe.getOutermostCell().createMemento();
+    memento.load(in);
+    in.close();
+
+    return memento;
   }
 }
 
