@@ -324,5 +324,11 @@ public final class Neighborhood implements Cell {
       }
       return b.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+      return this.toString().equals(obj.toString());
+    }
+
   }
 }
