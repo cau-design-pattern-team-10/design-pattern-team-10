@@ -26,7 +26,7 @@ public class LifeTest {
         new TestCase("Loaf", 2),
         new TestCase("LWSS", 5),
         new TestCase("MWSS", 5),
-        new TestCase("Penta_decathion", 16),
+        new TestCase("Penta_decathlon", 16),
         new TestCase("Pulsar", 4),
         new TestCase("Toad", 3),
         new TestCase("Tub", 2),

@@ -56,11 +56,6 @@ public class NeighborhoodTest {
     }
 
     @Override
-    public Direction isDisruptiveTo() {
-      return null;
-    }
-
-    @Override
     public void clear() {
 
     }
