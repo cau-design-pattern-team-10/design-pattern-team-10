@@ -1,6 +1,8 @@
 # Design Pattern Team 10
-## TODO: 제목을 정해주세요
-- Holub Life game 을 리펙토링합니다.
+
+- Holub Life game 을 리펙토링 및 확장합니다.
+
+- 팀원(이름순) : 여일구, 이민욱, 정우현
 
 ## Documentation
 - `docs` 디렉토리에 문서를 Markdown과 draw.io 를 활용하여 만듭니다.:

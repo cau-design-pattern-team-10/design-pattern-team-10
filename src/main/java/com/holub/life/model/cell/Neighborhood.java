@@ -1,7 +1,6 @@
 package com.holub.life.model.cell;
 
 import com.holub.asynch.ConditionVariable;
-import com.holub.life.model.Direction;
 import com.holub.life.model.Point;
 import com.holub.tools.Observer;
 import com.holub.tools.Storable;
@@ -78,10 +77,6 @@ public final class Neighborhood implements Cell {
   @Getter
   @Setter
   private boolean oneLastRefreshRequired = false;
-  /**
-   *
-   */
-  private final Direction activeEdges = new Direction(Direction.NONE);
 
   /**
    * Create a new Neighborhood containing gridSize-by-gridSize clones of the
@@ -121,18 +116,6 @@ public final class Neighborhood implements Cell {
   }
 
   /**
-   * Shows the direction of the cells along the edge of the block that will
-   * change state in the next transition. For example, if the upper-left corner
-   * has changed, then the current Cell is disruptive in the NORTH, WEST, and
-   * NORTHWEST directions. If this is the case, the neighboring cells may need
-   * to be updated, even if they were previously stable.
-   * @return activeEdges;
-   */
-  public Direction isDisruptiveTo() {
-    return activeEdges;
-  }
-
-  /**
    * Figures the next state of the current neighborhood and the contained
    * neighborhoods (or cells).
    * Does not transition to the next state, however. Note that the neighboring
@@ -146,8 +129,8 @@ public final class Neighborhood implements Cell {
    */
 
   @Override
-  public boolean figureNextState(final NearestCellsDTO dto) {
-    StateDiscriminator discriminator = new StateDiscriminator(dto);
+  public boolean figureNextState() {
+    StateDiscriminator discriminator = StateDiscriminator.getInstance();
     return discriminator.figureNextState(this);
   }
 
@@ -158,74 +141,15 @@ public final class Neighborhood implements Cell {
    * @see #figureNextState
    */
   public boolean transition() {
-    // The condition variable is set and reset only by the
-    // outermost neighborhood. It's actually incorrect
-    // for an inner block to touch it because the whole
-    // board has to be locked for edge cells in a subblock
-    // to compute their next state correctly. There's no
-    // race condition since the only place that transition()
-    // is called is from the clock tick, and recursively
-    // from here. As long as the recompute time is less
-    // than the tick interval, everything's copacetic.
-
-    boolean someSubcellChangedState = false;
-
-    nestingLevel++;
-    if (nestingLevel == 0) {
-      READING_PERMITTED.set(false);
-    }
-
-    activeEdges.clear();              /*(1)*/
-
-    for (int row = 0; row < gridSize; ++row) {
-      for (int column = 0; column < gridSize; ++column) {
-        if (grid[row][column].transition()) {
-          rememberThatCellAtEdgeChangedState(row, column);
-          someSubcellChangedState = true;
+    boolean isChanged = false;
+    for (int r = 0; r < gridSize; r ++) {
+      for (int c = 0; c < gridSize; c ++) {
+        if (grid[r][c].transition()) {
+          isChanged = true;
         }
       }
     }
-
-    nestingLevel--;
-    if (nestingLevel < 0) {
-      READING_PERMITTED.set(true);
-    }
-
-    return someSubcellChangedState;
-  }
-
-  /**
-   * Modifies activeEdges to indicate whether the addition of the cell at
-   * (row,column) makes an edge active.
-   * @param row
-   * @param column
-   */
-  public void rememberThatCellAtEdgeChangedState(
-      final int row, final int column) {
-    if (row == 0) {
-      activeEdges.add(Direction.NORTH);
-
-      if (column == 0) {
-        activeEdges.add(Direction.NORTHWEST);
-      } else if (column == gridSize - 1) {
-        activeEdges.add(Direction.NORTHEAST);
-      }
-    } else if (row == gridSize - 1) {
-      activeEdges.add(Direction.SOUTH);
-
-      if (column == 0) {
-        activeEdges.add(Direction.SOUTHWEST);
-      } else if (column == gridSize - 1) {
-        activeEdges.add(Direction.SOUTHEAST);
-      }
-    }
-
-    if (column == 0) {
-      activeEdges.add(Direction.WEST);
-    } else if (column == gridSize - 1) {
-      activeEdges.add(Direction.EAST);
-    }
-    // else it's an internal cell. Do nothing.
+    return isChanged;
   }
 
   /**
@@ -262,7 +186,6 @@ public final class Neighborhood implements Cell {
    *
    */
   public void clear() {
-    activeEdges.clear();
 
     for (int row = 0; row < gridSize; ++row) {
       for (int column = 0; column < gridSize; ++column) {
@@ -294,13 +217,6 @@ public final class Neighborhood implements Cell {
         if (grid[row][column].transfer(memento, upperLeft, load)) {
           amActive = true;
         }
-
-        Direction d = grid[row][column].isDisruptiveTo();
-
-        if (!d.equals(Direction.NONE)) {
-          activeEdges.add(d);
-        }
-
         upperLeft.translate(subcellWidth, 0);
       }
       upperLeft.translate(-myWidth, subcellWidth);
@@ -408,5 +324,11 @@ public final class Neighborhood implements Cell {
       }
       return b.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+      return this.toString().equals(obj.toString());
+    }
+
   }
 }

@@ -1,6 +1,5 @@
 package com.holub.life.model.cell;
 
-import com.holub.life.model.Direction;
 import com.holub.life.model.Point;
 import com.holub.tools.Observer;
 import com.holub.tools.Storable;
@@ -15,42 +14,17 @@ import lombok.Setter;
  */
 
 public final class Resident implements Cell {
-  /**
-   *
-   */
-  private static final int ALIVE_NEIGHBOR_NUM = 2;
-  /**
-   *
-   */
-  private static final int GENERATING_NEIGHBOR_NUM = 3;
-  /**
-   *
-   */
   private List<Observer> observers;
-  /**
-   *
-   */
-  @Getter
-  @Setter
+  @Getter @Setter
   private boolean alive = false;
-  /**
-   *
-   */
-  @Getter
-  @Setter
+  @Getter @Setter
   private boolean willBeAlive = false;
 
-  /**
-   *
-   */
   public Resident() {
     super();
     this.observers = new LinkedList<>();
   }
 
-  /**
-   *
-   */
   public void toggle() {
     alive = !alive;
   }
@@ -66,12 +40,11 @@ public final class Resident implements Cell {
   /**
    * figure the next state.
    *
-   * @param dto
    * @return true if the cell is not stable (will change state on the next
    * transition().
    */
-  public boolean figureNextState(final NearestCellsDTO dto) {
-    StateDiscriminator discriminator = new StateDiscriminator(dto);
+  public boolean figureNextState() {
+    StateDiscriminator discriminator = StateDiscriminator.getInstance();
     return discriminator.figureNextState(this);
   }
 
@@ -123,14 +96,6 @@ public final class Resident implements Cell {
    */
   public int widthInCells() {
     return 1;
-  }
-
-  /**
-   *
-   * @return disruptive
-   */
-  public Direction isDisruptiveTo() {
-    return isStable() ? Direction.NONE : Direction.ALL;
   }
 
   /**

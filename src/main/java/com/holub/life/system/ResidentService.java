@@ -7,10 +7,19 @@ import java.util.Map;
 import java.util.Optional;
 
 public class ResidentService {
+  private static ResidentService instance;
+
   private Map<Point, Resident> mappingTable;
   private Map<Resident, Point> inverseMappingTable;
 
-  public ResidentService() {
+  public static synchronized ResidentService getInstance() {
+    if (instance == null) {
+      instance = new ResidentService();
+    }
+    return instance;
+  }
+
+  private ResidentService() {
     mappingTable = new HashMap<>();
     inverseMappingTable = new HashMap<>();
   }
@@ -23,9 +32,6 @@ public class ResidentService {
    *         otherwise, return true.
    */
   public boolean register(final Resident r, final Point p) {
-    if (mappingTable.containsKey(p)) {
-      return false;
-    }
     mappingTable.put(p, r);
     inverseMappingTable.put(r, p);
     return true;
@@ -36,8 +42,8 @@ public class ResidentService {
    * @param p
    * @return get resident on a specific point.
    */
-  public Optional<Resident> getResident(final Point p) {
-    return Optional.ofNullable(mappingTable.get(p));
+  public Resident getResident(final Point p) {
+    return mappingTable.get(p);
   }
 
   /**
@@ -47,10 +53,10 @@ public class ResidentService {
    * @param dy
    * @return get resident using offset.
    */
-  public Optional<Resident> getResident(final Resident resident, final int dx, final int dy) {
+  public Resident getResident(final Resident resident, final int dx, final int dy) {
     Point p = inverseMappingTable.get(resident);
     if (p == null) {
-      return Optional.empty();
+      return null;
     }
 
     return getResident(
