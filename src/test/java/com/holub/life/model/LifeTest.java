@@ -2,14 +2,12 @@ package com.holub.life.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.holub.io.Files;
 import com.holub.life.model.cell.Cell;
 import com.holub.life.model.cell.Cell.Memento;
 import com.holub.life.system.Universe;
 import com.holub.tools.Storable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 

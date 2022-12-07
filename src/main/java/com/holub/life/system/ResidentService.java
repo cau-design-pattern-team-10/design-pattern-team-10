@@ -32,9 +32,6 @@ public class ResidentService {
    *         otherwise, return true.
    */
   public boolean register(final Resident r, final Point p) {
-    if (mappingTable.containsKey(p)) {
-      return false;
-    }
     mappingTable.put(p, r);
     inverseMappingTable.put(r, p);
     return true;
