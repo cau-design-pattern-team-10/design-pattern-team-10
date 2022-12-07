@@ -1,5 +1,7 @@
 package com.holub.life.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.holub.io.Files;
 import com.holub.life.model.cell.Cell;
 import com.holub.life.model.cell.Cell.Memento;
@@ -26,17 +28,18 @@ public class LifeTest {
         new TestCase("Loaf", 2),
         new TestCase("LWSS", 5),
         new TestCase("MWSS", 5),
-        new TestCase("Penta_decathion", 16),
+        new TestCase("Penta_decathlon", 16),
         new TestCase("Pulsar", 4),
         new TestCase("Toad", 3),
         new TestCase("Tub", 2),
     };
 
-    for (TestCase tc: testCases) {
+    for (TestCase tc : testCases) {
       Universe universe = new Universe();
-      Memento[] currentState = new Memento[tc.num];
-      Memento[] nextState = new Memento[tc.num];
-      for (int step = 1; step <= tc.num; step ++) {
+      Memento[] currentState = new Memento[tc.num + 1];
+      Memento[] nextState = new Memento[tc.num + 1];
+      for (int step = 1; step <= tc.num; step++) {
+
         File file = new File("testcases/" + tc.name + "/" + step);
 
         FileInputStream in = new FileInputStream(file);
@@ -46,7 +49,15 @@ public class LifeTest {
         universe.getOutermostCell().transfer(memento, new Point(0, 0), Cell.LOAD);
         in.close();
 
-        universe.getOutermostCell().createMemento();
+        currentState[step] = (Memento) universe.getOutermostCell().createMemento();
+
+        // tick
+        universe.getTickSystem().tick();
+        nextState[step] = (Memento) universe.getOutermostCell().createMemento();
+
+        if (step != 1) {
+          assertEquals(currentState[step], nextState[step - 1], "At " + tc.name + " step " + step);
+        }
       }
     }
   }
