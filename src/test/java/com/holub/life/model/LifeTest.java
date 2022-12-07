@@ -20,54 +20,46 @@ public class LifeTest {
     TestCase[] testCases = {
         new TestCase("Beacon", 3),
         new TestCase("Bee_hive", 2),
-        //new TestCase("Blinker", 3),
+        new TestCase("Blinker", 3),
         new TestCase("Block", 2),
         new TestCase("Boat", 2),
-        //new TestCase("Glider", 5),
-        //new TestCase("HWSS", 5),
+        new TestCase("Glider", 5),
+        new TestCase("HWSS", 5),
         new TestCase("Loaf", 2),
-        //new TestCase("LWSS", 5),
-        //new TestCase("MWSS", 5),
-        //new TestCase("Penta_decathlon", 16),
-        //new TestCase("Pulsar", 4),
-        //new TestCase("Toad", 3),
+        new TestCase("LWSS", 5),
+        new TestCase("MWSS", 5),
+        new TestCase("Penta_decathlon", 16),
+        new TestCase("Pulsar", 4),
+        new TestCase("Toad", 3),
         new TestCase("Tub", 2),
     };
 
-    for (TestCase tc: testCases) {
+    for (TestCase tc : testCases) {
       Universe universe = new Universe();
-      for (int step = 1; step < tc.num; step ++) {
-        Storable memento = ReadMemento(tc.name, step);
+      Memento[] currentState = new Memento[tc.num];
+      Memento[] nextState = new Memento[tc.num];
+      for (int step = 1; step < tc.num; step++) {
+
+        File file = new File("testcases/" + tc.name + "/" + step);
+
+        FileInputStream in = new FileInputStream(file);
+
+        Storable memento = universe.getOutermostCell().createMemento();
+        memento.load(in);
         universe.getOutermostCell().transfer(memento, new Point(0, 0), Cell.LOAD);
+        in.close();
 
-        Storable nextState = universe.getOutermostCell().createMemento();
+        currentState[step - 1] = (Memento) universe.getOutermostCell().createMemento();
 
-        // tick to next state
-        if( universe.getOutermostCell().figureNextState() ||
-            universe.getOutermostCell().transition()) {
-          nextState = universe.getOutermostCell().createMemento();
+        if(step != 1) {
+          assertEquals(currentState[step], nextState[step - 1], "At " + tc.name + " step " + step);
         }
 
-        memento = ReadMemento(tc.name, step + 1);
-        universe.getOutermostCell().transfer(memento, new Point(0, 0), Cell.LOAD);
-        Storable expectedState = universe.getOutermostCell().createMemento();
-
-        assertEquals(expectedState, nextState, "At " + tc.name  + " step "+ step);
+        // tick
+        universe.getTickSystem().tick();
+        nextState[step - 1] = (Memento) universe.getOutermostCell().createMemento();
       }
     }
-  }
-
-  private Storable ReadMemento (String testCase, int step) throws IOException {
-    Universe universe = new Universe();
-
-    File file = new File("testcases/" + testCase + "/" + step);
-    FileInputStream in = new FileInputStream(file);
-
-    Storable memento = universe.getOutermostCell().createMemento();
-    memento.load(in);
-    in.close();
-
-    return memento;
   }
 }
 
