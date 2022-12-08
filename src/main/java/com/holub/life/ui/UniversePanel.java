@@ -68,31 +68,6 @@ public class UniversePanel extends JPanel implements Observer {
     this.outermostCellUI = cellUIFactory.createCellUI(
         universe.getOutermostCell(), this);
 
-    addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        TickSystem tickSystem = universe.getTickSystem();
-        switch (e.getKeyCode()) {
-          case KeyEvent.VK_RIGHT:
-            tickSystem.tick();
-            break;
-          case KeyEvent.VK_LEFT:
-          case KeyEvent.VK_U:
-            try {
-              universe.doRollback();
-            } catch (IOException ex) {
-              throw new RuntimeException(ex);
-            }
-            break;
-          case KeyEvent.VK_SPACE:
-            if(tickSystem.isRunning()) {
-              tickSystem.stop();
-            } else {
-              tickSystem.resume();
-            }
-        }
-      }
-    });
-
     addComponentListener(new ComponentAdapter() {
            public void componentResized(final ComponentEvent e) {
              // Make sure that the cells fit evenly into the
@@ -167,6 +142,30 @@ public class UniversePanel extends JPanel implements Observer {
     jframe.getContentPane().setLayout(new BorderLayout());
     jframe.getContentPane().add(this, BorderLayout.CENTER);
     jframe.getContentPane().add(statusBar, BorderLayout.SOUTH);
+    jframe.addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        TickSystem tickSystem = universe.getTickSystem();
+        switch (e.getKeyCode()) {
+          case KeyEvent.VK_RIGHT:
+            tickSystem.tick();
+            break;
+          case KeyEvent.VK_LEFT:
+          case KeyEvent.VK_U:
+            try {
+              universe.doRollback();
+            } catch (IOException ex) {
+              throw new RuntimeException(ex);
+            }
+            break;
+          case KeyEvent.VK_SPACE:
+            if(tickSystem.isRunning()) {
+              tickSystem.stop();
+            } else {
+              tickSystem.resume();
+            }
+        }
+      }
+    });
   }
 
   private void registerGridMenu() {
